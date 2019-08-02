@@ -1,0 +1,28 @@
+import(ini)
+import(futile.logger)
+import(data.table)
+import(tools)
+import(ggplot2)
+import(knitr)
+import(rmarkdown)
+import(gridExtra)
+import(grid)
+import(RSQLite)
+importFrom(kableExtra,"%>%","kable_styling","column_spec","footnote")
+importFrom("grDevices", "dev.off", "graphics.off")
+importFrom("stats", "complete.cases", "cor", "median", "na.omit",
+             "pchisq", "ppoints", "qbeta", "qchisq", "sd")
+importFrom("utils", "data", "head", "installed.packages", "menu",
+             "modifyList", "packageVersion", "read.table",
+             "setTxtProgressBar", "txtProgressBar", "write.table")
+
+export(inspect)
+export(inspect.example)
+export(system.check)
+export(man.plot)
+export(reformat.columns)
+export(get.config)
+export(get.headerTranslation)
+export(check.database)
+export(find.variants)
+export(compare.GWASs)

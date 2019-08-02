@@ -1,0 +1,161 @@
+---
+title: "Quality Check Report"
+output:
+  html_document:
+    css: styles_extra.css
+---
+
+<style>
+.main-container {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(system.file("extdata", "DNA.png", package = "GWASinspector")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:20%; padding:10px;')
+```
+
+***
+
+
+
+<h3 class="header1">Input GWAS Files</h3>
+
+
+
+`r  report.table <- data.table(sapply(.QC$input.file.list, 
+                                  function(x) 
+                                    return(basename(x$file.path))))
+                                    
+  report.table <- cbind(sapply(.QC$input.file.list, function(x) return(x$number)) , report.table)
+  colnames(report.table) <- c('File number', 'Input file name')
+  row.names(report.table) <- sapply(.QC$input.file.list, function(x) return(x$number))
+
+kable(report.table, align = "c" ,escape = FALSE, format = "html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+full_width = FALSE, 
+position = "left") %>%
+kableExtra::column_spec(1, bold = TRUE,width="10em",extra_css='text-align:center', border_right = T) %>%
+kableExtra::column_spec(2, extra_css='text-align:left')
+`
+
+***
+
+<h4 class="header2">Summary of the input GWAS files</h4>
+
+`r report.table <- t(data.table(
+       "<span class='mainItem'>Sample size</span>" = sapply(.QC$input.file.list, function(x) return(thousand.sep(x$MAX_N_TOTAL))),
+	   
+	    "<span class='mainItem'>Missing columns</span>" = sapply(.QC$input.file.list, function(x) return(paste(x$missing.Columns, collapse = ' | '))), 
+		
+       "<span class='mainItem'>Variants in input file</span>" = sapply(.QC$input.file.list, function(x) return(thousand.sep(x$input.data.rowcount))), 
+		"<span class='item'>Missing crucial variable</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$missing.crucial.rowcount,
+                                                  x$input.data.rowcount,
+                                                  pretty = T))),
+												  
+       "<span class='mainItem'>Variant count after step 1</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$rowcount.step1,
+                                                     x$input.data.rowcount,
+                                                     decimal.place=3,
+                                                     pretty = T))),
+													 
+	   "<span class='item'>Monomorphic variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
+	   
+       "<span class='item'>Duplicated variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
+	   "<span class='mainItem'>Variant count after step 2</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$rowcount.step2,
+                                                      x$input.data.rowcount,
+                                                      decimal.place=3,
+                                                      pretty = T))),
+	   "<span class='item'>Mismatch variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent((x$mismatched.rows.std + x$mismatched.rows.alt),
+                                           x$rowcount.step2,
+                                           decimal.place=3,
+                                           pretty=TRUE))),
+	   "<span class='mainItem'>Variant count after step 3</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$rowcount.step3,
+                                                       x$input.data.rowcount,
+                                                       decimal.place=4,
+                                                       pretty = T))),
+	   "<span class='mainItem'>Palindromic variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),
+       "<span class='mainItem'>Genotyped variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[1,2]),x$rowcount.step3,pretty=TRUE))),
+       "<span class='mainItem'>Imputed variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[2,2]),x$rowcount.step3,pretty=TRUE))),
+       "<span class='mainItem'>Negative-strand variants</span>" = sapply(.QC$input.file.list, function(x) return(calculatePercent(x$neg.strand.count,x$rowcount.step3,pretty=TRUE))),
+	   "<span class='mainItem'>Allele frequency correlation</span>" = '',
+	   "<span class='item'>Standard reference</span>" = sapply(.QC$input.file.list, function(x) return(x$AFcor.std_ref)),
+	   "<span class='item'>Alternative reference</span>" = sapply(.QC$input.file.list, function(x) return(x$AFcor.alt_ref)),
+       "<span class='mainItem'>Palindromic allele frequency correlation</span>" = '',
+        "<span class='item'>Standard reference</span>" = sapply(.QC$input.file.list, function(x) return(x$AFcor.palindromic.std_ref)),
+       "<span class='item'>Alternative reference</span>" = sapply(.QC$input.file.list, function(x) return(x$AFcor.palindromic.alt_ref)),
+       "<span class='mainItem'>Lambda - total</span>" = sapply(.QC$input.file.list, function(x) return(x$lambda)),
+       "<span class='mainItem'>Lambda - genotyped</span>" = sapply(.QC$input.file.list, function(x) return(x$lambda.gen)),
+       "<span class='mainItem'>Lambda - imputed</span>" = sapply(.QC$input.file.list, function(x) return(x$lambda.imp)),
+	   "<span class='mainItem'>P-value correlation (obs. vs exp.)</span>" = sapply(.QC$input.file.list, function(x) return(x$PVcor)),
+       "<span class='mainItem'>Visscher's statistic (HQ variants)</span>" = sapply(.QC$input.file.list, function(x) return(x$Visschers.stat.HQ)),
+        "<span class='mainItem'>Effect size</span>" = ' ',
+        "<span class='item'>Min.</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['Min.', 'BETA'])),
+	   "<span class='item'>1st Qu.</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['1st Qu.', 'BETA'])),
+    	   "<span class='item'>Median</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['Median', 'BETA'])),
+	   	   "<span class='item'>Mean</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['Mean', 'BETA'])),
+	   "<span class='item'>3rd Qu.</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['3rd Qu.', 'BETA'])),
+	           "<span class='item'>Max.</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['Max.', 'BETA'])),
+	   "<span class='mainItem'>Standard error (median)</span>" = sapply(.QC$input.file.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
+       "<span class='mainItem'>Fixed HWE P-value</span>" = sapply(.QC$input.file.list, function(x) return(x$fixed.hwep)),
+	   "<span class='mainItem'>Fixed imputation quality</span>" = sapply(.QC$input.file.list, function(x) return(x$fixed.impq)),
+	   "<span class='mainItem'>Fixed sample size</span>" = sapply(.QC$input.file.list, function(x) return(x$fixed.n_total)),
+	   "<span class='mainItem'>Fixed call rate</span>" = sapply(.QC$input.file.list, function(x) return(x$fixed.callrate))
+       ))
+      
+	    colnames(report.table) <- sapply(.QC$input.file.list, function(x) return(x$number))
+		study.col.count <- length(.QC$input.file.list) + 1
+
+prc <-  sprintf("%s%%", study.col.count * 15)	
+	
+kable(report.table,escape = FALSE, align = "c" , format = "html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+full_width = TRUE, 
+position = "left") %>%
+kableExtra::column_spec(1, bold = TRUE, width="20em", border_right = T,extra_css="vertical-align:middle"  ) %>%
+kableExtra::column_spec(2:study.col.count, width="20em" , border_right = T ) %>%
+kableExtra::scroll_box(width = prc)
+
+`
+<br/>
+  <div>step1: removing variants with missing crucial values.</div>
+  <div>step2: removing monomorphic, duplicated and chromosomal variants.</div>
+  <div>step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.</div>
+
+
+
+<h3 class="header1">Plots</h3>
+
+`r if(file.exists(.QC$precisionPlotPath))
+	htmltools::img(src = knitr::image_uri(.QC$precisionPlotPath),alt = 'precisionPlot',width='80%')
+`
+
+
+***
+
+
+`r 
+if(file.exists(.QC$skew_kurtPlotPath))
+	htmltools::img(src = knitr::image_uri(.QC$skew_kurtPlotPath), 
+               alt = 'skew_kurtPlot',width='80%')
+
+`
+
+*** 
+
+
+
+
+<h4 class="header2">Effect-size box plot</h4>
+`r paste0("<a target='_blank' href='",basename(.QC$effsizePlotPath),"'><font color='blue'>click for full-size plot</font></a>")`
+
+`r 
+if(file.exists(.QC$effsizePlotPath))
+	htmltools::img(src = knitr::image_uri(.QC$effsizePlotPath), 
+               alt = 'effsizePlot',height='100%')
+
+`

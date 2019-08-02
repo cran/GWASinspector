@@ -1,0 +1,716 @@
+---
+title: "Quality Check Report"
+output:
+  html_document:
+    css: styles_extra.css
+---
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri(system.file("extdata", "DNA.png", package = "GWASinspector")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:20%; padding:10px;')
+```
+
+***
+
+<br/>
+QC start time:		**`r format(.QC$thisStudy$starttime, "%b %d %Y - %X")`**
+
+QC end time:		**`r format( .QC$thisStudy$endtime, "%b %d %Y - %X")`**
+
+Script version: **`r .QC$script.version`**
+
+System information : **`r .QC$r.version`**
+
+<br/>
+
+
+<h3 class="header1">User preferences</h3>
+Alterative header file:		**`r basename(.QC$config$supplementaryFiles$header_translations)`**
+
+Allele frequency standard reference dataset:		**`r basename(.QC$config$supplementaryFiles$allele_ref_std)`**
+
+`r if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt)){ 
+			paste(sprintf("Allele frequency alternative reference dataset:\t**%s**" , 
+			basename(.QC$config$supplementaryFiles$allele_ref_alt)))
+			}
+
+`
+
+`r if(!is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
+			paste(sprintf("Effect-size reference dataset:\t**%s**" , 
+			basename(.QC$config$supplementaryFiles$beta_ref_std)))
+			}
+
+`
+
+
+
+
+
+<h4 class="header2">Filter values for selecting High-Quality (HQ) variants</h4>
+
+`r count.table <- t(data.table(
+    "<span class='mainItem'>Allele frequency</span>" =  format(.QC$config$filters$HQfilter_FRQ,
+                                 scientific = FALSE),
+    "<span class='mainItem'>HWE p-value</span>" = format(.QC$config$filters$HQfilter_HWE,
+                          scientific = FALSE),
+    "<span class='mainItem'>Call-rate</span>" =  format(.QC$config$filters$HQfilter_cal,
+                          scientific = FALSE),
+    "<span class='mainItem'>Imputation quality</span>" = format(.QC$config$filters$HQfilter_imp,
+                                  scientific = FALSE)))
+
+  colnames(count.table) <- 'Value'
+  kable(count.table,escape='FALSE', align = "c",format = "html") %>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em") %>%
+		kableExtra::column_spec(2, width="10em")
+`
+
+
+
+
+
+
+
+<h3 class="header1">Input File Description</h3>
+
+
+Input file:		**`r basename(.QC$thisStudy$file.path)`**
+
+Input file line count (including header):		**`r .QC$thisStudy$file.line.count`**
+
+Duplicated lines:  **`r format(.QC$thisStudy$dup_lines_count, big.mark = ',' ,scientific = FALSE)`**
+
+
+
+<br/>
+
+<h4 class="header2">Column names</h4>
+
+`r column.tbl <- rbind(.QC$thisStudy$original.File.Columns.sorted,
+.QC$thisStudy$renamed.File.Columns.sorted)
+rownames(column.tbl) <- c('Original', 'Renamed')
+
+kable(column.tbl, align = "c" , format = "html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+full_width = F, 
+position = "left") %>%
+kableExtra::column_spec(1, bold = T, border_right = T  ) %>%
+kableExtra::column_spec(2, width = "10em") %>%
+kableExtra::scroll_box(width = "100%")
+`
+<div class="footnote1">
+*Header values are translated according to 'header_translations' file.*
+</div>
+
+* missing columns = <span  class="redStar">**`r paste(.QC$thisStudy$missing.Columns,collapse = ' | ')`**</span>
+
+<br/>
+
+
+<h4 class="header2">Column report</h4>
+
+`r b <- t(data.frame('CHR' = c(abs(study$column.NA.list$CHR - study$column.INVALID.list$CHR) ,
+                              study$column.INVALID.list$CHR,
+                              ' '),
+
+                    'POSITION' = c(abs(study$column.NA.list$POSITION - study$column.INVALID.list$POSITION) ,
+                                   paste(study$column.INVALID.list$POSITION, kableExtra::footnote_marker_symbol(1)),
+                                   ' '),
+
+                    'EFFECT_ALL' = c(abs(study$column.NA.list$EFFECT_ALL - study$column.INVALID.list$EFFECT_ALL) ,
+                                     study$column.INVALID.list$EFFECT_ALL,
+                                     ' '),
+
+                    'OTHER_ALL' = c(abs(study$column.NA.list$OTHER_ALL - study$column.INVALID.list$OTHER_ALL) ,
+                                    study$column.INVALID.list$OTHER_ALL,
+                                    ' '),
+
+                    'EFFECT' = c(abs(study$column.NA.list$EFFECT - study$column.INVALID.list$EFFECT) ,
+                                 paste(study$column.INVALID.list$EFFECT,kableExtra::footnote_marker_symbol(3)),
+                                 ' '),
+
+                    'STDERR' = c(abs(study$column.NA.list$STDERR - study$column.INVALID.list$STDERR - study$column.INVALID.list$zero.STDERR) ,
+                                 paste(study$column.INVALID.list$STDERR,kableExtra::footnote_marker_symbol(1)),
+                                 paste(study$column.INVALID.list$zero.STDERR,kableExtra::footnote_marker_symbol(2))),
+
+                    'EFF_ALL_FREQ' = c(abs(study$column.NA.list$EFF_ALL_FREQ - study$column.INVALID.list$EFF_ALL_FREQ - study$column.INVALID.list$minusone.EFF_ALL_FREQ),                                       paste(study$column.INVALID.list$EFF_ALL_FREQ,kableExtra::footnote_marker_symbol(1),kableExtra::footnote_marker_symbol(4)),
+                                       paste(study$column.INVALID.list$minusone.EFF_ALL_FREQ,kableExtra::footnote_marker_symbol(3))),
+
+                    'HWE_PVAL' = c(abs(study$column.NA.list$HWE_PVAL - study$column.INVALID.list$HWE_PVAL - study$column.INVALID.list$minusone.HWE_PVAL) ,
+                                   paste(study$column.INVALID.list$HWE_PVAL,
+                                         kableExtra::footnote_marker_symbol(1),
+                                         kableExtra::footnote_marker_symbol(2),
+                                         kableExtra::footnote_marker_symbol(4)),
+                                  paste(study$column.INVALID.list$minusone.HWE_PVAL,
+                                        kableExtra::footnote_marker_symbol(3))),
+
+                    'PVALUE' = c(abs(study$column.NA.list$PVALUE - study$column.INVALID.list$PVALUE - study$column.INVALID.list$minusone.PVALUE) ,
+                                 paste(study$column.INVALID.list$PVALUE,kableExtra::footnote_marker_symbol(1),kableExtra::footnote_marker_symbol(2),kableExtra::footnote_marker_symbol(4)),
+                                 paste(study$column.INVALID.list$minusone.PVALUE,kableExtra::footnote_marker_symbol(3))),
+
+                    'IMPUTED' = c(abs(study$column.NA.list$IMPUTED - study$column.INVALID.list$IMPUTED),
+                                  study$column.INVALID.list$IMPUTED,
+                                  ' '),
+
+                    'IMP_QUALITY' = c(abs(study$column.NA.list$IMP_QUALITY - study$column.INVALID.list$IMP_QUALITY) ,
+                                      paste(study$column.INVALID.list$IMP_QUALITY,kableExtra::footnote_marker_symbol(5)),
+                                      ' '),
+
+                    'MARKER' = c(abs(study$column.NA.list$MARKER - study$column.INVALID.list$MARKER) ,
+                                 study$column.INVALID.list$MARKER,
+                                 ' '),
+
+                    'N_TOTAL' = c(abs(study$column.NA.list$N_TOTAL - study$column.INVALID.list$N_TOTAL) ,
+                                  paste(study$column.INVALID.list$N_TOTAL,
+                                        kableExtra::footnote_marker_symbol(1),
+                                        kableExtra::footnote_marker_symbol(2)),
+                                  ' '),
+
+                    'STRAND' = c(abs(study$column.NA.list$STRAND - study$column.INVALID.list$STRAND) ,
+                                 study$column.INVALID.list$STRAND,
+                                 ' '),
+
+                    'CALLRATE' = c(abs(study$column.NA.list$CALLRATE - study$column.INVALID.list$CALLRATE - study$column.INVALID.list$minusone.CALLRATE),
+                                   paste(study$column.INVALID.list$CALLRATE,
+                                         kableExtra::footnote_marker_symbol(1),
+                                         kableExtra::footnote_marker_symbol(4)),
+                                   paste(study$column.INVALID.list$minusone.CALLRATE,
+                                         kableExtra::footnote_marker_symbol(3)))
+
+
+  ))
+
+colnames(b) <- c('NA values','Invalid values','Uncertain values')
+
+kable(b, align = "c", escape= FALSE ,format = "html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+full_width = F, 
+position = "left") %>%
+kableExtra::column_spec(1, bold = T, border_right = T  ) %>%
+kableExtra::column_spec(2, width = "15em", border_right = T )  %>%
+kableExtra::column_spec(3, width = "15em", border_right = T ) %>%
+	kableExtra::footnote(general = ' ', symbol = c( 
+                      "< 0",
+                      "= 0",
+                      "= -1",
+                      "> 1",
+                      sprintf("valid range is between %s and %s",.QC$config$filters$minimal_impQ_value,.QC$config$filters$maximal_impQ_value)))
+
+`
+
+
+
+
+
+
+
+<h4 class="header2">Variant processing</h4>
+
+
+`r count.table <- t(data.table(
+    "input variant count" = format(.QC$thisStudy$input.data.rowcount, big.mark="," , scientific = FALSE),
+    "<span class='item'>Missing crucial variable</span>" = calculatePercent(.QC$thisStudy$missing.crucial.rowcount,
+                                                  .QC$thisStudy$input.data.rowcount,
+                                                  pretty = T),
+    "variant count after step 1"= calculatePercent(.QC$thisStudy$rowcount.step1,
+                                                     .QC$thisStudy$input.data.rowcount,
+                                                     decimal.place=3,
+                                                     pretty = T),
+    "<span class='item'>Monomorphic variants</span>" = calculatePercent(.QC$thisStudy$monomorphic.count,
+                                              .QC$thisStudy$input.data.rowcount,
+                                              pretty = T),
+    "<span class='item'>Duplicated variants</span>" = calculatePercent(.QC$thisStudy$duplicate.count,
+                                             .QC$thisStudy$input.data.rowcount,
+                                             pretty = T)))											
+
+
+  colnames(count.table) <- 'Count'
+  rownames(count.table)[1] <- "<span class='mainItem'>Input variant count</span>"
+  rownames(count.table)[3] <- sprintf("<span class='mainItem'>Variant count after step 1 %s</span>",kableExtra::footnote_marker_symbol(1))
+  
+  
+  
+  if (.QC$thisStudy$x.chr.count.removed > 0) 
+	count.table <- rbind(count.table, t(data.table("<span class='item'>Removed X variants</span>" = calculatePercent(.QC$thisStudy$x.chr.count.removed,
+                                                                                                       .QC$thisStudy$input.data.rowcount,
+                                                                                                       pretty = T))))
+																									   
+if (.QC$thisStudy$y.chr.count.removed > 0) 
+	count.table <- rbind(count.table, t(data.table("<span class='item'>Removed Y variants</span>" = calculatePercent(.QC$thisStudy$y.chr.count.removed,
+                                                                                                       .QC$thisStudy$input.data.rowcount,
+                                                                                                       pretty = T))))
+if (.QC$thisStudy$xy.chr.count.removed > 0) 
+	count.table <- rbind(count.table, t(data.table("<span class='item'>Removed XY variants</span>" = calculatePercent(.QC$thisStudy$xy.chr.count.removed,
+                                                                                                       .QC$thisStudy$input.data.rowcount,
+                                                                                                       pretty = T))))
+if (.QC$thisStudy$m.chr.count.removed > 0) 
+	count.table <- rbind(count.table, t(data.table("<span class='item'>Removed M variants</span>" = calculatePercent(.QC$thisStudy$m.chr.count.removed,
+                                                                                                       .QC$thisStudy$input.data.rowcount,
+                                                                                                       pretty = T))))																									   
+count.table2 <- t(data.table(
+      "variant count after step 2" = calculatePercent(.QC$thisStudy$rowcount.step2,
+                                                      .QC$thisStudy$input.data.rowcount,
+                                                      decimal.place=3,
+                                                      pretty = T),
+    "variant count after step 3"= calculatePercent(.QC$thisStudy$rowcount.step3,
+                                                       .QC$thisStudy$input.data.rowcount,
+                                                       decimal.place=4,
+                                                       pretty = T)))
+											 
+		
+
+  rownames(count.table2)[1] <- sprintf("<span class='mainItem'>Variant count after step 2 %s</span>",kableExtra::footnote_marker_symbol(2))
+  rownames(count.table2)[2] <- sprintf("<span class='mainItem'>Variant count after step 3 %s</span>",kableExtra::footnote_marker_symbol(3))
+
+  count.table <- rbind(count.table,count.table2)
+  
+  kable(count.table,escape='FALSE', align = "l",format = "html") %>% 
+	kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+	full_width = F, 
+	position = "left") %>%
+	kableExtra::column_spec(1, bold = F, border_right = T  )  %>%
+	kableExtra::footnote(general = ' ', symbol = c( 
+                      "step1: removing variants with missing crucial values.",
+                      "step2: removing monomorphic, duplicated and chromosomal variants.",
+                      "step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified."))
+					  
+					  
+
+`
+
+
+
+
+<span class = 'important'>All further reports are based on variants after step3 (which will be saved as output file).</span>
+
+
+<h3 class="header1">Description of variants</h3>
+
+
+<br/>
+
+<span class='mainItem'>Negative strand variants</span> : **`r .QC$thisStudy$neg.strand.count`**
+
+
+<span class='mainItem'>Allele frequency = 0</span> : **`r .QC$thisStudy$column.INVALID.list$zero.EFF_ALL_FREQ`**
+
+
+<span class='mainItem'>Allele frequency = 1</span> : **`r .QC$thisStudy$column.INVALID.list$one.EFF_ALL_FREQ`**
+
+
+
+
+<br/>
+
+
+`r count.table <- t(data.table(
+    "<span class='mainItem'>High Quality variants</span>" = calculatePercent(.QC$thisStudy$HQ.count,
+                                               .QC$thisStudy$rowcount.step3,
+                                               pretty = T),
+    "<span class='mainItem'>Low Quality variants</span>" = calculatePercent(.QC$thisStudy$LQ.count,
+                                              .QC$thisStudy$rowcount.step3,
+                                              pretty = T),
+    "<span class='mainItem'>Palindromic variants</span>" = calculatePercent(.QC$thisStudy$palindromic.rows,
+                                              .QC$thisStudy$rowcount.step3,
+                                              pretty = T),
+    "<span class='mainItem'>Non-Palindromic variants</span>" = calculatePercent(.QC$thisStudy$non.palindromic.rows,
+                                                  .QC$thisStudy$rowcount.step3,
+                                                  pretty = T),
+    "<span class='mainItem'>Palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$palindormicHighDiffEAF,
+                                    .QC$thisStudy$palindromic.rows,
+                                    pretty = T),
+    "<span class='mainItem'>Palindromic variants with opposite allele frequency \"compared to the reference\" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)</span>" =  calculatePercent(.QC$thisStudy$palindormicExtremeDiffEAF ,
+                                      .QC$thisStudy$palindromic.rows,
+                                      pretty = T),
+    "<span class='mainItem'>Non-palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$nonpalindormicHighDiffEAF ,
+                                      .QC$thisStudy$non.palindromic.rows,
+                                      pretty = T)))
+
+  colnames(count.table) <- 'Count'
+  
+	kable(count.table,escape='FALSE', align = "l",format = "html") %>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T, width= "40em")%>%
+		kableExtra::footnote(general = ' ', symbol = c( 
+                      "Palindromic variants are variants with strand-independent allele-configurations (A/T and C/G)"))
+`
+
+<br/>
+<span class='mainItem'>Imputation status</span>
+`r tbl = .QC$thisStudy$tables$imputed.tbl
+
+colnames(tbl) <- c('','Count')
+
+
+kable(tbl, align = "c",format = "html") %>% 
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+full_width = F, 
+position = "left") %>%
+kableExtra::column_spec(1, bold = T, border_right = T ,width = "15em" ) %>%
+kableExtra::column_spec(2, width = "10em")
+
+`
+
+
+<br/>
+
+
+<span class='mainItem'>Variant count for each chromosome</span>
+`r 
+
+if(!is.na(study$tables$CHR.tbl))
+  {
+	tbl = t(.QC$thisStudy$tables$CHR.tbl)
+	rownames(tbl) <- c('Chromosome','Count')
+
+
+	kable(tbl, align = "c",format = "html") %>% 
+	kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+	full_width = F, 
+	position = "left") %>%
+	kableExtra::column_spec(1, bold = T, border_right = T  ) %>%
+	kableExtra::column_spec(2, width = "10em") %>%
+	kableExtra::scroll_box(width = "100%", height = "80%")
+	} else{ paste('CHR column not found!')}
+`
+
+
+<h3 class="header1">Result from matching variants with reference datasets</h3>
+
+
+<h4 class="header2">Variant types after matching with standard reference datasets</h4>
+
+`r 
+if(nrow(.QC$thisStudy$tables$multi_allele_count_preProcess) > 1)
+  kable(.QC$thisStudy$tables$multi_allele_count_preProcess,escape='FALSE', align = "l",format = "html") %>% 
+  		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+  		full_width = F, 
+  		position = "left") %>%
+  		kableExtra::column_spec(1, bold = T, border_right = T)
+`
+
+ <h4 class="header2">Result of matching with standard reference dataset</h4>
+
+ 
+`r  count.table1 <- t(data.table(
+    "<span class='mainItem'>Found variants</span>" = calculatePercent(.QC$thisStudy$found.rows.std,
+                                        .QC$thisStudy$rowcount.step2,
+                                        decimal.place=3,
+                                        pretty=TRUE),
+    "<span class='mainItem'>Not-found variants</span>" = calculatePercent(.QC$thisStudy$not.found.rows.std,
+                                            .QC$thisStudy$rowcount.step2,
+                                            decimal.place=3,
+                                            pretty=TRUE),
+    "<span class='mainItem'>Mismatch variants</span>" = calculatePercent(.QC$thisStudy$mismatched.rows.std,
+                                           .QC$thisStudy$found.rows.std,
+                                           decimal.place=3,
+                                           pretty=TRUE),
+    "<span class='mainItem'>Non-verified multiallelic variants</span>" = calculatePercent(.QC$thisStudy$multiAlleleVariants.rowcount,
+                                           .QC$thisStudy$found.rows.std,
+                                           decimal.place=3,
+                                           pretty=TRUE),
+    "<span class='mainItem'>Ambiguous variants</span>" = calculatePercent(.QC$thisStudy$ambiguos.rows,
+                                           .QC$thisStudy$found.rows.std,
+                                           decimal.place=3,
+                                           pretty=TRUE),
+    "<span class='mainItem'>Flipped variants</span>" = calculatePercent(.QC$thisStudy$flipped.rows.std,
+                                          .QC$thisStudy$found.rows.std,
+                                          pretty=TRUE),
+    "<span class='mainItem'>Switched variants</span>" = calculatePercent(.QC$thisStudy$switched.rows.std,
+                                           .QC$thisStudy$found.rows.std,
+                                           pretty=TRUE),
+    "<span class='mainItem'>Allele frequency correlation</span>" = '',
+    "<span class='item'>r (all variants)</span>" = .QC$thisStudy$AFcor.std_ref,
+    "<span class='item'>r (palindromic)</span>" = .QC$thisStudy$AFcor.palindromic.std_ref,
+    "<span class='item'>r (non-palindromic)</span>" = .QC$thisStudy$AFcor.non.palindromic.std_ref,
+	"<span class='item'>r (INDEL)</span>" = .QC$thisStudy$AFcor.std_ref.indel))
+
+  colnames(count.table1) <- 'Count'
+  kable(count.table1,escape='FALSE', align = "c",format = "html") %>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em") %>%
+		kableExtra::column_spec(2, width="10em")
+`
+
+<br/>
+
+
+`r 
+if(file.exists(.QC$thisStudy$stdMafPlotPath) & .QC$graphic.device != 'tiff')
+{
+paste(' <h4 class="header2">Standard reference allele-frequency comparison plot</h4>')
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$stdMafPlotPath), 
+               alt = 'MAF', 
+               style = 'width:100%')
+}
+`
+
+
+
+***
+
+
+
+
+`r if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt))
+  paste('<h4 class="header2">Result of matching with alternative reference dataset</h4>')
+`
+
+`r if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt)){
+ 
+ count.table2 <- t(data.table(
+      "<span class='mainItem'>Found variants</span>" = calculatePercent(.QC$thisStudy$found.rows.alt ,
+                                          .QC$thisStudy$not.found.rows.std,
+                                          decimal.place=3,
+                                          pretty=TRUE),
+      "<span class='mainItem'>Not-found variants</span>" = calculatePercent(.QC$thisStudy$not.found.rows.alt ,
+                                              .QC$thisStudy$not.found.rows.std,
+                                              decimal.place=3,
+                                              pretty=TRUE),
+      "<span class='mainItem'>Mismatch variants</span>" = calculatePercent(.QC$thisStudy$mismatched.rows.alt ,
+                                             .QC$thisStudy$found.rows.alt,
+                                             decimal.place=3,
+                                             pretty=TRUE),
+      "<span class='mainItem'>Flipped variants</span>" = calculatePercent(.QC$thisStudy$flipped.rows.alt ,
+                                            .QC$thisStudy$found.rows.alt,
+                                            pretty=TRUE),
+      "<span class='mainItem'>Switched variants</span>" = calculatePercent(.QC$thisStudy$switched.rows.alt ,
+                                             .QC$thisStudy$found.rows.alt,
+                                             pretty=TRUE),
+      "<span class='mainItem'>Allele frequency correlation</span>" = '',
+      "<span class='item'>r (all variants)</span>" = .QC$thisStudy$AFcor.alt_ref,
+      "<span class='item'>r (palindromic)</span>" = .QC$thisStudy$AFcor.palindromic.alt_ref,
+      "<span class='item'>r (non-palindromic)</span>" = .QC$thisStudy$AFcor.non.palindromic.alt_ref))
+
+    colnames(count.table2) <- 'Count'
+	
+	  kable(count.table2,escape='FALSE', align = "c",format = "html") %>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em") %>%
+		kableExtra::column_spec(2, width="10em")	
+ }
+`
+
+<br/>
+
+
+`r 
+if(file.exists(.QC$thisStudy$altMafPlotPath) & .QC$graphic.device != 'tiff')
+{
+paste(' <h4 class="header2">Standard reference allele-frequency comparison plot</h4>')
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$altMafPlotPath), 
+               alt = 'MAF', 
+               style = 'width:100%')
+}
+`
+
+
+<h3 class="header1">Summary statistics</h3>
+
+
+  
+
+ <h4 class="header2">P-value correlation (observed vs expected)</h4>
+ <div><strong>Note:</strong> Only variants with a valid P-value are used for P-value correlation calculation.</div>
+  `r  count.table1 <- t(data.table(
+    "<span class='mainItem'>Included variants</span>" = calculatePercent(.QC$thisStudy$rownum.PVcor,
+                                           .QC$thisStudy$rowcount.step3,
+                                           pretty = T),
+    "<span class='item'>r</span>" = .QC$thisStudy$PVcor))
+	
+	  colnames(count.table1) <- 'Value'  
+    
+  kable(count.table1,escape='FALSE', align = "c",format = "html") %>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em") %>%
+		kableExtra::column_spec(2, width="10em")
+`
+
+
+<br/>
+
+`r 
+if(file.exists(.QC$thisStudy$pvalCorPlotPath) & .QC$graphic.device != 'tiff')
+{
+paste('<h4 class="header2">P-value correlation plot</h4>')
+
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$pvalCorPlotPath), 
+               alt = 'MAF', 
+               style = 'width:50%')
+}
+`
+
+***
+
+
+ <h4 class="header2">Distribution statistics [1]</h4>
+
+`r 	count.table2 <- t(data.table(
+    "<span class='mainItem'>Skewness</span>" = .QC$thisStudy$skewness,
+    "<span class='mainItem'>Skewness (HQ)</span>" = .QC$thisStudy$skewness.HQ,
+    "<span class='mainItem'>Kurtosis</span>" = .QC$thisStudy$kurtosis,
+    "<span class='mainItem'>Kurtosis (HQ)</span>" = .QC$thisStudy$kurtosis.HQ,
+    "<span class='mainItem'>Visscher's stat</span>" = .QC$thisStudy$Visschers.stat ,
+    "<span class='mainItem'>Visscher's stat (HQ)</span>" = .QC$thisStudy$Visschers.stat.HQ,
+    "<span class='mainItem'>Lambda - total</span>" = .QC$thisStudy$lambda ,
+    "<span class='mainItem'>Lambda - genotyped</span>" = .QC$thisStudy$lambda.gen,
+    "<span class='mainItem'>Lambda - imputed</span>" = .QC$thisStudy$lambda.imp,
+	"<span class='mainItem'>Sample Size (max)</span>" = .QC$thisStudy$MAX_N_TOTAL,
+    "<span class='mainItem'>Fixed HWE P-value</span>" = .QC$thisStudy$fixed.hwep,
+    "<span class='mainItem'>Fixed Imputation Quality</span>" = .QC$thisStudy$fixed.impq,
+    "<span class='mainItem'>Fixed Call Rate</span>" = .QC$thisStudy$fixed.callrate,
+    "<span class='mainItem'>Fixed Sample Size</span>" = .QC$thisStudy$fixed.n_total))
+	
+	  colnames(count.table2) <- 'Value'
+	 		
+		kable(count.table2,escape='FALSE', align = "c",format = "html") %>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em") %>%
+		kableExtra::column_spec(2, width="10em") %>%
+		kableExtra::footnote(general = ' ', symbol = c( 
+                      "**HQ** = High-Quality variants"))
+`
+
+***
+ <h4 class="header2">Distribution statistics [2]</h4>
+ 
+`r 
+kable(t(.QC$thisStudy$tables$variable.summary), format = "html")%>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em")
+`
+
+
+
+
+
+
+
+<h4 class="header2">Effect allele distribution</h4>
+`r 
+
+tbl = merge(.QC$thisStudy$tables$EFFECT_ALL.tbl,
+.QC$thisStudy$tables$EFFECT_ALL.post.matching.tbl,
+by="EFFECT_ALL",
+all = T)
+tbl = t(tbl)
+
+rownames(tbl) <- c('Allele','Count (input file)','Count (post-matching)')
+
+kable(tbl, align = "c",format = "html") %>%
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover",  "responsive"),
+full_width = F,
+position = "left") %>%
+kableExtra::column_spec(1, bold = T, border_right = T  ) %>%
+kableExtra::column_spec(2, width = "10em")`
+
+
+
+
+<h4 class="header2">Other allele distribution</h4>
+`r 
+
+tbl = merge(.QC$thisStudy$tables$OTHER_ALL.tbl,
+.QC$thisStudy$tables$OTHER_ALL.post.matching.tbl,
+by="OTHER_ALL",
+all = T)
+tbl = t(tbl)
+
+rownames(tbl) <- c('Allele','Count (input file)','Count (post-matching)')
+
+kable(tbl, align = "c",format = "html") %>%
+kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "responsive"),
+full_width = F,
+position = "left") %>%
+kableExtra::column_spec(1, bold = T, border_right = T  ) %>%
+kableExtra::column_spec(2, width = "10em")`
+
+
+
+`r if(!is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
+      paste('<h3 class="header1">Effect-size correlation</h3>')
+}
+`
+
+`r if(!is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
+      paste('* r =', .QC$thisStudy$effect.rho_4)
+			}
+
+`
+
+
+`r 
+if(file.exists(.QC$thisStudy$effPlotPath) & .QC$graphic.device != 'tiff')
+{
+
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$effPlotPath), 
+               alt = 'MAF', 
+               style = 'width:50%')
+}
+
+`
+
+
+
+
+
+`r if(file.exists(.QC$thisStudy$histPlotPath) & .QC$graphic.device != 'tiff')
+  paste('<h3 class="header1">Plots</h3>')
+`
+
+
+
+`r 
+if(file.exists(.QC$thisStudy$histPlotPath) & .QC$graphic.device != 'tiff')
+{
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$histPlotPath), 
+               alt = 'MAF', 
+               style = 'width:100%')
+}
+`
+
+
+***
+
+
+`r 
+if(file.exists(.QC$thisStudy$QQPlotPath) & .QC$graphic.device != 'tiff'){
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$QQPlotPath), 
+               alt = 'MAF', 
+               style = 'width:100%')
+}
+
+`
+
+***
+
+`r 
+if(file.exists(.QC$thisStudy$manPlotPath) & .QC$graphic.device != 'tiff')
+{
+	htmltools::img(src = knitr::image_uri(.QC$thisStudy$manPlotPath), 
+               alt = 'MAF', 
+               style = 'width:100%')
+}
+
+`

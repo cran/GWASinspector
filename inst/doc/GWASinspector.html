@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Alireza Ani" />
+
+<meta name="date" content="2019-07-31" />
+
+<title>Introduction to GWASinspector</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to GWASinspector</h1>
+<h3 class="subtitle"><em>Comprehensive, efficient and easy to use quality control of genome-wide association study results</em></h3>
+<h4 class="author"><em>Alireza Ani</em></h4>
+<h4 class="date"><em>2019-07-31</em></h4>
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS files:</p>
+<blockquote>
+<p>Check our <a href="http://GWASinspector.com">website</a> for further information and reference data sets.</p>
+</blockquote>
+<hr />
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<ol style="list-style-type: decimal">
+<li><p>The easiest way to get <strong>GWASinspector</strong> is to install it from CRAN:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># this will automatically download and install the dependencies.</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">install.packages</span>(<span class="st">&quot;GWASinspector&quot;</span>)</a></code></pre></div></li>
+<li><p>Alternatively, you can use the installation function and zipped package from our website:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># get the installation function from our website:</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">source</span>(<span class="st">&#39;http://GWASinspector.com/references/install_GWASinspector.R&#39;</span>)</a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co"># this function will check R packages and install the dependencies from CRAN.</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="kw">install.GWASinspector</span>(<span class="dt">package.path =</span> <span class="st">&#39;path/to/packageFile.gz&#39;</span>)</a></code></pre></div></li>
+</ol>
+<hr />
+</div>
+<div id="available-functions" class="section level1">
+<h1>Available functions</h1>
+<p>This package includes functions for checking prerequisite libraries on the local machine, setting up QC parameters and running the QC on GWAS result files.</p>
+<ul>
+<li><p><code>system.check()</code> Some R packages or system functions are not necessary for running the algorithm; but, it is suggested to install them to benefit full functionality. Using this function to get a brief information about whether these utilities are present and accessible. After running the command you will see a table indicating package names and their version.</p></li>
+<li><p><code>inspect()</code> Main function for running the algorithm on GWAS data files.</p></li>
+<li><p><code>check.database()</code> Displays the summary of a reference database, including how many tables are in the database file, number of data rows for each data table and the first row of each table</p></li>
+<li><p><code>find.variants()</code> Search for a list of variants in the reference panel.</p></li>
+<li><p><code>get.config()</code> Save a sample configuration file on your computer.</p></li>
+<li><p><code>get.headerTranslation()</code> Save a sample column header translation table file.</p></li>
+<li><p><code>compare.GWASs()</code> Compares result files from different analyses. So, there is no need to re-run the analysis on a result file again.</p></li>
+<li><p><code>man.plot()</code> Generates the Manhattan plot from a result file. This function has many features that are described in the paclage tutorial.</p></li>
+<li><p><code>inspect.example()</code> This function runs the algorithm on a fabricated GWAS result file. User should only set the output folder for saving the generated files. The input file and reference dataset are embedded in the package.</p></li>
+</ul>
+<hr />
+</div>
+<div id="required-files" class="section level1">
+<h1>Required files</h1>
+<div id="reference-panels" class="section level2">
+<h2>Reference panels</h2>
+<p>Comparing result files with an standard reference panel is the most important part of the QC process. This reference is used to check the alleles in the datasets and to ensure they are all in the same configuration (same strand, same coded alleles) in the post-QC data.</p>
+<p>We have created databases from the most popular refernece panel (e.g. HapMap, 1000G, HRC) which are available from our <a href="http://GWASinspector.com">website</a>. Database files are in SQLite format and can be downloaded as a compressed file.</p>
+<blockquote>
+<p>Some reference panles include more than one population which should be set as a parameter in the configuration file before running the algorithm.</p>
+</blockquote>
+</div>
+<div id="the-header-translation-table" class="section level2">
+<h2>The header-translation table</h2>
+<p>Column names in the input files might be different among cohorts. For example, CODED_ALLELE and EFFECT_ALLELE have the same defintion and both should be converted to the same name when compared together. The simplest way is to use a table for translate popular column names to a standard name for consistency of the output files.</p>
+<blockquote>
+<p>A sample file including common terms is provided as part of the package and could be used as a template. The file contains a two-column table, with the left column containing the standard column-names and the right the alternatives.</p>
+</blockquote>
+</div>
+<div id="configuration-file" class="section level2">
+<h2>configuration file</h2>
+<p>INI file format is used for configuring the desired parameters and settings for running the algorithm and has three componenets:</p>
+<dl>
+<dt>Key or property</dt>
+<dd>The basic element contained in an INI file is the key or property. Every key has a name and a value, delimited by an equals sign (=). The name appears to the left of the equals sign.
+</dd>
+<dt>Sections</dt>
+<dd>Keys mare grouped into arbitrarily named sections. The section name appears on a line by itself, in square brackets ([ and ])
+</dd>
+<dt>Comments</dt>
+<dd>Semicolons (;) at the beginning of the line indicate a comment. Comment lines are ignored.
+</dd>
+</dl>
+<blockquote>
+<p>Key-names and section-names should not be edited or renamed. Otherwise the algorithm will not work properly.</p>
+</blockquote>
+<blockquote>
+<p>A sample file is included in the package which should be used as a template. File paths and QC parameters are are set according to comments and examples in the file.</p>
+</blockquote>
+<hr />
+</div>
+</div>
+<div id="step-by-step-guide-to-run-a-qc" class="section level1">
+<h1>Step-by-step guide to run a QC</h1>
+<p>This walkthrough explains how to run QC on a sample result file.</p>
+<div id="step-1-make-sure-the-package-is-installed-correctly" class="section level2">
+<h2>Step 1: make sure the package is installed correctly</h2>
+<p>After installation, try loading the package with the following command. You might see some warnings but the package should load successfully without any errors.</p>
+<p><code>require(GWASinspector)</code></p>
+</div>
+<div id="step-2-check-r-environment" class="section level2">
+<h2>Step 2: check R environment</h2>
+<p>local machine and R environment can be explored by running the following function.</p>
+<p><code>system.check()</code></p>
+<p>This provides information about existing and missing libraries. There are some optional libraries that can be used for better user experience. Refer to the manual for further information.</p>
+<ul>
+<li><p><strong>Pandoc</strong> library is required for generating HTML reports. This is an optional feature and full report will always be available in text format.</p></li>
+<li><p><strong>Java</strong> library is required for installing <em>kableExtra</em> and <em>xlsx</em> packages.</p></li>
+<li><p><strong>kableExtra</strong> package provides customized tables in HTML report file. The HTML output file will have a simple look if this package is not available.</p></li>
+<li><p><strong>xlsx</strong> package is required for Excel report files. This is an optional feature and full report will always be available in text format.</p></li>
+</ul>
+</div>
+<div id="step-3-download-the-standard-allele-frequency-reference-datasets" class="section level2">
+<h2>Step 3: download the standard allele-frequency reference datasets</h2>
+<p>Standard allele-frequency reference datasets are available from our <a href="http://GWASinspector.com">website</a>. This file should be decompressed and copied in the <em>references</em> folder (<code>dir_references</code> parameter of the config file).</p>
+</div>
+<div id="step-4-get-the-header-translation-table" class="section level2">
+<h2>Step 4: get the header-translation table</h2>
+<p>A copy of this file can be copied to a local folder by running this command. This is a text file which includes most common variable/header names and can be edited according to user specifications. This file should be copied in the <em>references</em> folder (<code>dir_references</code> parameter of the config file).</p>
+<p>The default name of this file is <strong>alt_headers.txt</strong>. <code>header_translations</code> field should be edited in the configuration file accrodingly if this name is changed by user.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">get.headerTranslation.file</span>(<span class="st">&#39;c:/path/to/folder&#39;</span>) <span class="co"># copies the file to selected folder</span></a></code></pre></div>
+<blockquote>
+<p><strong>Notice:</strong> Duplicated entries will stop the algorihtm.</p>
+</blockquote>
+</div>
+<div id="step-5-get-the-configuration-file" class="section level2">
+<h2>Step 5: get the configuration file</h2>
+<p>This is a text file and is used for configuring the desired parameters and settings for running the algorithm. A sample file can be copied to local folder by running the following command (<strong>config.ini</strong>).</p>
+<p>The default name of this file is <strong>config.ini</strong>. This can be changed by user.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">get.config</span>(<span class="st">&#39;c:/path/to/folder&#39;</span>) <span class="co"># copies the file to selected folder</span></a></code></pre></div>
+</div>
+<div id="step-6-modify-the-parameters-in-the-configuration-file" class="section level2">
+<h2>Step 6: modify the parameters in the configuration file</h2>
+<p>Please refer to the configuration file or package manual for full detail of parameters.</p>
+</div>
+<div id="step-7-run-the-qc-function" class="section level2">
+<h2>Step 7: run the QC function</h2>
+<p>QC functions starts with the following command. Please refer to the package manual for full detail of parameters.</p>
+<p><code>inspect(&#39;/path/to/configuration/file&#39;)</code></p>
+<p>All result files and reports are saved in the output folder. An exhaustive log file indicates all steps and can be used for localization of any problems during this run.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

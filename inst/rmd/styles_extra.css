@@ -1,0 +1,62 @@
+.header1 {
+  color: darkblue;
+  padding-bottom: 10px;
+  padding-top: 30px;
+  border-top: 3px solid sienna;
+  margin-top: 40px;
+}
+
+.header2 {
+  color: darkred;
+  padding-bottom: 5px;
+  margin-top: 40px;
+
+}
+
+.box{
+  padding-bottom:8px;
+}
+
+
+.imageBox{
+  padding-top:50px;
+}
+
+.footnote1
+{
+  color: red;
+  padding-left: 25px;
+  padding-bottom: 10px;
+}
+
+
+.note
+{
+  font-weight:bold;
+  font-style:italic;
+}
+
+
+.redStar{
+  color:red;
+}
+
+
+.mainItem{
+  color: #023411;
+    font-weight: bold;
+}
+
+.item{
+  color: #000726;
+    font-style:italic;
+  padding-left: 25px;
+}
+
+.important{
+  color: darkgreen;
+  border:1px solid red;
+  padding: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+}

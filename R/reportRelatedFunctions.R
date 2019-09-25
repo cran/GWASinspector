@@ -240,7 +240,7 @@ report.to.txt.file <- function(study) {
 
   writeTXTreport(' ')
 
-  writeTXTreport(paste('Effect type:', .QC$config$parameters$effect_type))
+  writeTXTreport(paste('Effect type:', .QC$config$input_parameters$effect_type))
 
   ### ==================================
   writeTXTreport(' ')
@@ -731,7 +731,7 @@ save.rds.file <- function(study) {
   tryCatch(
     {
       if(.QC$config$output_parameters$object_file)
-        saveRDS(object = study, file =  study$rds.study.rds.path)
+        saveRDS(object = study, file =  study$rds.study.rds.path, version = '2')
     },
     error = function(err)
     {

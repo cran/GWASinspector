@@ -1,0 +1,17 @@
+Changes in version 1.2 (Sep 2019)
+====================================
+	- ".QC$parameters" is renamed to ".QC$input_parameters"
+	- checkConfigFileSections() function was added to checkConfigFile.R
+	- Below variables are changed:
+		* study$SNPs_invalid.path
+		* study$SNPs_removed.path
+		* study$SNPs_improbable_values.path
+		* study$SNPs_duplicates.path
+		* study$SNPs_mismatches.path
+		* study$SNPs_monomorphic.path
+		* study$SNPs_multi_allelic.path
+		* study$SNPs_ambiguous.path
+		* study$SNPs_significant.path
+	- Add compatibility for older versions of R
+	  * save.alternate.reference() ==> saveRDS(... , version = '2')
+	  * save.rds.file() ==> saveRDS(... , version = '2')

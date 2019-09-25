@@ -66,8 +66,8 @@ plot.variable.frequency.histograms<-function(input.data, study , plot.title.text
 
 
     # convert BETA to Beta
-    # effect.title <- tools::toTitleCase(tolower(.QC$config$parameters$effect_type_string))
-    effect.title <- chartr('ETA','eta', .QC$config$parameters$effect_type_string)
+    # effect.title <- tools::toTitleCase(tolower(.QC$config$input_parameters$effect_type_string))
+    effect.title <- chartr('ETA','eta', .QC$config$input_parameters$effect_type_string)
 
 
     effect.plot<-ggplot(data=tmp.data,aes(x=EFFECT)) +

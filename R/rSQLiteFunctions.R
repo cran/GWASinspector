@@ -132,8 +132,17 @@ compareInputfileWithReferenceDataBase <- function(input.data)
                                     .QC$config$supplementaryFiles$allele_ref_std_population) ,
                             param = list(x = rn))
 
+  ## merging data
+  if(data.table::key(input.data) != 'hID')
+    data.table::setkey(input.data,hID)
 
-  input.data <- merge(x = input.data, y = rs, by.x = 'hID', by.y = 'hID',all.x=TRUE)
+  rs <- data.table::setDT(rs,key = 'hID')
+
+  ##input.data <- merge(x = input.data, y = rs, by.x = 'hID', by.y = 'hID',all.x=TRUE)
+  # removed MERGE with data table join
+  input.data <- rs[input.data]
+
+
 
 
 

@@ -20,10 +20,10 @@ text-align: justify}
 
 This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS files:
 
+Check our [website](http://GWASinspector.com) for further information and reference data sets. 
 
+The manual for this package can also be accessed online from [here](http://gwasinspector.com/references/Introduction_to_GWASinspector.pdf).
 
-
-> Check our [website](http://GWASinspector.com) for further information and reference data sets.
 
 
 ---
@@ -60,38 +60,9 @@ This vignette introduces the GWASinspector package, its general form and how to 
 
 ---
 
-# Available functions
-
-This package includes functions for checking prerequisite libraries on the local machine, setting up QC parameters and running the QC on GWAS result files.
-
-* `system.check()` Some R packages or system functions are not necessary for running the algorithm; but, it is suggested to install them to benefit full functionality. Using this function to get a brief information about whether these utilities are present and accessible. After running the command you will see a table indicating package names and their version. 
-
-* `inspect()` Main function for running the algorithm on GWAS data files.
-
-* `check.database()` Displays the summary of a reference database, including how many tables are in the database file, number of data rows for each data table and the first row of each table
-
-* `find.variants()` Search for a list of variants in the reference panel.
-
-* `get.config()` Save a sample configuration file on your computer.
-
-* `get.headerTranslation()` Save a sample column header translation table file. 
- 
-* `compare.GWASs()` Compares result files from different analyses. So, there is no need to re-run the analysis on a result file again.
-
-* `man.plot()` Generates the Manhattan plot from a result file. This function has many features that are described in the paclage tutorial.
-
-* `inspect.example()` This function runs the algorithm on a fabricated GWAS result file. User should only set the output folder for saving the generated files. The input file and reference dataset are embedded in the package.
-
-
-
-
-
-
----
-
 # Required files
 
-## Reference panels
+## Allele reference panels
 
 Comparing result files with an standard reference panel is the most important part of the QC process. This reference is used to check the alleles in the datasets and to ensure they are all in the same configuration (same strand, same coded alleles) in the post-QC data.
 
@@ -102,26 +73,17 @@ We have created databases from the most popular refernece panel (e.g. HapMap, 10
 
 ## The header-translation table
 
-Column names in the input files might be different among cohorts. For example, CODED_ALLELE and EFFECT_ALLELE have the same defintion and both should be converted to the same name when compared together. The simplest way is to use a table for translate popular column names to a standard name for consistency of the output files. 
+
+The column names used in the input may differ between files (e.g. one file uses EFFECT_ALLELE where another uses CODED_ALLELE). This file is a table of possible column names and their standard translations. A sample file with common names is provided in the package.
 
 > A sample file including common terms is provided as part of the package and could be used as a template. The file contains a two-column table, with the left column containing the standard column-names and the right the alternatives. 
 
 
 
 
-## configuration file
+## Configuration file
 
-INI file format is used for configuring the desired parameters and settings for running the algorithm and has three componenets:
-
-Key or property 
-  : The basic element contained in an INI file is the key or property. Every key has a name and a value, delimited by an equals sign (=). The name appears to the left of the equals sign.
-
-Sections
-  : Keys mare grouped into arbitrarily named sections. The section name appears on a line by itself, in square brackets ([ and ])
-  
-Comments
-  : Semicolons (;) at the beginning of the line indicate a comment. Comment lines are ignored. 
-  
+An INI file is used to configure the quality control. See the manual for details.
 
 > Key-names and section-names should not be edited or renamed. Otherwise the algorithm will not work properly.
 
@@ -140,7 +102,9 @@ This walkthrough explains how to run QC on a sample result file.
 After installation, try loading the package with the following command. You might see some warnings but the package should load successfully without any errors.
 
 	  
-`require(GWASinspector)`
+```{r}
+require(GWASinspector)
+```
    
 
 
@@ -148,21 +112,12 @@ After installation, try loading the package with the following command. You migh
 
 local machine and R environment can be explored by running the following function. 
 
-`system.check()`
+```{r}
+system.check()
+```
 			  
-   
-
-This provides information about existing and missing libraries. There are some optional libraries that can be used for better user experience. Refer to the manual for further information.
-
-
-* **Pandoc** library is required for generating HTML reports. This is an optional feature and full report will always be available in text format.
-
-* **Java** library is required for installing *kableExtra* and *xlsx* packages. 
-
-* **kableExtra** package provides customized tables in HTML report file. The HTML output file will have a simple look if this package is not available.
-
-* **xlsx** package is required for Excel report files. This is an optional feature and full report will always be available in text format.
-
+This will inform you if **pandoc**, **kableExtra**, **xlsx** packages and **Java** library are available. These are not required for running GWASinspector, but allow for Excel and HTML formatted outputs.
+ 
 
 
 ## Step 3: download the standard allele-frequency reference datasets
@@ -174,13 +129,13 @@ Standard allele-frequency reference datasets are available from our [website](ht
 
 ## Step 4: get the header-translation table
 
+
 A copy of this file can be copied to a local folder by running this command. This is a text file which includes most common variable/header names and can be edited according to user specifications. This file should be copied in the *references* folder (`dir_references` parameter of the config file).
 
 The default name of this file is **alt_headers.txt**. `header_translations` field should be edited in the configuration file accrodingly if this name is changed by user.
 
 ```{r}
-
-get.headerTranslation.file('c:/path/to/folder') # copies the file to selected folder
+get.headerTranslation.file('c:/path/to/referenceFolder') # copies the file to selected folder
 
 ```
 
@@ -188,18 +143,27 @@ get.headerTranslation.file('c:/path/to/folder') # copies the file to selected fo
 
 
 
+
 ## Step 5: get the configuration file
 
-This is a text file and is used for configuring the desired parameters and settings for running the algorithm. A sample file can be copied to local folder by running the following command (**config.ini**).
+It is recommended to set a working directory at first.
 
-The default name of this file is **config.ini**. This can be changed by user.
+```{r}
+setwd('c:/path/to/workingDirectory') # copies the file to selected folder
+
+```
+
+
+This is a text file and is used for configuring the desired parameters and settings for running the algorithm. A template file can be copied to local folder by running the following command (**config.ini**).
+
+The default name of this file is **config.ini** which can be changed by user.
 
 
 ```{r}
-
-get.config('c:/path/to/folder') # copies the file to selected folder
+get.config(getwd()) # copies the file to the working directory
 
 ```
+
 
 
 ## Step 6: modify the parameters in the configuration file
@@ -211,8 +175,20 @@ Please refer to the configuration file or package manual for full detail of para
 
 QC functions starts with the following command. Please refer to the package manual for full detail of parameters.
 
-	   
-`inspect('/path/to/configuration/file')`
-   
 
-All result files and reports are saved in the output folder. An exhaustive log file indicates all steps and can be used for localization of any problems during this run.
+```{r}
+inspect('config.ini')
+```
+   
+The results will be saved in the output folder specified in **config.ini**. A log file is also created, and can be used to locate any problems occurring during the QC run.
+
+---
+
+# Test run
+
+You can run the algorithm on a sample GWAS file that is embedded in the package. Reports are generated and saved in the specified folder.
+
+```{r}
+library(GWASinspector)
+inspect.example('/sample_dir')
+```

@@ -37,9 +37,16 @@ compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.col
     # we only need original file columns, so , added columns from checking with reference file from previous step should be deleted
     if(.QC$thisStudy$hID.added)
     {
-      setkey(.QC$alt.reference.data,"hID")
-      setkey(input.data,"hID")
 
+      # double check KEY property for merging data
+      if(data.table::key(.QC$alt.reference.data) != 'hID')
+        data.table::setkey(.QC$alt.reference.data , hID)
+
+      if(data.table::key(input.data) != 'hID')
+        data.table::setkey(input.data , hID)
+
+
+      # FIXME change merge to data table join
       tmp.data <- merge(x = subset(input.data[is.na(REF) & MULTI_ALLELIC == 0 ,] ,
                                    select = input.file.colNames),
                         y = .QC$alt.reference.data,

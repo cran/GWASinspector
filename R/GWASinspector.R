@@ -1,0 +1,32 @@
+#' Comprehensive and Easy to Use Quality Control of GWAS Results
+#'
+#' When evaluating the results of a genome-wide association study (GWAS), it is important to perform a quality control to ensure that the results are valid, complete, correctly formatted, and, in case of meta-analysis, consistent with other studies in the same analysis. This package was developed to facilitate and streamline this process and provide the user with a comprehensive report.
+#'
+#' Check out our website for more help and support  \url{http://GWASinspector.com}.
+#'
+#' @section Functions:
+#'
+#' This package includes functions for checking prerequisite libraries on the local machine, setting up QC parameters and running the QC on GWAS result files.
+#'
+#' \code{system.check()} Some R packages or system functions are not necessary for running the algorithm; but, it is suggested to install them to benefit full functionality. Using this function to get a brief information about whether these utilities are present and accessible. After running the command you will see a table indicating package names and their version.
+#'
+#' \code{inspect()} Main function for running the algorithm on GWAS data files.
+#'
+#' \code{check.database()} Displays the summary of a reference database, including how many tables are in the database file, number of data rows for each data table and the first row of each table
+#'
+#' \code{find.variants()} Search for a list of variants in the allele reference panels.
+#'
+#' \code{get.config()} Save a sample configuration file on your computer.
+#'
+#' \code{get.headerTranslation()} Save a sample column header translation table file.
+#'
+#' \code{compare.GWASs()} Compares result files from different analyses. So, there is no need to re-run the analysis on a result file again.
+#'
+#' \code{man.plot()} Generates the Manhattan plot from a result file. This function has many features that are described in the paclage tutorial.
+#'
+#' \code{inspect.example()} This function runs the algorithm on a fabricated GWAS result file. User should only set the output folder for saving the generated files. The input file and reference dataset are embedded in the package.
+#'
+#'
+#' @docType package
+#' @name GWASinspector
+NULL

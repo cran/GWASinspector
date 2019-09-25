@@ -4,6 +4,7 @@
     welcomeString =sprintf("%s %s\n%s (%s)",
                         .QC$package.name,
                         .QC$script.version,
+                      #  .QC$vignetteLink,
                         .QC$help,
                         .QC$url)
 

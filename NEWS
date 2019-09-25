@@ -1,0 +1,8 @@
+Changes in version 1.2 (Sep 2019)
+====================================
+	- "parameters" section in the configuration file was changed to "input_parameters"
+	- Configuration file sections are checked for consistency
+	- Output file names are changed from SNPs to vars. This is because they might contain INDELs too.
+	- Merging of data sets are done with data.table method instead of merge() function.
+	- Vignette is updated.
+	- Added compatibility for older versions of R.

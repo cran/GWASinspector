@@ -56,7 +56,7 @@ calculate.PVALUE <- function(input.data)
 ## because missing pvalues should not be analyzed during QC
 fill.missing.pvalues.from.calculated.pvalues <- function(input.data){
 
-  if(.QC$config$parameters$calculate_missing_p){
+  if(.QC$config$input_parameters$calculate_missing_p){
 
     # check for missing PVALUES and repkkcae the missings
     input.data[is.na(PVALUE),

@@ -50,15 +50,19 @@ uploadAltReferenceFile<-function()
   }
 
 
-  # convert to data.table
+  # convert to data.table and set KEY
   if(!is.data.table(allele_ref_alt_std))
-    allele_ref_alt_std<-as.data.table(allele_ref_alt_std)
+    allele_ref_alt_std<-data.table::setDT(allele_ref_alt_std, key = "hID")
 
-  #set key for fast access
-  if('hID' %in% names(allele_ref_alt_std))
-    setkey(allele_ref_alt_std,"hID")
-  else
-    setkey(allele_ref_alt_std,"ID")
+
+  # FIXME only hID must be used.
+  # set key for fast access
+  # if('hID' %in% names(allele_ref_alt_std))
+  #   setkey(allele_ref_alt_std,"hID")
+  # else
+  #   setkey(allele_ref_alt_std,"ID")
+
+
 
   print.and.log(sprintf("Alternative Reference file \'%s\' loaded (%s x %s)!",
                         altReferenceFile,thousand.sep(nrow(allele_ref_alt_std)),ncol(allele_ref_alt_std)),
@@ -190,7 +194,7 @@ save.alternate.reference <- function()
     rm(allele_ref_alt_std)
   }else if(file.extension == 'rds')
   {
-    saveRDS(.QC$alt.reference.data, file = .QC$config$supplementaryFiles$allele_ref_alt)
+    saveRDS(.QC$alt.reference.data, file = .QC$config$supplementaryFiles$allele_ref_alt, version = '2')
 
 
   }else if(file.extension %in% c('gz','zip')) {

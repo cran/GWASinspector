@@ -20,12 +20,27 @@
 #  
 
 ## ------------------------------------------------------------------------
-#  
-#  get.headerTranslation.file('c:/path/to/folder') # copies the file to selected folder
+#  require(GWASinspector)
+
+## ------------------------------------------------------------------------
+#  system.check()
+
+## ------------------------------------------------------------------------
+#  get.headerTranslation.file('c:/path/to/referenceFolder') # copies the file to selected folder
 #  
 
 ## ------------------------------------------------------------------------
+#  setwd('c:/path/to/workingDirectory') # copies the file to selected folder
 #  
-#  get.config('c:/path/to/folder') # copies the file to selected folder
+
+## ------------------------------------------------------------------------
+#  get.config(getwd()) # copies the file to the working directory
 #  
+
+## ------------------------------------------------------------------------
+#  inspect('config.ini')
+
+## ------------------------------------------------------------------------
+#  library(GWASinspector)
+#  inspect.example('/sample_dir')
 

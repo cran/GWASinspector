@@ -59,9 +59,13 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
   message('\n---------- [validating Config file] ----------\n')
 
   ## check config file
+
+  # check if file is in correct format
+  if(!checkConfigFileSections(.QC$config))
+    runStopCommand('Config file is not in a correct format! run get.config() to obtain a template.')
+
   ## stops the process if paths or directories not found
   .QC$config<-checkConfigFile(.QC$config) # checkConfigFile.R
-
 
 
   ## =====================================

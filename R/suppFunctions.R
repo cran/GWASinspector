@@ -58,7 +58,7 @@ changeROptions<-function(){
   if(capabilities('cairo'))
     options(bitmapType='cairo')
   else
-    message('cairo module not available! run QC_SYSTEM_CHECK() ')
+    print.and.log('cairo module not available! run system.check()','warning')
 }
 
 

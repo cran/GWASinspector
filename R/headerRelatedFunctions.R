@@ -21,10 +21,10 @@ checkRequiredColumnNames <- function(inputFile, study){
   file.extension<-study$file.extension #file_ext(inputFile)
 
   ##set NA string set from config
-  na.string <- .QC$config$parameters$na.string
+  na.string <- .QC$config$input_parameters$na.string
 
   ##set column separator from config file
-  sep.strings <- .QC$config$parameters$column_separator
+  sep.strings <- .QC$config$input_parameters$column_separator
 
   # if(file.extension %in% c('gz','zip')){
   #
@@ -135,9 +135,9 @@ checkRequiredColumnNames <- function(inputFile, study){
 
 
   ## check if file has the selected effect column , either BETA or OR
-  # if(!is.element(.QC$config$parameters$effect_type,renamed.File.Columns))
+  # if(!is.element(.QC$config$input_parameters$effect_type,renamed.File.Columns))
   #   print.and.log(sprintf('You have selected \"%s\" as the effect column, which is not found in the input file.' ,
-  #                         .QC$config$parameters$effect_type ),'fatal')
+  #                         .QC$config$input_parameters$effect_type ),'fatal')
 
 
 
@@ -231,9 +231,9 @@ getCrucialColumnNames.onFileLoading<-function()
     "STDERR"
   )
 
-  if(.QC$config$parameters$effect_type == 'BETA')
+  if(.QC$config$input_parameters$effect_type == 'BETA')
     wanted.columns <- append(wanted.columns,'BETA')
-  else  if(.QC$config$parameters$effect_type == 'OR')
+  else  if(.QC$config$input_parameters$effect_type == 'OR')
     wanted.columns <- append(wanted.columns,'OR')
 
   return(wanted.columns)
@@ -285,9 +285,9 @@ getRequiredColumnNames<-function()
                     "CALLRATE",
                     "N_TOTAL")
 
-  if(.QC$config$parameters$effect_type == 'BETA')
+  if(.QC$config$input_parameters$effect_type == 'BETA')
     wanted.columns <- append(wanted.columns,'BETA')
-  else  if(.QC$config$parameters$effect_type == 'OR')
+  else  if(.QC$config$input_parameters$effect_type == 'OR')
     wanted.columns <- append(wanted.columns,'OR')
 
   return(wanted.columns)

@@ -20,10 +20,10 @@ uploadInputFile<-function()
   file.extension <- study$file.extension
 
   ##set NA string set from config
-  na.string<-config$parameters$na.string
+  na.string<-config$input_parameters$na.string
 
   ##set column separator from config file
-  sep.strings<-config$parameters$column_separator
+  sep.strings<-config$input_parameters$column_separator
 
   #check how the file was read
   read.method <- 'fread'

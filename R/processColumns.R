@@ -133,19 +133,19 @@ process.column.IMPUTED<- function(input.data){
 
     input.data[,IMPUTED := toupper(IMPUTED)]
 
-    input.data[!is.na(IMPUTED),  IMPUTED := gsub(pattern = config$parameters$imputed_T,
+    input.data[!is.na(IMPUTED),  IMPUTED := gsub(pattern = config$input_parameters$imputed_T,
                                                  x = IMPUTED,
                                                  replacement = 1)]
 
-    input.data[!is.na(IMPUTED),  IMPUTED := gsub(pattern = config$parameters$imputed_F,
+    input.data[!is.na(IMPUTED),  IMPUTED := gsub(pattern = config$input_parameters$imputed_F,
                                                  x = IMPUTED,
                                                  replacement = 0)]
 
 
-    # input.data$IMPUTED= gsub(pattern = config$parameters$imputed_T,
+    # input.data$IMPUTED= gsub(pattern = config$input_parameters$imputed_T,
     #                          x = input.data$IMPUTED,
     #                          replacement = 1)
-    # input.data$IMPUTED= gsub(pattern = config$parameters$imputed_F,
+    # input.data$IMPUTED= gsub(pattern = config$input_parameters$imputed_F,
     #                          x = input.data$IMPUTED,
     #                          replacement = 0)
 
@@ -225,7 +225,7 @@ process.column.EFFECT<- function(input.data){
   # odds_ratio = exp(Beta)
   # Beta = natural log(odds_taio)
 
-  if(.QC$config$parameters$effect_type == 'BETA')
+  if(.QC$config$input_parameters$effect_type == 'BETA')
   {
     # change the name of beta column to EFFECT in input data
     names(input.data)[names(input.data) == 'BETA'] <- 'EFFECT'

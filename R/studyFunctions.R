@@ -587,35 +587,35 @@ create.file.specific.config <- function(file.name){
   ## add dataset paths
 
   #variant with missing crucial values
-  study$SNPs_invalid.path<-paste(files.prefix, 'SNPs_invalid_allele.txt' , sep='_')
+  study$SNPs_invalid.path<-paste(files.prefix, 'vars_invalid_allele.txt' , sep='_')
 
 
   #variant with invalid allele values
-  study$SNPs_removed.path<-paste(files.prefix, 'SNPs_removed.txt' , sep='_')
+  study$SNPs_removed.path<-paste(files.prefix, 'vars_removed.txt' , sep='_')
 
 
   #variant with missing non-crucial values
-  study$SNPs_improbable_values.path<-paste(files.prefix, 'SNPs_improbable_values.txt' , sep='_')
+  study$SNPs_improbable_values.path<-paste(files.prefix, 'vars_improbable_values.txt' , sep='_')
 
   # duplicate variants
-  study$SNPs_duplicates.path<-paste(files.prefix, 'SNPs_duplicates.txt' , sep='_')
+  study$SNPs_duplicates.path<-paste(files.prefix, 'vars_duplicates.txt' , sep='_')
 
   # mismatched bi-allelic variants
-  study$SNPs_mismatches.path<-paste(files.prefix, 'SNPs_mismatches_BA.txt' , sep='_')
+  study$SNPs_mismatches.path<-paste(files.prefix, 'vars_mismatches_BA.txt' , sep='_')
 
   # monomorphic variants
-  study$SNPs_monomorphic.path<-paste(files.prefix, 'SNPs_monomorphic.txt' , sep='_')
+  study$SNPs_monomorphic.path<-paste(files.prefix, 'vars_monomorphic.txt' , sep='_')
 
   # multi_allelic variants
   # vairants that are found in reference but cannot be matched because of many variants on the same position
   # mismatched multi-allelic variants
-  study$SNPs_multi_allelic.path<-paste(files.prefix, 'SNPs_mismatches_MA.txt' , sep='_')
+  study$SNPs_multi_allelic.path<-paste(files.prefix, 'vars_mismatches_MA.txt' , sep='_')
 
   # duplicated match variants
-  study$SNPs_ambiguous.path<-paste(files.prefix, 'SNPs_ambiguous.txt' , sep='_')
+  study$SNPs_ambiguous.path<-paste(files.prefix, 'vars_ambiguous.txt' , sep='_')
 
   # significant variants
-  study$SNPs_significant.path<-paste(files.prefix, 'SNPs_significant.txt' , sep='_')
+  study$SNPs_significant.path<-paste(files.prefix, 'vars_significant.txt' , sep='_')
 
 
   # cleaned output file
@@ -978,6 +978,6 @@ variable.statistics.post.matching <- function(input.data)
 
 
   # change effect column name to BETA or LN(OR)
-  colnames(.QC$thisStudy$tables$variable.summary)[colnames(.QC$thisStudy$tables$variable.summary) == 'EFFECT'] <- .QC$config$parameters$effect_type_string
+  colnames(.QC$thisStudy$tables$variable.summary)[colnames(.QC$thisStudy$tables$variable.summary) == 'EFFECT'] <- .QC$config$input_parameters$effect_type_string
 
 }

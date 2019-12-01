@@ -1,7 +1,6 @@
 ---
 title: "Introduction to GWASinspector"
 subtitle: "Comprehensive, efficient and easy to use quality control of genome-wide association study results"
-author: "Alireza Ani"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -18,9 +17,7 @@ text-align: justify}
 
 # Overview
 
-This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS files:
-
-Check our [website](http://GWASinspector.com) for further information and reference data sets. 
+This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS result files. Check our [website](http://GWASinspector.com) for further information and reference data sets. 
 
 The manual for this package can also be accessed online from [here](http://gwasinspector.com/references/Introduction_to_GWASinspector.pdf).
 
@@ -68,7 +65,7 @@ Comparing result files with an standard reference panel is the most important pa
 
 We have created databases from the most popular refernece panel (e.g. HapMap, 1000G, HRC) which are available from our [website](http://GWASinspector.com). Database files are in SQLite format and can be downloaded as a compressed file. 
 
-> Some reference panles include more than one population which should be set as a parameter in the configuration file before running the algorithm.
+> Some reference panels include more than one population. The target population which should be set as a parameter in the configuration file before running the algorithm.
 
 
 ## The header-translation table
@@ -83,17 +80,17 @@ The column names used in the input may differ between files (e.g. one file uses 
 
 ## Configuration file
 
-An INI file is used to configure the quality control. See the manual for details.
+An INI file is used to configure the parameters for running the algorithm. See the manual for details.
 
 > Key-names and section-names should not be edited or renamed. Otherwise the algorithm will not work properly.
 
-> A sample file is included in the package which should be used as a template. File paths and QC parameters are are set according to comments and examples in the file.
+> A sample file is included in the package which should be used as a template. File paths and QC parameters are set according to comments and examples in the file.
 
 ---
 
 # Step-by-step guide to run a QC 
 
-This walkthrough explains how to run QC on a sample result file.
+This walk-through explains how to run QC on a sample result file.
 
 
 
@@ -104,25 +101,29 @@ After installation, try loading the package with the following command. You migh
 	  
 ```{r}
 require(GWASinspector)
+
 ```
    
 
 
 ## Step 2: check R environment
 
-local machine and R environment can be explored by running the following function. 
+Local machine and R environment can be explored by running the following function. 
 
 ```{r}
 system.check()
+
 ```
 			  
-This will inform you if **pandoc**, **kableExtra**, **xlsx** packages and **Java** library are available. These are not required for running GWASinspector, but allow for Excel and HTML formatted outputs.
+This will also inform you if **pandoc**, **kableExtra**, **xlsx** packages and **Java** library are available. These are not required for running GWASinspector, but allow for Excel and HTML formatted outputs.
  
 
 
 ## Step 3: download the standard allele-frequency reference datasets
 
-Standard allele-frequency reference datasets are available from our [website](http://GWASinspector.com). This file should be decompressed and copied in the *references* folder (`dir_references` parameter of the config file).
+Standard allele-frequency reference datasets are available from our [website](http://GWASinspector.com). The database file should be decompressed and copied in the *references* folder [`dir_references` parameter of the config file].
+
+> This package supports both *Rdata* and *SQLite database* files (the later is recommended).
 
 
 
@@ -130,17 +131,16 @@ Standard allele-frequency reference datasets are available from our [website](ht
 ## Step 4: get the header-translation table
 
 
-A copy of this file can be copied to a local folder by running this command. This is a text file which includes most common variable/header names and can be edited according to user specifications. This file should be copied in the *references* folder (`dir_references` parameter of the config file).
+A copy of this file can be copied to a local folder by running the below command. This is a text file which includes most common variable/header names and can be edited according to user specifications. This file should be copied in the *references* folder [`dir_references` parameter of the config file].
 
-The default name of this file is **alt_headers.txt**. `header_translations` field should be edited in the configuration file accrodingly if this name is changed by user.
+The default name of this file is **alt_headers.txt**. 
+
+`header_translations` field should be edited in the configuration file accordingly if this name is changed by user.
 
 ```{r}
-get.headerTranslation.file('c:/path/to/referenceFolder') # copies the file to selected folder
+get.headerTranslation('/path/to/referenceFolder') # copy the file to selected folder
 
 ```
-
-> **Notice:** Duplicated entries will stop the algorihtm.
-
 
 
 
@@ -149,18 +149,18 @@ get.headerTranslation.file('c:/path/to/referenceFolder') # copies the file to se
 It is recommended to set a working directory at first.
 
 ```{r}
-setwd('c:/path/to/workingDirectory') # copies the file to selected folder
+setwd('/path/to/workingDirectory')
 
 ```
 
 
-This is a text file and is used for configuring the desired parameters and settings for running the algorithm. A template file can be copied to local folder by running the following command (**config.ini**).
+The configuration file is in plain text format and is used for setting the desired parameters for running the algorithm. A template file can be copied to local folder by running the following command.
 
 The default name of this file is **config.ini** which can be changed by user.
 
 
 ```{r}
-get.config(getwd()) # copies the file to the working directory
+get.config(getwd()) # copy the file to selected folder
 
 ```
 
@@ -171,24 +171,46 @@ get.config(getwd()) # copies the file to the working directory
 Please refer to the configuration file or package manual for full detail of parameters.
 
 
+
 ## Step 7: run the QC function
 
-QC functions starts with the following command. Please refer to the package manual for full detail of parameters.
+GWASinspector uses the **S4** object system of R to conduct the QC. Parameters are configured using a configuration (ini) file, which is imported into R through `setup.inspector` and turned into an object of the **Inspector** class. To perform the QC, process the object with `run.inspector`. 
 
+A quick scan of the results can be performed via `result.inspector`, but the primary outcome of the QC are the log files and graphs generated by `run.inspector`. An exhaustive log file indicating the progress and possible warnings is also saved which can be used for localization of any problems during this run.
+
+**Example:**
 
 ```{r}
-inspect('config.ini')
+
+## load the package
+require(GWASinspector)
+
+## import the QC-configuration file 
+job <- setup.inspector("/home/user/config.ini")
+
+## check the created instance
+## input result files that will be inspected are also displayed
+job
+
+## run the algorithm 
+job <- run.inspector(job)
+
+## check the results
+## comprehensive report and result file are already saved in the output folder
+result.inspector(job)
+
 ```
    
-The results will be saved in the output folder specified in **config.ini**. A log file is also created, and can be used to locate any problems occurring during the QC run.
 
 ---
 
 # Test run
 
-You can run the algorithm on a sample GWAS file that is embedded in the package. Reports are generated and saved in the specified folder.
+You can run the algorithm on a sample GWAS file which is embedded in the package. Reports are generated and saved in the specified folder.
 
 ```{r}
-library(GWASinspector)
-inspect.example('/sample_dir')
+require(GWASinspector)
+sample.inspector('/sample_dir')
 ```
+
+---

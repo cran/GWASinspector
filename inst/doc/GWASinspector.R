@@ -21,26 +21,45 @@
 
 ## ------------------------------------------------------------------------
 #  require(GWASinspector)
+#  
 
 ## ------------------------------------------------------------------------
 #  system.check()
-
-## ------------------------------------------------------------------------
-#  get.headerTranslation.file('c:/path/to/referenceFolder') # copies the file to selected folder
 #  
 
 ## ------------------------------------------------------------------------
-#  setwd('c:/path/to/workingDirectory') # copies the file to selected folder
+#  get.headerTranslation('/path/to/referenceFolder') # copy the file to selected folder
 #  
 
 ## ------------------------------------------------------------------------
-#  get.config(getwd()) # copies the file to the working directory
+#  setwd('/path/to/workingDirectory')
 #  
 
 ## ------------------------------------------------------------------------
-#  inspect('config.ini')
+#  get.config(getwd()) # copy the file to selected folder
+#  
 
 ## ------------------------------------------------------------------------
-#  library(GWASinspector)
-#  inspect.example('/sample_dir')
+#  
+#  ## load the package
+#  require(GWASinspector)
+#  
+#  ## import the QC-configuration file
+#  job <- setup.inspector("/home/user/config.ini")
+#  
+#  ## check the created instance
+#  ## input result files that will be inspected are also displayed
+#  job
+#  
+#  ## run the algorithm
+#  job <- run.inspector(job)
+#  
+#  ## check the results
+#  ## comprehensive report and result file are already saved in the output folder
+#  result.inspector(job)
+#  
+
+## ------------------------------------------------------------------------
+#  require(GWASinspector)
+#  sample.inspector('/sample_dir')
 

@@ -9,6 +9,9 @@
 #'
 compare.GWASs <- function(input.file.list, output.path)
 {
+  if(missing(input.file.list) || missing(output.path))
+    stop('Function arguments are not set.', call. = FALSE)
+
 
   on.exit({
 

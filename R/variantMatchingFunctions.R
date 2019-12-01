@@ -39,10 +39,10 @@ compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.col
     {
 
       # double check KEY property for merging data
-      if(data.table::key(.QC$alt.reference.data) != 'hID')
+      if(is.null(data.table::key(.QC$alt.reference.data)) || data.table::key(.QC$alt.reference.data) != 'hID')
         data.table::setkey(.QC$alt.reference.data , hID)
 
-      if(data.table::key(input.data) != 'hID')
+      if(is.null(data.table::key(input.data)) || data.table::key(input.data) != 'hID')
         data.table::setkey(input.data , hID)
 
 

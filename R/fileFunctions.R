@@ -1,13 +1,3 @@
-#' Unifies column separators in all data rows
-#'
-#' It is common that column separator is different between the header and the rest of the file. This can be problematic for reading the file correctly and should be treated before loading the data.
-#' This function is based on Rtools and *awk* function to read and save a new file with equal column separators between all rows of data.
-#'
-#' @param input.file path to the input file
-#' @param output.file path of the outfile path; if not defined , a tag is added to input file
-#' @param sep what character to be used add separator; tab character is default
-#' @return A new text file is generated from the old one with a consistent column separator character.
-#'
 reformat.columns <- function(input.file, output.file = NULL, sep='\t')
 {
   if(!check.awk())
@@ -143,52 +133,6 @@ get.R.version <- function(){
   return(paste(name,arch,sep = ' - '))
 }
 
-
-
-get.parallel.core.count <- function()
-{
-
-  # return 1 , if core value is not numeric or is set to 1 or lower
-    if(is.null(.QC$cpu.core) || !is.numeric(.QC$cpu.core) || .QC$cpu.core <= 1  )
-    return(1)
-
-  #===================================
-  # selected core value is more than 1
-
-  #Sys.info()['sysname']
-  if(grepl(pattern = 'win' , tolower(.Platform$OS.type)))
-  {
-    print.and.log("Parallel processing is not avaialble in Windows OS! single core will be used.",'warning')
-    return(1)
-
-  }
-
-  if(!.QC$parallel.package.exists)
-  {
-    print.and.log("Parallel package is not installes in R! single core will be used.",'warning')
-    return(1)
-
-  }
-
-
-  pc.cores <- parallel::detectCores()
-
-
-  if(.QC$cpu.core <= pc.cores)
-    return(.QC$cpu.core)
-  else
-    return(pc.cores)
-
-}
-
-
-check.parallel.package <- function(existing.packages)
-{
-  if (is.element('parallel', existing.packages))
-    return(TRUE)
-  else
-    return(FALSE)
-}
 
 
 check.kableExtra.package <- function(existing.packages)

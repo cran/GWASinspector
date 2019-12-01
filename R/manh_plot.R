@@ -38,9 +38,19 @@ man.plot <- function(dataset,
                      std.error = NULL,
                      check.columns = TRUE) {
 
+  # check if function arguments are defined
+  if(missing(dataset) ||
+     missing(chr) ||
+     missing(pvalue) |
+     missing(position) ||
+     missing(fileName))
+    stop('Function arguments are not set.', call. = FALSE)
+
+  if(!is(dataset,"data.frame"))
+    stop("Dataset is not in correct format. A data.frame or data.table is required.",call. = FALSE)
 
   if(!is.data.table(dataset))
-    dataset <- as.data.table(dataset)
+    setDT(dataset)
 
   # check if columns are present
   if(!is.element(chr,names(dataset))){
@@ -123,7 +133,8 @@ man.plot <- function(dataset,
     plot.data <- process.column.PVALUE(plot.data)
 
     if(!missing.beta)
-      plot.data <- process.column.EFFECT(plot.data)
+      plot.data[EFFECT == -1 , EFFECT:= NA]
+
     if(!missing.std.err)
       plot.data <- process.column.STDERR(plot.data)
   }
@@ -150,7 +161,7 @@ man.plot <- function(dataset,
       }
       else
       {
-        print.and.log('Define STDERR and Beta columns for calculating missing items.'
+        print.and.log('Define STDERR and Beta columns for calculating missing P-values'
                       ,'warning')
       }
     }
@@ -161,7 +172,7 @@ man.plot <- function(dataset,
   plot.data <- plot.data[!is.na(CHR) & PVALUE < p.threshold]
 
   ## manhattanPlotFunction.R
-  plot.manhattan(plot.data, plot.title,plot.subtitle, sig.threshold.log, fileName)
+  plot.manhattan(plot.data[,list(CHR,PVALUE,POSITION)], plot.title,plot.subtitle, sig.threshold.log, fileName)
 
 
 

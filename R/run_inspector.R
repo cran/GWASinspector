@@ -1,37 +1,46 @@
-#' Runs the QC algorithm
+#' Runs the Inspector algorithm on a list of GWAS result files
 #'
-#' This is the main function for running the algorithm on GWAS result files.
+#' This is the main function of the package, which runs the QC algorithm on GWAS result files.
+#' It requires an object of class \linkS4class{Inspector} which should be created by \code{\link{setup.inspector}}.
+#' Check the package vignette and tutorial for more details on this topic.
 #'
-#' @param config.file character. Path to a configuration (.ini) file to configurate the QC. For a sample configuration file, see get.config(). For details on how to edit the config file, see the tutorial.
-#' @param user.verification logical. If TRUE, the algorithm will pause and ask the user to verify that it has selected the correct input files for QC. Default vaule is FALSE.
-#' @param test.run logical. if TRUE, only the first 1000 lines of each data file are loaded and analysed, and no plots or final dataset is produced.
-#' @return QC reports from running the algorithm on a single or a series of GWAS result files are generated and saved.
+#' @param inspector An instance of \linkS4class{Inspector} class. Check \code{\link{setup.inspector}} for more details.
+#' @param test.run logical. If TRUE, only the first 1000 lines of each data file are loaded and analysed;
+#' plots and saving the cleaned output dataset are skipped. Default value is FALSE.
+#' @return Reports from running the algorithm on a single or a series of GWAS result files are generated and saved.
+#' @examples
+#' \dontrun{
+#' # save a sample configuration file and edit it as required.
+#' config.file <- get.config(tempdir())
 #'
-inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALSE){
+#' # import the QC-configuration file into R.
+#' job <- setup.inspector(config.file)
+#'
+#' # check the generated object.
+#' job
+#'
+#' # run the generated object.
+#' # This may take up to a couple of hours, depending on your PC and the size/number of files.
+#' job <- run.inspector(job)
+#'
+#' # view a brief summary about the result. report files and plots are already saved.
+#' result.inspector(job)
+#' }
+#'
+run.inspector <- function(inspector, test.run=FALSE)
+{
+
+  if(missing(inspector))
+    stop('Function arguments are not set.',call. = FALSE)
+
+  if (!is(inspector, "Inspector"))
+    stop("Object must be of class Inspector.", call. = FALSE)
+
+  if(!validate.Inspector(inspector, printWarnings = FALSE))
+    stop("Function interrupted.", call. = FALSE)
 
 
-  #### 0 check if config file exists ####
-  ## =====================================
-  if(is.null(config.file))
-  {
-    runStopCommand('Configuration file not provided.')
 
-  } else if(!file.exists(config.file))
-  {
-    runStopCommand(sprintf('Configuration file not found! check if the path is correct: %s', config.file))
-
-  }
-
-  ## 1
-  # =============================================
-  #### creating a restore point ####
-  # 'terminationFunctions.R'
-  user.options<-getDefaultSystemOptions()
-  changeROptions() ## change R Options for better performance. THIS WILL BE REVERSED AT THE END OF QC RUN!
-
-  # check if use.verification parameter os a logical parameter or not
-  if(!is.logical(user.verification))
-    runStopCommand('user verification parameter should be a logical value! (TRUE/FALSE)')
 
 
   # reset to default setting and empty the createdenvironmet on exit (including errors)
@@ -39,38 +48,34 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
     removeFunctionVariablesFromRAM() #terminationFunctions.R
     resetDefaultSystemOptions(user.options) # sytem restore
   })
+  #############################################################
 
 
-  ## start Algorithm
-  # =============================================
+  #### creating a restore point ####
+  user.options<-getDefaultSystemOptions()
+  ## change R Options for better performance. THIS WILL BE REVERSED AT THE END OF QC RUN!
+  changeROptions()
 
+  #### get config
+  ## TODO create it, not borrow it
+  .QC$config<-make.config(inspector)
+
+  start.time <-  proc.time()
+  .QC$config$new_items$starttime <- Sys.time()
+
+  .QC$StudyList <- new("StudyList")
+
+
+  inspector@start_time <- .QC$config$new_items$starttime
+
+  #### 1
   message('\n=============================================')
   message(sprintf('=========== %s v.%s ===========',
-              .QC$package.name,
-              .QC$script.version))
+                  .QC$package.name,
+                  .QC$script.version))
   message('=============================================')
 
 
-
-  .QC$config<-read.ini(filepath = config.file)
-
-
-
-  message('\n---------- [validating Config file] ----------\n')
-
-  ## check config file
-
-  # check if file is in correct format
-  if(!checkConfigFileSections(.QC$config))
-    runStopCommand('Config file is not in a correct format! run get.config() to obtain a template.')
-
-  ## stops the process if paths or directories not found
-  .QC$config<-checkConfigFile(.QC$config) # checkConfigFile.R
-
-
-  ## =====================================
-  start.time = proc.time()
-  .QC$config$new_items$starttime <- Sys.time()
   # assign(x = "config" , value = config , envir = .QC)
 
 
@@ -80,62 +85,22 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
                 'info')
 
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
-  # check if awk and wc and gzip commands are installed and accessible.
-  # awk is used for synchronizing each row separator character
-  # wc is used for counting file lines (check if all lines of file is read successfully)
-  # gzip is used for reading zip files
-  # TODO this is part of RTools and user is urged to install it.
-  cores <- 1
-  .QC$cpu.core <- cores # checked and changed in check.tools() function
+  print.and.log(sprintf("Log file saved at \'%s\'",log.file.path))
+
   check.tools() #suppFunctions.R
-
-
-  print.and.log(sprintf("Log file saved at \'%s\'",log.file.path),
-                'info')
+  .QC$headerKV<-getFileHeaderKV()
 
   ##print and log some config variable
   printConfigVariables(.QC$config)
 
 
-  ## reading header table from alt_header txt file
-  # ==============================================
-  .QC$headerKV<-tryCatch(getFileHeaderKV(),
-                         error= function(err)
-                         {
-                           print.and.log(paste('Error in cerating header table.',err$message),'fatal')
-                         }
-  )
-
-  ## initiate study file specific variables
-  # including plot and file paths and saved data file paths and report variables
-  ## =====================================
-  # print.and.log('===============================================','info')
-  #
-  # print.and.log('---------- [analyzing input files] ----------\n','info')
-
+  ## TODO move it to validation process
   message('\n---------- [analyzing input files] ----------\n')
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
-
-  # change config variables if this is a test run
-  # new varibles are created
-  # .QC$config$test.run <- TRUE
-  # .QC$config$test.row.count <- 1000
   set.test.run.variables(test.run)
 
-
-
-
-  if(.QC$cpu.core == 1)
-    .QC$qc.study.list <- lapply(.QC$config$paths$filename,
-                                create.file.specific.config)
-  else
-    .QC$qc.study.list <- parallel::mclapply(X= .QC$config$paths$filename,
-                                            FUN = create.file.specific.config,
-                                            mc.cores = .QC$cpu.core)
-
-
+  .QC$qc.study.list <- lapply(inspector@input_files,
+                              create.file.specific.config)
 
 
   # remove problematic file from list
@@ -151,7 +116,7 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
 
   # display study files, missing columns and line number to user
   # ask if algorithm should be done
-  verify.files.with.user(.QC$qc.study.list, user.verification)
+ # verify.files.with.user(.QC$qc.study.list)
 
 
 
@@ -176,7 +141,9 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
   # if user has defined a file name that exist => it will be loaded and checked for correct columns; it will be updated during algorithm
   .QC$alt.reference.data <- data.table(numeric(0)) # create an empty data table for keeping unfound variables in each study and save as alt_ref
 
-  if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt) & .QC$config$alt_ref_file_exists)
+  if(!is.null(.QC$config$supplementaryFiles$allele_ref_alt) &&
+     !is.na(.QC$config$supplementaryFiles$allele_ref_alt) &&
+     .QC$config$alt_ref_file_exists)
   { # load the file if exists
     message('\n\n---------- [uploading allele frequency alternative reference file] ----------')
 
@@ -241,13 +208,8 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
   ## =====================================
   #print.and.log(mem_used(),'info',cat= FALSE)
 
-  if(.QC$cpu.core == 1)
-    .QC$qc.study.list <- lapply(.QC$qc.study.list,
+  .QC$qc.study.list <- lapply(.QC$qc.study.list,
                                 process.each.file)
-  else
-    .QC$qc.study.list <- parallel::mclapply(X = .QC$qc.study.list,
-                                            FUN = process.each.file,
-                                            mc.cores = .QC$cpu.core)
 
 
   # remove null files from list
@@ -256,6 +218,9 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
   if(length(.QC$qc.study.list) == 0 )
     print.and.log('All Files Removed From Further Analysis During Processing!','fatal')
 
+
+  .QC$config$new_items$endtime <- Sys.time()
+  inspector@end_time <- .QC$config$new_items$endtime
 
   # compare different studies together if there are more than one
   # draw precision , skew-kurt and effect plots
@@ -295,7 +260,7 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
 
   invisible(gc())
 
-  .QC$config$new_items$endtime <- Sys.time()
+
 
   ## FOR DEBUGGING
   ## FIXME DELETE
@@ -325,8 +290,6 @@ inspect<-function(config.file = NULL, user.verification = FALSE, test.run = FALS
   print.and.log(sprintf("Run time: %s",timetaken(start.time)))# END LOG
 
 
-
-  ## end Algorithm using on.exit() at top of page
-
-
+  inspector@StudyList <- .QC$StudyList
+  return(invisible(inspector))
 }

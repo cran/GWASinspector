@@ -71,6 +71,8 @@ writeMainReportFile <- function() {
              output_file = report.output.path,
              quiet = TRUE)
 
+      print.and.log(sprintf('HTML report file saved as %s!',report.output.path),
+                    'info')
       return(TRUE)
 
     },
@@ -254,8 +256,10 @@ report.to.txt.file <- function(study) {
   writeTXTreport(sprintf('Input file name: %s', basename( study$file.path)))
   writeTXTreport(sprintf('Input file line count (including header): %s', study$file.line.count))
   writeTXTreport(sprintf('Duplicated lines: %s', format(.QC$thisStudy$dup_lines_count,big.mark = ',',scientific = FALSE)))
-  if(study$hanNoneBaseAlleles)
-    writeTXTreport('WARNING: Input file has unknown character for INDEL variants!')
+
+  # it is mentioned in log file
+  # if(study$hanNoneBaseAlleles)
+  #   writeTXTreport('WARNING: Input file has unknown character for INDEL variants!')
 
   writeTXTreport(' ')
 

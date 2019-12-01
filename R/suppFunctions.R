@@ -158,15 +158,11 @@ check.tools <- function()
 
   .QC$xlsx.package.exists <- check.xlsx.package(existing.packages)
 
-  .QC$parallel.package.exists <- check.parallel.package(existing.packages)
-
   .QC$rsqlite.package.exists <- check.rsqlite.package(existing.packages)
 
   .QC$kableExtra.package.exists <- check.kableExtra.package(existing.packages)
 
   .QC$rJava.package.exists <- check.rJava.package(existing.packages)
-
-  .QC$cpu.core <- get.parallel.core.count()
 
   .QC$r.version<- get.R.version()
 

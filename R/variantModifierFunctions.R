@@ -9,13 +9,12 @@ removeChromosomeVariants<-function(input.data){
 	config <- .QC$config
 
   ## delete chromose data
-  if(config$remove_chromosomes$remove_X == TRUE |
-     config$remove_chromosomes$remove_Y == TRUE |
-     config$remove_chromosomes$remove_XY == TRUE |
-     config$remove_chromosomes$remove_M == TRUE )
-  {
+	if(any(config$remove_chromosomes$remove_X ,
+	       config$remove_chromosomes$remove_Y,
+	       config$remove_chromosomes$remove_XY,
+	       config$remove_chromosomes$remove_M))
     input.data <- find.and.remove.ChromosomeVariant(input.data)
-  }
+
 
   return(input.data)
 }
@@ -23,7 +22,9 @@ removeChromosomeVariants<-function(input.data){
 
 find.and.remove.ChromosomeVariant<-function(input.data){
 	config <- .QC$config
-  message('\n--- [removing Chromosomal variants ...] ---')
+
+	message('\n--- [removing specified chromosomes ...] ---')
+
   ##REMOVE a chromosome from input file
   if(config$remove_chromosomes$remove_X == TRUE){
     r.index <- which(input.data$CHR == 23)

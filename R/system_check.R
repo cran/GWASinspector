@@ -1,8 +1,11 @@
 #' Checks which required and optional packages are available
 #'
-#' This functions checks the availability of all required and optional packages for GWASinspector.
-#' The optional packages are not mandatory for running the algorithm; but will add useful functionalities.
-#' @return System information and required functionalities for the QC algorythm are checked and reported as a data frame.
+#' Checks if required and optional packages are installed on the system.
+#' Although the optional packages do not contribute to the QC itself, having them available
+#' will allow for Excel and HTML formatted log files, which are easier to read and interpret.
+#'
+#'
+#' @return System information and required functionalities for the QC algorithm are checked and reported as a data frame.
 #' @examples system.check()
 #'
 system.check <- function()
@@ -19,8 +22,6 @@ system.check <- function()
     'Package description' = '  ',
     "pandoc" = ifelse(.QC$pandoc.exists , paste(rmarkdown::pandoc_version(),collapse = '.') , 'not available'),
     "kableExtra" = ifelse(.QC$kableExtra.package.exists,   paste(packageVersion('kableExtra'),collapse = '.') , 'not available'),
-    "parallel" = ifelse(.QC$parallel.package.exists,  paste(packageVersion('parallel'),collapse = '.') , 'not available'),
-    "CPU cores" = ifelse(.QC$parallel.package.exists,  parallel::detectCores() , 'not available'),
     "ggplot2" = .QC$ggplot2.version,
     "xlsx" = ifelse(.QC$xlsx.package.exists,  paste(packageVersion('xlsx'),collapse = '.') , 'not available'),
     "rJava" = ifelse(.QC$rJava.package.exists,  paste(packageVersion('rJava'),collapse = '.') , 'not available'),
@@ -30,7 +31,7 @@ system.check <- function()
 
   colnames(tbl) <- 'version/availability'
   row.names(tbl) <- sapply(row.names(tbl), function(x) return(gsub('\\.',' ',x)))
-  row.names(tbl)[5:12] <- sapply(row.names(tbl)[5:12] , function(x) return(paste('~',x)))
+  row.names(tbl)[5:10] <- sapply(row.names(tbl)[5:10] , function(x) return(paste('~',x)))
 
   # ==
   cap <- data.frame(capabilities(c('png','jpeg','tiff','cairo')))

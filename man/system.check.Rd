@@ -7,11 +7,12 @@
 system.check()
 }
 \value{
-System information and required functionalities for the QC algorythm are checked and reported as a data frame.
+System information and required functionalities for the QC algorithm are checked and reported as a data frame.
 }
 \description{
-This functions checks the availability of all required and optional packages for GWASinspector.
-The optional packages are not mandatory for running the algorithm; but will add useful functionalities.
+Checks if required and optional packages are installed on the system.
+Although the optional packages do not contribute to the QC itself, having them available
+will allow for Excel and HTML formatted log files, which are easier to read and interpret.
 }
 \examples{
 system.check()

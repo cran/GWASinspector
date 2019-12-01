@@ -31,8 +31,6 @@ Script version: **`r .QC$script.version`**
 
 System Information : **`r .QC$r.version`**
 
-Operating CPU cores:		**`r .QC$cpu.core`**
-
 
 <br/>
 

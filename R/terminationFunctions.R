@@ -30,6 +30,7 @@ removeFunctionVariablesFromRAM<-function(){
   # rm(alt.reference.data, envir = .QC) ## removing items variable from memory
 
   # FIXME delete after debugging
+  rm(.QC)
   # rm(list = ls(envir = .QC))
 
   # if(!is.null(dev.list()))

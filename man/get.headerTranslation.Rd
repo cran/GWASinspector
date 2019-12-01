@@ -4,7 +4,7 @@
 \alias{get.headerTranslation}
 \title{Save a sample header translation table file}
 \usage{
-get.headerTranslation(dir.path = NULL)
+get.headerTranslation(dir.path)
 }
 \arguments{
 \item{dir.path}{Path to the folder for saving a header-translation table file.}
@@ -16,7 +16,7 @@ Saves a sample header-translation table file in the specified folder.
 This template file is used to translate a dataset`s column names (the header) into the standard names used by GWASinspector.
 The file contains a two-column table, with the left column containing the standard column-names and the right the alternatives.
 Both the standard and alternative columns must be fully capitalized.  This is a text file which includes most common variable/header names and can be edited according to user specifications.
-The default name of this file is *alt_headers.txt*. configuration file should be edited if this name is changed by user (**header_translations** property).
+The default name of this file is \strong{alt_headers.txt}. configuration file should be edited if this name is changed by user (\strong{header_translations} property).
 }
 \examples{
 get.headerTranslation(tempdir())

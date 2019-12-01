@@ -2,10 +2,18 @@
 #'
 #' This function displays the summary of the database, including how many tables are in the database file, number of data rows for each data table and the first row of each table.
 #'
-#' @param path character. full path to the database file (*.sqlite)
-#' @return This function returns a data table including the summary of the specified database. This is neccessary to check the consistency and validity of an unknown or new database file.
+#' @details This function only checks databases in sqlite format.
+#' @param inspector An instance of \linkS4class{Inspector} class. Check \code{\link{setup.inspector}} for more details.
+#' @return This function returns a data table including the summary of the specified database. This is necessary to check the consistency and validity of an unknown or new database file.
 #' @examples
-#' check.database(system.file("extdata", "sample_db.sqlite", package = "GWASinspector"))
+#' config.file <- get.config(tempdir())
+#' inspector <- setup.inspector(config.file , validate = FALSE)
+#' # use sample database embedded in the package
+#' inspector@@supplementaryFiles$allele_ref_std <- system.file("extdata",
+#'                                                             "sample_db.sqlite",
+#'                                                              package = "GWASinspector")
+#' sqlite.db.check(inspector)
+#'
 #' @note
 #' First column include the names of the tables in database
 #'
@@ -13,14 +21,24 @@
 #'
 #' Next columns are the first row of each table
 #'
-check.database <- function(path)
+sqlite.db.check <- function(inspector)
 {
 
+  if(missing(inspector))
+    stop('Function arguments are not set.',call. = FALSE)
+
+  if (!is(inspector, "Inspector"))
+    stop("Object must be of class Inspector.", call. = FALSE)
+
+
+  # check if file is in SQLite format
+  path <- inspector@supplementaryFiles$allele_ref_std
+
   if(tools::file_ext(path) != 'sqlite')
-    stop('File is not sqlite type database!')
+    stop('File is not sqlite type database!', call. = FALSE)
 
   if (!file.exists(path))
-    stop('File not found!')
+    stop('File not found!', call. = FALSE)
 
   # message(paste('Reading database file:','"' ,basename(path),'"'))
 
@@ -72,7 +90,7 @@ check.database <- function(path)
 
     },error=function(err)
     {
-      stop(paste('Error reading database file:',err$message))
+      stop(paste('Error reading database file:',err$message), call. = FALSE)
     })
 
 }

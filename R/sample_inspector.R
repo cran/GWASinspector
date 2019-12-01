@@ -6,27 +6,43 @@
 #' @return QC reports from running the algorithm on a sample GWAS file are generated and saved in the specified folder.
 #' @examples
 #' \donttest{
-#' inspect.example(tempdir())
+#' sample.inspector(tempdir())
 #' }
-inspect.example<-function(result.dir = NULL)
+sample.inspector <- function(result.dir)
 {
-  if(is.null(result.dir) || !dir.exists(result.dir))
-    stop("Please provide an existing folder for saving the output files.",call. = FALSE)
+
+  if(missing(result.dir))
+    stop("Function arguments are not set.",call. = FALSE)
+
+  if(!dir.exists(result.dir))
+    stop("Directory does not exist.",call. = FALSE)
+
+  # get embedded file
+  ex.config.file <- system.file("extdata", "config.ini", package = "GWASinspector")
+
+  if(is.null(ex.config.file) || !file.exists(ex.config.file))
+    stop("Sample file not found. Re-install the package")
 
 
+  user.options<-getDefaultSystemOptions()
+  changeROptions() ## change R Options for better performance. THIS WILL BE REVERSED AT THE END OF QC RUN!
   # reset to default setting and empty the created environmet on exit (including errors)
   on.exit({
     removeFunctionVariablesFromRAM() #terminationFunctions.R
     resetDefaultSystemOptions(user.options) # sytem restore
   })
 
-  user.options<-getDefaultSystemOptions()
-  changeROptions() ## change R Options for better performance. THIS WILL BE REVERSED AT THE END OF QC RUN!
 
 
-  .QC$config <- example.config(result.dir)
-  .QC$config<-checkConfigFile(.QC$config)
+  inspector <- new("Inspector")
+  .QC$StudyList <- new("StudyList")
+  .QC$file.counter <- 1
+  .QC$config<-checkConfigFile(ex.config.file)
+  .QC$config <- example.config(result.dir, .QC$config)
+
   start.time = proc.time()
+  inspector@start_time <- Sys.time()
+
   .QC$config$new_items$starttime <- Sys.time()
   .QC$config$test.run <- FALSE
   .QC$alt.reference.data <- data.table(numeric(0))
@@ -36,7 +52,7 @@ inspect.example<-function(result.dir = NULL)
   log.file.path <- setupLogOptions(.QC$config)
 
   ##==============
-  print.and.log("Inspection started!",'info')
+  print.and.log("Inspection started!")
 
   check.tools()
 
@@ -46,7 +62,7 @@ inspect.example<-function(result.dir = NULL)
   .QC$headerKV<-tryCatch(getFileHeaderKV(),
                          error= function(err)
                          {
-                           print.and.log(paste('Error in cerating header table.',err$message),'fatal')
+                           print.and.log(paste('Error in creating header table.',err$message),'fatal')
                          }
   )
 
@@ -68,6 +84,7 @@ inspect.example<-function(result.dir = NULL)
 
   create.report.files()
 
+  inspector@end_time <- .QC$config$new_items$endtime
 
   print.and.log(sprintf('\nFinished analyzing %s files!',length(.QC$qc.study.list)))
   print.and.log(sprintf("Run time: %s",timetaken(start.time)))# END LOG

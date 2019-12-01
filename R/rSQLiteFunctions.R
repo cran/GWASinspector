@@ -238,23 +238,6 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
 
 
-#' Search variants in the reference database
-#'
-#' This function searches for a list of variants inside the reference database. rsID or hID of the variants can be used for the lookup.
-#'
-#' @param db.path character, full path to the database file (*.sqlite).
-#' @param input.vector character, list of variant IDs to be searched in the database
-#' @param column.name character, this can be either hID (CHR:POS:type) or ID (rsID). default: hID
-#' @param reorder logical, if TRUE output is reordered like the input vector
-#' @param output.path character, full path to the excel file.
-#' @return A data table is returned after searching for input variants in the database.
-#' @examples
-#' find.variants(system.file("extdata", "sample_db.sqlite", package = "GWASinspector"),
-#'               c('rs568405545','rs367896724') , column.name = 'ID')
-#'
-#' find.variants(system.file("extdata", "sample_db.sqlite", package = "GWASinspector"),
-#'               c('1:10506:1','1:10511:1') , column.name = 'hID')
-#'
 find.variants <- function(db.path, input.vector, column.name = 'hID',reorder = FALSE, output.path = NULL){
 
 

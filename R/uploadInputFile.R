@@ -45,7 +45,7 @@ uploadInputFile<-function()
                                sep = sep.strings,
                                colClasses = study$renamed.File.Columns.classes,
                                data.table = TRUE,
-                               showProgress = TRUE,
+                               showProgress = FALSE,
                                nrows = {if(config$test.run) config$debug$test_row_count else -1},
                                fill = TRUE)
 
@@ -107,7 +107,7 @@ uploadInputFile<-function()
                                sep = sep.strings,
                                colClasses = study$renamed.File.Columns.classes,
                                data.table = TRUE,
-                               showProgress = TRUE,
+                               showProgress = FALSE,
                                nrows = {if(config$test.run) config$debug$test_row_count else -1},
                                fill = TRUE)
 
@@ -167,7 +167,7 @@ uploadInputFile<-function()
                               sep = sep.strings,
                               colClasses = study$renamed.File.Columns.classes,
                               data.table = TRUE,
-                              showProgress = TRUE,
+                              showProgress = FALSE,
                               fill = TRUE,
                               nrows = {if(config$test.run) config$debug$test_row_count else -1})
 
@@ -179,7 +179,7 @@ uploadInputFile<-function()
       error=function(err)  {
         print.and.log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
 
-
+return(NULL)
 
       })
   }

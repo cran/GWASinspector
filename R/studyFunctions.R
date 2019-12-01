@@ -46,6 +46,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in loading!','warning')
+    addEmptyStudy(.QC$thisStudy$file.path)
     return(NULL)
   }
 
@@ -70,6 +71,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in processing!','warning')
+    addEmptyStudy(.QC$thisStudy$file.path)
     return(NULL)
   }
 
@@ -92,6 +94,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in comparing process!','warning')
+    addEmptyStudy(.QC$thisStudy$file.path)
     return(NULL)
   }
 
@@ -112,6 +115,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in allele matching!','warning')
+    addEmptyStudy(.QC$thisStudy$file.path)
     return(NULL)
   }
 
@@ -135,6 +139,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in variant processing!','warning')
+    addEmptyStudy(.QC$thisStudy$file.path)
     return(NULL)
   }
 
@@ -322,7 +327,7 @@ process.each.file <- function(study){
     # gc not done in previous function
     invisible(gc())
 
-    ## allele matching
+    ## allele matching for effect size plot
     ## ==============================================
     if(nrow(input.data) > 0){
       print.and.log('Allele matching vs Effect-Size reference dataset ...','info')
@@ -387,8 +392,12 @@ process.each.file <- function(study){
 
 
   # save rds file
-  save.rds.file(.QC$thisStudy)
+  studyClass <- create.Study(.QC$thisStudy)
+  # .QC$StudyList <- append( .QC$StudyList , studyClass)
+  .QC$StudyList@studyList <- append(.QC$StudyList@studyList , studyClass)
+  .QC$StudyList@studyCount <- length(.QC$StudyList@studyList)
 
+  save.rds.file(.QC$thisStudy)
 
   rm(input.data)
   invisible(gc())
@@ -516,6 +525,7 @@ create.file.specific.config <- function(file.name){
   study <- c()
   config <- .QC$config
 
+  file.name <- as.character(file.name[[1]])
 
   study$file.path <- file.name
 
@@ -532,7 +542,8 @@ create.file.specific.config <- function(file.name){
   study$file.name <- tools::file_path_sans_ext(basename(file.name))
 
   # remove the extension before gz
-  if(study$file.extension == 'gz' && any(endsWith(x =  study$file.name,suffix = c('.txt','.csv'))))
+  #if(study$file.extension == 'gz' && any(endsWith(x =  study$file.name,suffix = c('.txt','.csv')))) ## replaced to be compatible with older R
+  if(study$file.extension == 'gz' && any( grepl("(txt|csv)$", x = study$file.name)))
   {
     study$file.name <- sub(x= study$file.name , pattern = '\\.(\\w{3})$', replacement = '')
   }
@@ -580,7 +591,7 @@ create.file.specific.config <- function(file.name){
 
   study$effPlotPath<-paste0(files.prefix, '_beta' , .QC$img.extension)
 
-  study$plot.title <- ifelse(length(config$paths$filename) > 1 | config$plot_specs$plot_title == 'none',
+  study$plot.title <- ifelse(length(config$paths$input_files) > 1 | config$plot_specs$plot_title == 'none',
                              study$file.name,
                              config$plot_specs$plot_title)
 
@@ -980,4 +991,21 @@ variable.statistics.post.matching <- function(input.data)
   # change effect column name to BETA or LN(OR)
   colnames(.QC$thisStudy$tables$variable.summary)[colnames(.QC$thisStudy$tables$variable.summary) == 'EFFECT'] <- .QC$config$input_parameters$effect_type_string
 
+}
+
+
+addEmptyStudy <- function(study.path)
+{
+  faultyStudy <- new("Study")
+  faultyStudy@File$file.path <- study.path
+  faultyStudy@Successful_run <- FALSE
+  faultyStudy@Counts$rowcount.step1 <- NA
+  faultyStudy@Counts$rowcount.step3 <- NA
+  faultyStudy@Counts$found.rows <- NA
+  faultyStudy@Correlations$AFcor.std_ref <- NA
+  faultyStudy@Correlations$PVcor <- NA
+  faultyStudy@Statistics$lambda <- NA
+
+  .QC$StudyList@studyList <- append(.QC$StudyList@studyList , faultyStudy)
+  .QC$StudyList@studyCount <- length(.QC$StudyList@studyList)
 }

@@ -5,80 +5,36 @@
 # 3- evaluateListsAsStrings => changes strings in config file to R vectors
 
 
-checkConfigFile <- function(config) {
+checkConfigFile <- function(config.file) {
+  if (!file.exists(config.file))
+    runStopCommand(sprintf('Configuration file not found at: %s', config.file))
+  else
+    config <- read.ini(filepath = config.file)
+
+
+  # check if file is in correct format
+  if (!checkConfigFileSections(config))
+    runStopCommand('Config file is not in a correct format! run get.config() to obtain a template.')
+
   ### initiate config variables
   # newly added variable to config (NOT IN CONFIG FILE)
 
-  # check if alt-referece file exists or not
-  # it will be loaded if exists and updated and saved at the end of algorithm
-  # it will be created if doesnot exist and saved at the end of algorithm
-  config$alt_ref_file_exists <- FALSE
 
-  # check if there is WRITE persmission on output folder (files and report and plots are saved)
-  config$output.path.writable <- FALSE
-
-  # check if there is WRITE persmission on reference folder ( alt reference file is saved)
-  config$reference.path.writable <- FALSE
   #=====================#
 
 
-  ## 0
-  #### check INPUT DIRECTORY
+  if (is.empty(config$paths$filename))
+    config$paths$filename <- ".+"
 
-  dir <- config$paths$dir_data
+  if (is.empty(config$paths$dir_data))
+    runStopCommand("Data directory not set!")
 
-  if (is.null(dir)) {
-    runStopCommand("Input directory is not set in config file!")
-
-  } else if (!dir.exists(dir)) {
-    runStopCommand(sprintf("Input directory \'%s\'wrong or not found!", dir))
-
-  }
+  if (is.empty(config$paths$dir_output))
+    runStopCommand("Output directory not set!")
 
 
-  ## ======================================================================
-  ## 1
-  ## if output DIR is not found in config file, set it equal to input DIR
-  if (is.empty(config$paths$dir_output)) {
-    config$paths$dir_output <- config$paths$dir_data
-  }
-  else if (!dir.exists(config$paths$dir_output)) {
-    ## try create output DIR if set but not found
-    outputDirCreated <-
-      TRUE ## to double check if folder is created successfully
-    outputDirCreated <- tryCatch(
-      dir.create(config$paths$dir_output),
-
-      error = function(err) {
-        runStopCommand(
-          sprintf(
-            "Could not create outpur directory at \'%s\'! see below error:\n%s",
-            config$paths$dir_output,
-            err
-          )
-        )
-        return(FALSE)
-      }
-    )
-
-    ## double check if output_dir was created correctly
-    if (outputDirCreated != TRUE)
-      runStopCommand('Could not create output Directory!')
-  }
-
-
-
-  ## =======================================================
-
-  ## if reference DIR is not found in config file, set it equal to input DIR
-  ## TODO - OPTION: remove dir_reference from config file (reference file should be given in full path)
-  if (is.empty(config$paths$dir_references)) {
-    config$paths$dir_references <- config$paths$dir_data
-  }
-  else if (!dir.exists(config$paths$dir_references)) {
-    runStopCommand("Reference directory not found!")
-  }
-
+  if (is.empty(config$paths$dir_references))
+    runStopCommand("Reference directory not set!")
 
   ## ========================================================
   ## 2
@@ -124,96 +80,50 @@ checkConfigFile <- function(config) {
 
 
 
-  ##==========================================================
-  ## 3
-  #### INPUT FILE
-  ##check if it is set in config file
-  if (is.empty(config$paths$filename))
-    runStopCommand('Input file not specified in the config file!')
+  ##### file names
 
-  ## create full path of inputfiles
   input.file.names <- list.files(
     path = config$paths$dir_data,
     pattern = config$paths$filename,
     full.names = TRUE,
     recursive = FALSE,
     all.files = FALSE,
-    ignore.case = TRUE
-  )
+    ignore.case = TRUE)
 
-  ## file should have a valid extension
-  input.file.names <-
-    input.file.names[file_ext(input.file.names) %in% c('gz', 'zip', 'txt', 'dat', 'csv')]
+  ## keep valid extensions
+  config$paths$input_files <-input.file.names[file_ext(input.file.names) %in% c('gz', 'zip', 'txt', 'dat', 'csv')]
 
-  ## check if file exists
-  if (length(input.file.names) == 0)
-  {
-    runStopCommand(
-      sprintf(
-        "Input file not found at \'%s\'! (['gz|zip|txt|dat|csv'] extensions are accepted)!",
-        config$paths$dir_data
-      )
-    )
-  } else{
-    # save a copy of pattern that is in config file
-    config$paths$original.filename <- config$paths$filename
-
-    # put the found file list in this variable
-    config$paths$filename <- input.file.names
-  }
 
 
   # check if output folder is empty or not. warn user that existing files will be overwritten
   ##==========================================================
   ## create template of input files
   # like study1|study2|study3
-  found.file.template <-
-    paste(sapply(config$paths$filename , function(x)
-      tools::file_path_sans_ext(basename(x))) ,
-      collapse = '|')
 
-  existing.files <- list.files(
-    path = config$paths$dir_output,
-    pattern = found.file.template,
-    full.names = TRUE,
-    recursive = FALSE,
-    all.files = FALSE,
-    ignore.case = TRUE
-  )
 
-  config$new_items$non.empty.output.folder <-
-    ifelse(length(existing.files) > 0 , TRUE , FALSE)
+  # TODO
+  # found.file.template <-
+  #   paste(sapply(config$paths$filename , function(x)
+  #     tools::file_path_sans_ext(basename(x))) ,
+  #     collapse = '|')
+  #
+  # existing.files <- list.files(
+  #   path = config$paths$dir_output,
+  #   pattern = found.file.template,
+  #   full.names = TRUE,
+  #   recursive = FALSE,
+  #   all.files = FALSE,
+  #   ignore.case = TRUE
+  # )
+
+  # config$new_items$non.empty.output.folder <-
+  #   ifelse(length(existing.files) > 0 , TRUE , FALSE)
 
 
   ##==========================================================
 
   # 4
   #### HEADER file
-
-  ## if header file is not mentioned, upload it from package source
-  # if(is.empty(config$supplementaryFiles$header_translations)){
-  #
-  #   # check if package default header file is present and accessible. exit if not found
-  #   default.alt.header.file <- system.file("extdata", "alt_headers.txt", package = "GWASinspector")
-  #
-  #   if(file.exists(default.alt.header.file))
-  #     config$supplementaryFiles$header_translations <- default.alt.header.file
-  #   else
-  #     runStopCommand('Alternate Header file is not defined and the default file is also not found in package!')
-  # }
-  # else
-  # {
-  #   ## create full path of header file
-  #   config$supplementaryFiles$header_translations <- sprintf('%s/%s',
-  #                                                            config$paths$dir_references,
-  #                                                            config$supplementaryFiles$header_translations)
-  #
-  #   ## check if header file exists
-  #   if(!file.exists(config$supplementaryFiles$header_translations)){
-  #     runStopCommand(sprintf("Alternative Header file not found at \'%s\'!",config$supplementaryFiles$header_translations))
-  #   }
-  # }
-
 
   ## STOP the QC if header translation file is not mentioned or not found
   if (is.empty(config$supplementaryFiles$header_translations))
@@ -229,15 +139,6 @@ checkConfigFile <- function(config) {
         config$supplementaryFiles$header_translations
       )
 
-    ## check if header file exists
-    if (!file.exists(config$supplementaryFiles$header_translations)) {
-      runStopCommand(
-        sprintf(
-          "Alternative Header file not found at \'%s\'!",
-          config$supplementaryFiles$header_translations
-        )
-      )
-    }
   }
 
 
@@ -253,23 +154,6 @@ checkConfigFile <- function(config) {
       config$paths$dir_references,
       config$supplementaryFiles$allele_ref_std
     )
-
-    ## check if reference file exists
-    if (!file.exists(config$supplementaryFiles$allele_ref_std)) {
-      runStopCommand(
-        sprintf(
-          "Reference file not found at %s!",
-          config$supplementaryFiles$allele_ref_std
-        )
-      )
-    }
-
-    ## stop if a database file with sqlite extension is specified but required package is not installed
-    if (tools::file_ext(config$supplementaryFiles$allele_ref_std) == 'sqlite' &&
-        !check.rsqlite.package(installed.packages()[, 1]))
-      runStopCommand(
-        'RSQLite package is not installed on this computer!\nyou can use the table version of reference file (RData/RDS/txt).'
-      )
   }
 
 
@@ -299,8 +183,7 @@ checkConfigFile <- function(config) {
       config$supplementaryFiles$allele_ref_alt
     )
 
-    if (file.exists(config$supplementaryFiles$allele_ref_alt))
-      config$alt_ref_file_exists <- TRUE
+
   }
 
 
@@ -313,15 +196,6 @@ checkConfigFile <- function(config) {
                                                       config$paths$dir_references,
                                                       config$supplementaryFiles$beta_ref_std)
 
-    ## check if beta reference file exists
-    if (!file.exists(config$supplementaryFiles$beta_ref_std)) {
-      runStopCommand(
-        sprintf(
-          "Beta (effect) reference file not found at \'%s\'!",
-          config$supplementaryFiles$beta_ref_std
-        )
-      )
-    }
   }
 
 
@@ -358,13 +232,7 @@ checkConfigFile <- function(config) {
       range = c("BETA", "OR")
     )
 
-  # this item is used for display in report and plots
-  # if effect = OR , it will be converted to BEta by ln(OR)
-  # in this case, ln(OR) is displayed in plots and reports instead of BETA
-  config$input_parameters$effect_type_string <-
-    ifelse(config$input_parameters$effect_type == 'BETA' ,
-           'BETA',
-           'Ln(OR)')
+
 
 
 
@@ -387,19 +255,23 @@ checkConfigFile <- function(config) {
     config$input_parameters$imputed_T <- "TRUE|T|YES|Y"
   else
     config$input_parameters$imputed_T <-
-    paste(evaluateListsAsStrings('imputed_T', config$input_parameters$imputed_T),
-          collapse = '|')
+    paste(
+      evaluateListsAsStrings('imputed_T', config$input_parameters$imputed_T),
+      collapse = '|'
+    )
 
   if (is.empty(config$input_parameters$imputed_F))
     config$input_parameters$imputed_F <- "FALSE|F|NO|N"
   else
     config$input_parameters$imputed_F <-
-    paste(evaluateListsAsStrings('imputed_F', config$input_parameters$imputed_F),
-          collapse = '|')
+    paste(
+      evaluateListsAsStrings('imputed_F', config$input_parameters$imputed_F),
+      collapse = '|'
+    )
 
   ##IMP_QUALITY
   config$filters$minimal_impQ_value  <-
-    checkConfigParameters(config$filters$minimal_impQ_value, 'numeric',-0.5)
+    checkConfigParameters(config$filters$minimal_impQ_value, 'numeric', -0.5)
   config$filters$maximal_impQ_value  <-
     checkConfigParameters(config$filters$maximal_impQ_value, 'numeric', 1.5)
 
@@ -420,7 +292,8 @@ checkConfigFile <- function(config) {
 
   config$input_parameters$calculate_missing_p  <-
     checkConfigParameters(config$input_parameters$calculate_missing_p,
-                          'logical', FALSE)
+                          'logical',
+                          FALSE)
 
   #remove chromosomes from QC
   config$remove_chromosomes$remove_X  <-
@@ -534,96 +407,39 @@ checkConfigFile <- function(config) {
     checkConfigParameters(config$debug$test_row_count,
                           'numeric', 1000)
 
-  ## END oF VALIDATION
 
 
-  # ======
-  # save plots as png or jpeg or jpeg
-  # if neither exists , set make_plot as false
-  # config$graphic.device is set in the following function
-  # the reslut value for graphic.device is T/F
-
-  # following parameters are set:
-  # config$graphic.device
-  # config$plot_specs$make_plots is set to FALSE if device is not available
-  # .QC$graphic.device 'png' 'jpeg' 'tiff'
-  # .QC$img.extension  '.png' '.jpeg' '.tiff'
-  if (config$plot_specs$make_plots)
-    config <- set.graphic.device(config)
-  else
-  {
-    # set as default values if user does not want the plots
-    config$graphic.device <- TRUE
-    .QC$graphic.device  <- 'png'
-    .QC$img.extension <- '.png'
-  }
-  # ============
 
 
-  ## multi file comparison plot paths
-  config$paths$effsizePlotPath <-
-    sprintf('%s/Checkgraph_effect-size%s',
-            config$paths$dir_output,
-            .QC$img.extension)
-
-  config$paths$precisionPlotPath <-
-    sprintf('%s/Checkgraph_precision%s',
-            config$paths$dir_output,
-            .QC$img.extension)
-
-  config$paths$skew_kurt <- sprintf('%s/Checkgraph_skew_kurt%s',
-                                    config$paths$dir_output,
-                                    .QC$img.extension)
-
-  config$paths$html.report <- sprintf(
-    '%s/%s_%s',
-    config$paths$dir_output,
-    config$paths$filename_output_tag,
-    'Report.html'
-  )
-
-  config$paths$txt.report <- sprintf(
-    '%s/%s_%s',
-    config$paths$dir_output,
-    config$paths$filename_output_tag,
-    'Report.txt'
-  )
-
-  config$paths$xlsx.report <- sprintf(
-    '%s/%s_%s',
-    config$paths$dir_output,
-    config$paths$filename_output_tag,
-    'Report.xlsx'
-  )
-
-  config$paths$save_pre_modification_file <- sprintf(
-    '%s/%s_%s',
-    config$paths$dir_output,
-    config$paths$filename_output_tag,
-    'early_file.txt'
-  )
-
-  ## check folder permission
-  checkFolderPermission(config)
 
   return(config)
 }
 
 
+
+
 checkConfigFileSections <- function(config)
 {
-  if (all(names(config) %in% c(
-      'paths',
-      'supplementaryFiles',
-      'input_parameters',
-      'output_parameters',
-      'remove_chromosomes',
-      'plot_specs',
-      'filters',
-      'debug')))
-  return(TRUE)
+  required.sections <-  c(
+    'paths',
+    'supplementaryFiles',
+    'input_parameters',
+    'output_parameters',
+    'remove_chromosomes',
+    'plot_specs',
+    'filters'
+  )
+
+  missing.sections <- which( required.sections %notin% names(config) )
+
+  if (length(missing.sections) == 0)
+    return(TRUE)
   else
+  {
+    cat("\nError in configuration file.")
+    cat("\nMissing sections:", paste(required.sections[missing.sections],collapse = '  |  '))
     return(FALSE)
+  }
 
 }
 
@@ -717,9 +533,6 @@ printConfigVariables <- function(config) {
     )
 
 
-  print.and.log(paste('Operating CPU cores:', .QC$cpu.core), 'info')
-
-
   if (!.QC$config$graphic.device)
     print.and.log('No graphic devices are available. Plotting will be skipped!',
                   'warning')
@@ -788,6 +601,7 @@ checkConfigParameters <-
 
 
 
+
 set.test.run.variables <- function(test.run)
 {
   if (test.run)
@@ -802,4 +616,148 @@ set.test.run.variables <- function(test.run)
     .QC$config$test.run <- FALSE
   }
 
+}
+
+
+
+make.config <- function(object)
+{
+  config <- list(
+    paths = list(
+      filename = object@paths$filename,
+      filename_output_tag = object@paths$filename_output_tag,
+      dir_data = object@paths$dir_data,
+      dir_output = object@paths$dir_output,
+      dir_references = object@paths$dir_references,
+      input_files = object@input_files
+    ),
+    supplementaryFiles = list(
+      header_translations = object@supplementaryFiles$header_translations,
+      allele_ref_std =  object@supplementaryFiles$allele_ref_std,
+      allele_ref_std_population =  object@supplementaryFiles$allele_ref_std_population,
+      allele_ref_alt =  object@supplementaryFiles$allele_ref_alt,
+      beta_ref_std = object@supplementaryFiles$beta_ref_std
+    ),
+    input_parameters = list(
+      effect_type = object@input_parameters$effect_type,
+      column_separator = object@input_parameters$column_separator,
+      na.string = object@input_parameters$na.string,
+      imputed_T = object@input_parameters$imputed_T,
+      imputed_F = object@input_parameters$imputed_F,
+      calculate_missing_p = object@input_parameters$calculate_missing_p
+    ),
+    output_parameters = list(
+      save_final_dataset = object@output_parameters$save_final_dataset,
+      gzip_final_dataset = object@output_parameters$gzip_final_dataset,
+      out_header = object@output_parameters$out_header,
+      out_sep = object@output_parameters$out_sep,
+      out_na = object@output_parameters$out_na,
+      out_dec = object@output_parameters$out_dec,
+      html_report = object@output_parameters$html_report,
+      object_file = object@output_parameters$object_file
+    ),
+    remove_chromosomes = list(
+      remove_X = object@remove_chromosomes$remove_X,
+      remove_Y = object@remove_chromosomes$remove_Y,
+      remove_XY = object@remove_chromosomes$remove_XY,
+      remove_M = object@remove_chromosomes$remove_M
+    ),
+    plot_specs = list(
+      make_plots = object@plot_specs$make_plots,
+      plot_cutoff_p = object@plot_specs$plot_cutoff_p,
+      graphic_device = object@plot_specs$graphic_device,
+      plot_title = object@plot_specs$plot_title
+    ),
+    filters = list(
+      HQfilter_FRQ = object@filters$HQfilter_FRQ,
+      HQfilter_HWE = object@filters$HQfilter_HWE,
+      HQfilter_cal = object@filters$HQfilter_cal,
+      HQfilter_imp = object@filters$HQfilter_imp,
+      threshold_diffEAF = object@filters$threshold_diffEAF,
+      minimal_impQ_value = object@filters$minimal_impQ_value,
+      maximal_impQ_value = object@filters$maximal_impQ_value
+    ),
+    debug = list(
+      verbose = object@debug$verbose,
+      save_pre_modification_file = object@debug$save_pre_modification_file,
+      reduced.AF.plot = object@debug$reduced.AF.plot,
+      test_row_count = object@debug$test_row_count
+    )
+  )
+
+
+  # this item is used for display in report and plots
+  # if effect = OR , it will be converted to BEta by ln(OR)
+  # in this case, ln(OR) is displayed in plots and reports instead of BETA
+  config$input_parameters$effect_type_string <-
+    ifelse(config$input_parameters$effect_type == 'BETA' ,
+           'BETA',
+           'Ln(OR)')
+
+
+  if (!is.na(config$supplementaryFiles$allele_ref_alt) &&
+      !is.empty(config$supplementaryFiles$allele_ref_alt) &&
+      file.exists(config$supplementaryFiles$allele_ref_alt))
+    config$alt_ref_file_exists <- TRUE
+  else
+    config$alt_ref_file_exists <- FALSE
+
+
+
+  if (config$plot_specs$make_plots)
+    config <- set.graphic.device(config)
+  else
+  {
+    # set as default values if user does not want the plots
+    config$graphic.device <- TRUE
+    .QC$graphic.device  <- 'png'
+    .QC$img.extension <- '.png'
+  }
+  # ============
+
+
+  ## multi file comparison plot paths
+  config$paths$effsizePlotPath <-
+    sprintf('%s/Checkgraph_effect-size%s',
+            config$paths$dir_output,
+            .QC$img.extension)
+
+  config$paths$precisionPlotPath <-
+    sprintf('%s/Checkgraph_precision%s',
+            config$paths$dir_output,
+            .QC$img.extension)
+
+  config$paths$skew_kurt <- sprintf('%s/Checkgraph_skew_kurt%s',
+                                    config$paths$dir_output,
+                                    .QC$img.extension)
+
+  config$paths$html.report <- sprintf(
+    '%s/%s_%s',
+    config$paths$dir_output,
+    config$paths$filename_output_tag,
+    'Report.html'
+  )
+
+  config$paths$txt.report <- sprintf(
+    '%s/%s_%s',
+    config$paths$dir_output,
+    config$paths$filename_output_tag,
+    'Report.txt'
+  )
+
+  config$paths$xlsx.report <- sprintf(
+    '%s/%s_%s',
+    config$paths$dir_output,
+    config$paths$filename_output_tag,
+    'Report.xlsx'
+  )
+
+  config$paths$save_pre_modification_file <- sprintf(
+    '%s/%s_%s',
+    config$paths$dir_output,
+    config$paths$filename_output_tag,
+    'early_file.txt'
+  )
+
+  return(config)
 }

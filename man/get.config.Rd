@@ -4,7 +4,7 @@
 \alias{get.config}
 \title{Save a sample configuration file}
 \usage{
-get.config(dir.path = NULL)
+get.config(dir.path)
 }
 \arguments{
 \item{dir.path}{Path to the folder for saving a sample configuration file.}
@@ -15,7 +15,7 @@ Saves a sample configuration file (config.ini) in the specified folder.
 \description{
 Save a sample configuration file for running GWASinspector package. This templates should be edited and then used for running the QC.
 User can save multiple copies to be used for different sets of files.
-Default name is *config.ini*, which can be changed while saving the file or afterwards.
+Default name is \strong{config.ini}, which can be changed while saving the file or afterwards.
 }
 \examples{
 get.config(tempdir())

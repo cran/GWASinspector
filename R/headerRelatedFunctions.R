@@ -120,6 +120,7 @@ checkRequiredColumnNames <- function(inputFile, study){
     print.and.log(sprintf("File will be ignored. columns \'%s\' were not found.",
                           paste(crucial.columns[missing.crucial.column.indexes], collapse = '|')),
                   'warning')
+    addEmptyStudy(inputFile)
     return(NULL)
   }
 
@@ -317,23 +318,21 @@ setColumnClass<-function(column){
 
 getFileHeaderKV<-function()
 {
-  config <- .QC$config
-
-  headerTable <- read.table(file = config$supplementaryFiles$header_translations,
+  headerTable <- read.table(file = .QC$config$supplementaryFiles$header_translations,
                             sep='',
                             header = FALSE,
                             stringsAsFactors = FALSE)
-
-  ###checking header file
-  if(ncol(headerTable) != 2L) {
-    print.and.log(sprintf('\'headerTable\' should have two columns but has %s!',ncol(headerTable)),
-                  'fatal')
-  }
-
-  if(any(duplicated(headerTable[ ,2]))) {
-    print.and.log('Duplicated items found in header table!',
-                  'fatal')
-  }
+# TODO delete
+#   ###checking header file
+#   if(ncol(headerTable) != 2L) {
+#     print.and.log(sprintf('\'headerTable\' should have two columns but has %s!',ncol(headerTable)),
+#                   'fatal')
+#   }
+#
+#   if(any(duplicated(headerTable[ ,2]))) {
+#     print.and.log('Duplicated items found in header table!',
+#                   'fatal')
+#   }
 
   ##creating hashset of header elements
   headerKV <- hash::hash(keys = as.matrix(headerTable[, 2]),

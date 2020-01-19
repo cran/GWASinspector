@@ -15,32 +15,29 @@ setupLogOptions <- function(config,
 }
 
 
-print.and.log<-function(message,
-                        level='info',
-                        cat = TRUE,
-                        display = TRUE)
-{
-
-  if(cat & display)
-  {
-    message(paste('-' , toupper(level), ' : ' , message , sep=' '))
+print.and.log <- function(message,
+                          level = "info",
+                          cat = TRUE,
+                          display = TRUE) {
+  if (cat & display) {
+    message(paste("-", toupper(level), " : ", message, sep = " "))
   }
-  else if(display)
-  {
-    print(message, quote= FALSE)
+  else if (display) {
+    print(message, quote = FALSE)
   }
 
-
-    if(level=='info'){
-      flog.info(msg =  message , name='GWASinspector_logger')
-    }else if(level=='warning'){
-      flog.warn(msg =  message, name='GWASinspector_logger')
-    }else if(level=='fatal')
-    {
-      flog.fatal(msg =  message, name='GWASinspector_logger')
+#  tryCatch({
+    if (level == "info") {
+      flog.info(msg = message, name = "GWASinspector_logger")
+    } else if (level == "warning") {
+      flog.warn(msg = message, name = "GWASinspector_logger")
+    } else if (level == "fatal") {
+      flog.fatal(msg = message, name = "GWASinspector_logger")
       runStopCommand()
     }
-
+  # },
+  # error = function(err) {}
+  # )
 }
 
 

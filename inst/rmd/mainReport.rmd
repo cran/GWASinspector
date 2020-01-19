@@ -78,7 +78,6 @@ Allele frequency reference dataset:		**`r basename(.QC$config$supplementaryFiles
 
 Input File:		**`r basename(.QC$thisStudy$file.path)`**
 
-Input File line count (including header):		**`r .QC$thisStudy$file.line.count`**
 
 
 `r count.table <- t(data.table(
@@ -86,21 +85,21 @@ Input File line count (including header):		**`r .QC$thisStudy$file.line.count`**
     "<span class='item'>Missing crucial variable</span>" = calculatePercent(.QC$thisStudy$missing.crucial.rowcount,
                                                   .QC$thisStudy$input.data.rowcount,
                                                   pretty = T),
+    "<span class='item'>Duplicated variants</span>" = calculatePercent(.QC$thisStudy$duplicate.count,
+                                             .QC$thisStudy$input.data.rowcount,
+                                             pretty = T),
     "variant count after step 1"= calculatePercent(.QC$thisStudy$rowcount.step1,
                                                      .QC$thisStudy$input.data.rowcount,
                                                      decimal.place=3,
                                                      pretty = T),
     "<span class='item'>Monomorphic variants</span>" = calculatePercent(.QC$thisStudy$monomorphic.count,
                                               .QC$thisStudy$input.data.rowcount,
-                                              pretty = T),
-    "<span class='item'>Duplicated variants</span>" = calculatePercent(.QC$thisStudy$duplicate.count,
-                                             .QC$thisStudy$input.data.rowcount,
-                                             pretty = T)))											
+                                              pretty = T)))											
 
 
   colnames(count.table) <- 'Count'
   rownames(count.table)[1] <- "<span class='mainItem'>Input variant count</span>"
-  rownames(count.table)[3] <- sprintf("<span class='mainItem'>Variant count after step 1</span>")
+  rownames(count.table)[4] <- sprintf("<span class='mainItem'>Variant count after step 1</span>")
   
   
   
@@ -181,11 +180,11 @@ kable(column.tbl, align = "c" , format = "html")
     "<span class='mainItem'>Palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$palindormicHighDiffEAF,
                                     .QC$thisStudy$palindromic.rows,
                                     pretty = T),
+	"<span class='mainItem'>Non-palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$nonpalindormicHighDiffEAF ,
+                                      .QC$thisStudy$non.palindromic.rows,
+                                      pretty = T,								
     "<span class='mainItem'>Palindromic variants with opposite allele frequency \"compared to the reference\" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)</span>" =  calculatePercent(.QC$thisStudy$palindormicExtremeDiffEAF ,
                                       .QC$thisStudy$palindromic.rows,
-                                      pretty = T),
-    "<span class='mainItem'>Non-palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$nonpalindormicHighDiffEAF ,
-                                      .QC$thisStudy$non.palindromic.rows,
                                       pretty = T)))
 
   colnames(count.table) <- 'Count'
@@ -227,7 +226,7 @@ kable(.QC$thisStudy$tables$multi_allele_count_preProcess,escape='FALSE', align =
  Allele frequency reference dataset:		**`r basename(.QC$config$supplementaryFiles$allele_ref_std)`**
  
 `r  count.table1 <- t(data.table(
-    "<span class='mainItem'>Found variants</span>" = calculatePercent(.QC$thisStudy$found.rows.std,
+    "<span class='mainItem'>Verified variants</span>" = calculatePercent(.QC$thisStudy$found.rows.std,
                                         .QC$thisStudy$rowcount.step2,
                                         decimal.place=3,
                                         pretty=TRUE),
@@ -235,18 +234,6 @@ kable(.QC$thisStudy$tables$multi_allele_count_preProcess,escape='FALSE', align =
                                             .QC$thisStudy$rowcount.step2,
                                             decimal.place=3,
                                             pretty=TRUE),
-    "<span class='mainItem'>Mismatch variants</span>" = calculatePercent(.QC$thisStudy$mismatched.rows.std,
-                                           .QC$thisStudy$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
-     "<span class='mainItem'>Non-verified multiallelic variants</span>" = calculatePercent(.QC$thisStudy$multiAlleleVariants.rowcount,
-                                           .QC$thisStudy$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
-     "<span class='mainItem'>Ambiguous variants</span>" = calculatePercent(.QC$thisStudy$ambiguos.rows,
-                                           .QC$thisStudy$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
     "<span class='mainItem'>Flipped variants</span>" = calculatePercent(.QC$thisStudy$flipped.rows.std,
                                           .QC$thisStudy$found.rows.std,
                                           pretty=TRUE),
@@ -290,7 +277,7 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
 `r if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt)){
  
  count.table2 <- t(data.table(
-      "<span class='mainItem'>Found variants</span>" = calculatePercent(.QC$thisStudy$found.rows.alt ,
+      "<span class='mainItem'>Verified variants</span>" = calculatePercent(.QC$thisStudy$found.rows.alt ,
                                           .QC$thisStudy$not.found.rows.std,
                                           decimal.place=3,
                                           pretty=TRUE),
@@ -298,10 +285,6 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
                                               .QC$thisStudy$not.found.rows.std,
                                               decimal.place=3,
                                               pretty=TRUE),
-      "<span class='mainItem'>Mismatch variants</span>" = calculatePercent(.QC$thisStudy$mismatched.rows.alt ,
-                                             .QC$thisStudy$found.rows.alt,
-                                             decimal.place=3,
-                                             pretty=TRUE),
       "<span class='mainItem'>Flipped variants</span>" = calculatePercent(.QC$thisStudy$flipped.rows.alt ,
                                             .QC$thisStudy$found.rows.alt,
                                             pretty=TRUE),
@@ -333,7 +316,7 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
 `
 
 
-<h3 class="header1">Summary statistics</h3>
+<h3 class="header1">QC summary statistics</h3>
 
 
   

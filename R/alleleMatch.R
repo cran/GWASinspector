@@ -1,212 +1,29 @@
-## added columns to dataset
-# 'found' in allele.match() => variant is found in ref set
-# 'palindromic' in allele.match() =>
-# 'match' in allele.match() => eff_all == minor and oth_all == major
-# 'flip' in allele.match() => variant needs flipping
-# 'switch' in allele.match() => variant needs switching
-# 'wring' in allele.match() => alleles do not match with ref set
-# 'PVALUE.calculated' in replacePVALUE() => pvalue calculated from STDERR and EFFECT
-# 'HQ' in applyHQfilter() => tag HQ variants based on AF, hwe_p , IMP_Q , callrate
-# 'unusable' processcolumns() => missing or invalid crucial column
-# 'highDiffEAF' alleleMatch() => items with highDiff PVALUE - AF
-# for.AF checks if function is run for allele frequency or EFFECT PLOT
-
-allele.match <- function(matched.data) {
-
-
-  setkey(matched.data,EFFECT_ALL,OTHER_ALL,ALT,REF)
-
-  ##FIXME might differ according to refrence data
-  matched.data[REF == '', REF := NA] ## convert empty value to NA
-  matched.data[!is.na(REF), found := TRUE] ## found in reference data
-
-
-  # Palindromic variants:
-  # A-T
-  # vs A-T : match (1)
-  # vs T-A : flip (2)
-  # anything else : wrong (3)
-
-  # non-Palindromic variants:
-  # A-G
-  # vs A-G : match (1)
-  # vs G-A: flip (2)
-  # vs C-T: flip (5)
-  # vs T-C : switch (4)
-  # anything else : wrong (6)
-
-
-  ## A-T or G-C are palindrimic
-  matched.data[VT == 1 & EFFECT_ALL == switch.allele.vectorized(OTHER_ALL), palindromic := TRUE]
-
-  ## (1) matched exactly like the reference file
-  matched.data[(found) & (EFFECT_ALL == ALT & OTHER_ALL == REF) , match := TRUE]
-
-
-  ## (2) A-G in file vs G-A in reference file should be flipped
-  # no difference in palindrommic or non-palindromic
-  matched.data[(found) & (EFFECT_ALL == REF & OTHER_ALL == ALT), flip := TRUE]
-
-
-
-  ## matching INDELs
-  # FIXME the following condition is put because if INDELs have non base chars the can not be matched and will be
-  # removed as a mismatch
-  matched.data[.QC$thisStudy$hanNoneBaseAlleles & (found) & VT == 2 , match := TRUE]
-
-
-  # (4) non-palindromic variants should be swithched if
-  # A-C VS T-G
-  matched.data[(found) &
-                 is.na(palindromic) &
-                 is.na(match) &
-                 is.na(flip) &
-                 (EFFECT_ALL == switch.allele.vectorized(ALT) &
-                    OTHER_ALL == switch.allele.vectorized(REF)),
-               switch := TRUE]
-
-  # (5) non-palindromic variants should be flipped if
-  # A-C VS G-T
-  matched.data[(found) &
-                 is.na(palindromic) &
-                 is.na(match) &
-                 is.na(switch) &
-                 is.na(flip) &
-                 (EFFECT_ALL == switch.allele.vectorized(REF) &
-                    OTHER_ALL == switch.allele.vectorized(ALT)),
-               flip := TRUE]
-
-
-
-
-  # (6) non ppalindromic variants that are not fliped or switched or matched should be wrong
-  # A-C VS A-G
-
-  matched.data[(found) &
-                 VT == 1 &
-                 is.na(match) &
-                 is.na(switch) &
-                 is.na(flip) ,
-               # is.na(ignore),
-               wrong := TRUE]
-
-
-  matched.data[(found) &
-                 VT == 2 &
-                 is.na(switch) &
-                 is.na(flip) &
-                 EFFECT_ALL == 'R',
-               flip := TRUE]
-
-  matched.data[(found) &
-                 VT == 2 &
-                 is.na(match) &
-                 is.na(switch) &
-                 is.na(flip) &
-                 #  is.na(ignore) &
-                 !is.element(EFFECT_ALL,c('I','D','0','-','R')),
-               wrong := TRUE]
-
-
-  return(matched.data)
-
-}
-
-
-
-allele.match.effectPlot <- function(matched.data) {
-
-  ## TODO no need for allele matching because this is already done in previous steps
-  ## and reference dataset is also matched with reference dataset
-
-  return(matched.data)
-
-
-  setkey(matched.data,EFFECT_ALL,OTHER_ALL,ALT,REF)
-
-
-  # Palindromic variants:
-  # A-T
-  # vs A-T : match (1)
-  # vs T-A : flip (2)
-  # anything else : wrong (3)
-
-  # non-Palindromic variants:
-  # A-G
-  # vs A-G : match (1)
-  # vs G-A: flip (2)
-  # vs C-T: flip (5)
-  # vs T-C : switch (4)
-  # anything else : wrong (6)
-
-
-
-  matched.data[EFFECT_ALL == switch.allele.vectorized(OTHER_ALL), palindromic := TRUE]
-
-
-  ## (1) matched exactly like the reference file
-  matched.data[EFFECT_ALL == ALT & OTHER_ALL == REF , match := TRUE]
-
-
-  ## (2) A-G in file vs G-A in reference file should be flipped
-  # no difference in palindrommic or non-palindromic
-  matched.data[EFFECT_ALL == REF & OTHER_ALL == ALT, flip := TRUE]
-
-
-
-  # (4) non-palindromic variants should be swithched if
-  # A-C VS T-G
-  matched.data[is.na(palindromic) &
-                 is.na(match) &
-                 is.na(flip) &
-                 (EFFECT_ALL == switch.allele.vectorized(ALT) &
-                    OTHER_ALL == switch.allele.vectorized(REF)),
-               switch := TRUE]
-
-  # (5) non-palindromic variants should be flipped if
-  # A-C VS G-T
-  matched.data[ is.na(palindromic) &
-                 is.na(match) &
-                 is.na(switch) &
-                 is.na(flip) &
-                 (EFFECT_ALL == switch.allele.vectorized(REF) &
-                    OTHER_ALL == switch.allele.vectorized(ALT)),
-               flip := TRUE]
-
- # matched.data[ flip == TRUE, EFFECT := -1 * EFFECT]
-
-  return(matched.data)
-
-}
-
 
 switch.flip.variant <- function(matched.data){
   # switched variants should be :
   # only snp alleles are switched
-  matched.data[VT == 1 & switch == TRUE, `:=` (EFFECT_ALL = ALT ,
-                                               OTHER_ALL = REF)]
+  # matched.data[VT == 1 & switch == TRUE, `:=` (EFFECT_ALL = ALT ,
+  #                                              OTHER_ALL = REF)]
 
-  # flipped variants are switched and EFFECT and frequency are changed
-  # FIXME only SNPs alleles are flipped
-  # FIXME indel alleles are not changed , but indel AF is flipped
+  matched.data[match_result == 3L, `:=` (EFFECT_ALL = ALT ,
+                                     OTHER_ALL = REF)]
+
+
   if('EFF_ALL_FREQ' %in% colnames(matched.data))
   {
-    matched.data[ VT == 1 & flip == TRUE, `:=` (EFFECT_ALL = ALT
-                                                ,OTHER_ALL = REF
-                                                ,EFFECT = -1 * EFFECT
-                                                ,EFF_ALL_FREQ = 1 - EFF_ALL_FREQ)]
 
-    matched.data[ VT == 2 & flip == TRUE, `:=` (EFFECT = -1 * EFFECT
-                                                ,EFF_ALL_FREQ = 1 - EFF_ALL_FREQ)]
-
+    matched.data[match_result == 2L, `:=` (EFFECT_ALL = ALT
+                                    ,OTHER_ALL = REF
+                                    ,EFFECT = -1 * EFFECT
+                                    ,EFF_ALL_FREQ = 1 - EFF_ALL_FREQ)]
   }
   else
   {
-    matched.data[ VT == 1 &  flip == TRUE, `:=` (EFFECT_ALL = ALT
-                                                 ,OTHER_ALL = REF
-                                                 ,EFFECT = -1 * EFFECT)]
 
-    matched.data[ VT == 2 &  flip == TRUE, EFFECT := -1 * EFFECT]
+
+    matched.data[match_result == 2L, `:=` (EFFECT_ALL = ALT
+                                     ,OTHER_ALL = REF
+                                     ,EFFECT = -1 * EFFECT)]
 
   }
 
@@ -258,33 +75,33 @@ reportAlleleMatchStat <- function(matched.data) {
   nrow.total <- study$rowcount.step2
 
   # variables that are found in standard reference file
-  study$found.rows.std <- matched.data[found == TRUE & SOURCE == 'Std_ref' , .N]
-  study$switched.rows.std <- matched.data[switch == TRUE & SOURCE == 'Std_ref' , .N]
-  study$flipped.rows.std <- matched.data[flip == TRUE & SOURCE == 'Std_ref' , .N]
-  study$mismatched.rows.std <- matched.data[wrong == TRUE & SOURCE == 'Std_ref' , .N]
+  # study$found.rows.std <- matched.data[found == TRUE & SOURCE == 'Std_ref' , .N]
+  # study$switched.rows.std <- matched.data[switch == TRUE & SOURCE == 'Std_ref' , .N]
+  # study$flipped.rows.std <- matched.data[flip == TRUE & SOURCE == 'Std_ref' , .N]
+  study$mismatched.rows.std <- matched.data[match_result == 4L & SOURCE == 'Std_ref' , .N]
   study$multiAlleleVariants.rowcount <- matched.data[MULTI_ALLELIC == 1 & grepl(',',ALT) , .N]
 
   # variables that are found in alternate reference file
-  study$found.rows.alt <- matched.data[found == TRUE & SOURCE != 'Std_ref' , .N]
-  study$switched.rows.alt <- matched.data[switch == TRUE & SOURCE != 'Std_ref' , .N]
-  study$flipped.rows.alt <- matched.data[flip == TRUE & SOURCE != 'Std_ref' , .N]
-  study$mismatched.rows.alt <- matched.data[wrong == TRUE & SOURCE != 'Std_ref' , .N]
+  # study$found.rows.alt <- matched.data[found == TRUE & SOURCE != 'Std_ref' , .N]
+  # study$switched.rows.alt <- matched.data[switch == TRUE & SOURCE != 'Std_ref' , .N]
+  # study$flipped.rows.alt <- matched.data[flip == TRUE & SOURCE != 'Std_ref' , .N]
+  study$mismatched.rows.alt <- matched.data[match_result == 4L & SOURCE != 'Std_ref' , .N]
 
   # # pallindromics
   # study$palindromic.rows <- matched.data[palindromic == TRUE , .N]
 
   # variables that are not found in standard reference file
-  study$not.found.rows.std <- nrow.total - study$found.rows.std
+  # study$not.found.rows.std <- nrow.total - study$found.rows.std
 
   # variables that are not found in either standard or alternate reference file
-  study$not.found.rows.alt <- nrow.total - study$found.rows.std - study$found.rows.alt
+  # study$not.found.rows.alt <- nrow.total - study$found.rows.std - study$found.rows.alt
 
 
 
   ## table of how many variants where foundi each refrence file
-  study$tables$match.ref.table <- t(table(matched.data[!is.na(SOURCE)]$SOURCE))
-  if(nrow(study$tables$match.ref.table) == 0 )
-    study$tables$match.ref.table <- data.table(x = 0)
+  # study$tables$match.ref.table <- t(table(matched.data[!is.na(SOURCE)]$SOURCE))
+  # if(nrow(study$tables$match.ref.table) == 0 )
+  #   study$tables$match.ref.table <- data.table(x = 0)
 
 
 
@@ -300,21 +117,22 @@ check.diffEAF <- function(input.data) {
 
   if('EFF_ALL_FREQ' %in% colnames(input.data))
   {
-    input.data[(found) & abs(EFF_ALL_FREQ - AF) > DIFFthreshold , highDiffEAF := TRUE]
 
-    palindormicHighDiffEAF <- length(which( input.data$palindromic &
-                                              input.data$highDiffEAF))
+    input.data[, highDiffEAF := ifelse(match_result == 9L,
+                                       NA,
+                                       ifelse(abs(EFF_ALL_FREQ - AF) > DIFFthreshold,
+                                              1 ,
+                                              0))]
 
-    palindormicExtremeDiffEAF <- length(which(input.data$palindromic &
-                                                ((input.data$EFF_ALL_FREQ > 0.65 & input.data$AF < 0.35) |
-                                                   (input.data$EFF_ALL_FREQ < 0.35 & input.data$AF > 0.65))
-    )
-    )
+    palindormicHighDiffEAF <- input.data[palindromic == TRUE & highDiffEAF == TRUE ,.N]
+
+    palindormicExtremeDiffEAF <- input.data[palindromic == TRUE  &
+                                              ((EFF_ALL_FREQ > 0.65 & AF < 0.35)|
+                                                 (EFF_ALL_FREQ < 0.35 & AF > 0.65)),.N]
 
 
+     nonpalindormicHighDiffEAF <- input.data[palindromic == FALSE & highDiffEAF == TRUE ,.N]
 
-    nonpalindormicHighDiffEAF <- length(which(is.na(input.data$palindromic) &
-                                                input.data$highDiffEAF))
     ##--
     study$palindormicHighDiffEAF <- ifelse(palindormicHighDiffEAF > 0 , palindormicHighDiffEAF, 0 )
     study$palindormicExtremeDiffEAF <- ifelse(palindormicExtremeDiffEAF > 0 , palindormicExtremeDiffEAF , 0)
@@ -349,7 +167,8 @@ save.remove.mismatch.Variants <- function(input.data) {
                 .QC$thisStudy$SNPs_multi_allelic.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
 
     input.data <- input.data[!multiAllelic.rows,]
   }
@@ -361,7 +180,7 @@ save.remove.mismatch.Variants <- function(input.data) {
 
 
 
-  mismatched.rows<-which(input.data[, (wrong)])
+  mismatched.rows<-which(input.data[,match_result == 4L])
 
   ## remove reference file columns from final dataset
   if(length(mismatched.rows) >0){
@@ -373,7 +192,8 @@ save.remove.mismatch.Variants <- function(input.data) {
                 .QC$thisStudy$SNPs_mismatches.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
 
     input.data <- input.data[!mismatched.rows,] ## remove mismatched from dataset
 
@@ -419,7 +239,8 @@ save.remove.ambiguous.variants <- function(input.data)
                 .QC$thisStudy$SNPs_ambiguous.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
 
     input.data <- input.data[!duplicate.positions, ]
 

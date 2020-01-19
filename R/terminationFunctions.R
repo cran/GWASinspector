@@ -16,20 +16,10 @@ removeFunctionVariablesFromRAM<-function(){
 
   print.and.log('cleaning workspace...','info')
 
-  # FIXME delete after debugging
-  # rm(config, envir = .QC) ## removing config variable from memory
-  #
-  # rm(log.name.main, envir = .QC) ## removing logger variable from memory
-  #
-  # rm(qc.study.list, envir = .QC) ## removing items variable from memory
-  #
-  # rm(thisStudy, envir = .QC) ## removing items variable from memory
-  #
-  # rm(reference.data, envir = .QC) ## removing items variable from memory
-  #
-  # rm(alt.reference.data, envir = .QC) ## removing items variable from memory
+  if(exists("reference.data",envir = .QC) &&  class(.QC$reference.data) == "SQLiteConnection")
+    RSQLite::dbDisconnect(.QC$reference.data)
 
-  # FIXME delete after debugging
+
   rm(.QC)
   # rm(list = ls(envir = .QC))
 

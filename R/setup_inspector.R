@@ -54,7 +54,10 @@ setup.inspector <- function(config.file , validate = TRUE)
       out_na = configuration$output_parameters$out_na,
       out_dec = configuration$output_parameters$out_dec,
       html_report = configuration$output_parameters$html_report,
-      object_file =  configuration$output_parameters$object_file
+      object_file =  configuration$output_parameters$object_file,
+      add_column_multiallelic =  configuration$output_parameters$add_column_multiallelic,
+      add_column_AFmismatch =  configuration$output_parameters$add_column_AFmismatch,
+      ordered =  configuration$output_parameters$ordered
     ),
     remove_chromosomes = list(
       remove_X = configuration$remove_chromosomes$remove_X,

@@ -185,7 +185,7 @@ get.OS <- function()
 
 
 removeDuplicatedLines <- function(input.data) {
-  print.and.log('looking for duplicated lines ...','info')
+  print.and.log('Looking for duplicated lines ...','info')
 
   dup_lines <- which(duplicated(input.data))
   .QC$thisStudy$dup_lines_count <- length(dup_lines)

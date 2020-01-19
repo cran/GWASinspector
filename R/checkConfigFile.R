@@ -349,6 +349,21 @@ checkConfigFile <- function(config.file) {
                           'logical',
                           TRUE)
 
+  config$output_parameters$add_column_multiallelic <-
+	checkConfigParameters(config$output_parameters$add_column_multiallelic,
+                          'logical',
+                          FALSE)
+
+  config$output_parameters$add_column_AFmismatch <-
+    checkConfigParameters(config$output_parameters$add_column_AFmismatch,
+                          'logical',
+                          FALSE)
+
+   config$output_parameters$ordered <-
+    checkConfigParameters(config$output_parameters$ordered,
+                          'logical',
+                          FALSE)
+
   # converted to upppercase for consistency
   config$output_parameters$out_header <-
     checkConfigParameters(
@@ -565,10 +580,10 @@ checkConfigParameters <-
     {
       if (is.null(parameter) ||
           parameter == '' ||
-          is.na(as.logical(parameter)))
+          is.na(as.logical(toupper(parameter))))
         output <- default
       else
-        output  <- as.logical(parameter)
+        output  <- as.logical(toupper(parameter))
     }
 
 
@@ -654,7 +669,10 @@ make.config <- function(object)
       out_na = object@output_parameters$out_na,
       out_dec = object@output_parameters$out_dec,
       html_report = object@output_parameters$html_report,
-      object_file = object@output_parameters$object_file
+      object_file = object@output_parameters$object_file,
+      add_column_multiallelic = object@output_parameters$add_column_multiallelic,
+      add_column_AFmismatch = object@output_parameters$add_column_AFmismatch,
+      ordered = object@output_parameters$ordered
     ),
     remove_chromosomes = list(
       remove_X = object@remove_chromosomes$remove_X,

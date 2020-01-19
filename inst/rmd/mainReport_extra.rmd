@@ -87,8 +87,6 @@ Input file:		**`r basename(.QC$thisStudy$file.path)`**
 
 Input file line count (including header):		**`r .QC$thisStudy$file.line.count`**
 
-Duplicated lines:  **`r format(.QC$thisStudy$dup_lines_count, big.mark = ',' ,scientific = FALSE)`**
-
 
 
 <br/>
@@ -119,11 +117,11 @@ kableExtra::scroll_box(width = "100%")
 <h4 class="header2">Column report</h4>
 
 `r b <- t(data.frame('CHR' = c(abs(study$column.NA.list$CHR - study$column.INVALID.list$CHR) ,
-                              study$column.INVALID.list$CHR,
+                              paste(study$column.INVALID.list$CHR, kableExtra::footnote_marker_symbol(6)),
                               ' '),
 
                     'POSITION' = c(abs(study$column.NA.list$POSITION - study$column.INVALID.list$POSITION) ,
-                                   paste(study$column.INVALID.list$POSITION, kableExtra::footnote_marker_symbol(1)),
+                                   paste(study$column.INVALID.list$POSITION, kableExtra::footnote_marker_symbol(1), kableExtra::footnote_marker_symbol(2)),
                                    ' '),
 
                     'EFFECT_ALL' = c(abs(study$column.NA.list$EFFECT_ALL - study$column.INVALID.list$EFFECT_ALL) ,
@@ -135,7 +133,7 @@ kableExtra::scroll_box(width = "100%")
                                     ' '),
 
                     'EFFECT' = c(abs(study$column.NA.list$EFFECT - study$column.INVALID.list$EFFECT) ,
-                                 paste(study$column.INVALID.list$EFFECT,kableExtra::footnote_marker_symbol(3)),
+                                 ' ',
                                  ' '),
 
                     'STDERR' = c(abs(study$column.NA.list$STDERR - study$column.INVALID.list$STDERR - study$column.INVALID.list$zero.STDERR) ,
@@ -166,7 +164,7 @@ kableExtra::scroll_box(width = "100%")
                                       ' '),
 
                     'MARKER' = c(abs(study$column.NA.list$MARKER - study$column.INVALID.list$MARKER) ,
-                                 study$column.INVALID.list$MARKER,
+                                ' ',
                                  ' '),
 
                     'N_TOTAL' = c(abs(study$column.NA.list$N_TOTAL - study$column.INVALID.list$N_TOTAL) ,
@@ -203,7 +201,8 @@ kableExtra::column_spec(3, width = "15em", border_right = T ) %>%
                       "= 0",
                       "= -1",
                       "> 1",
-                      sprintf("valid range is between %s and %s",.QC$config$filters$minimal_impQ_value,.QC$config$filters$maximal_impQ_value)))
+                      sprintf("valid range is between %s and %s",.QC$config$filters$minimal_impQ_value,.QC$config$filters$maximal_impQ_value),
+                      "valid range is between 1 and 26"))
 
 `
 
@@ -221,21 +220,21 @@ kableExtra::column_spec(3, width = "15em", border_right = T ) %>%
     "<span class='item'>Missing crucial variable</span>" = calculatePercent(.QC$thisStudy$missing.crucial.rowcount,
                                                   .QC$thisStudy$input.data.rowcount,
                                                   pretty = T),
+    "<span class='item'>Duplicated variants</span>" = calculatePercent(.QC$thisStudy$duplicate.count,
+                                             .QC$thisStudy$input.data.rowcount,
+                                             pretty = T),
     "variant count after step 1"= calculatePercent(.QC$thisStudy$rowcount.step1,
                                                      .QC$thisStudy$input.data.rowcount,
                                                      decimal.place=3,
                                                      pretty = T),
     "<span class='item'>Monomorphic variants</span>" = calculatePercent(.QC$thisStudy$monomorphic.count,
                                               .QC$thisStudy$input.data.rowcount,
-                                              pretty = T),
-    "<span class='item'>Duplicated variants</span>" = calculatePercent(.QC$thisStudy$duplicate.count,
-                                             .QC$thisStudy$input.data.rowcount,
-                                             pretty = T)))											
+                                              pretty = T)))											
 
 
   colnames(count.table) <- 'Count'
   rownames(count.table)[1] <- "<span class='mainItem'>Input variant count</span>"
-  rownames(count.table)[3] <- sprintf("<span class='mainItem'>Variant count after step 1 %s</span>",kableExtra::footnote_marker_symbol(1))
+  rownames(count.table)[4] <- sprintf("<span class='mainItem'>Variant count after step 1 %s</span>",kableExtra::footnote_marker_symbol(1))
   
   
   
@@ -263,7 +262,7 @@ count.table2 <- t(data.table(
                                                       pretty = T),
     "variant count after step 3"= calculatePercent(.QC$thisStudy$rowcount.step3,
                                                        .QC$thisStudy$input.data.rowcount,
-                                                       decimal.place=4,
+                                                       decimal.place=3,
                                                        pretty = T)))
 											 
 		
@@ -279,8 +278,8 @@ count.table2 <- t(data.table(
 	position = "left") %>%
 	kableExtra::column_spec(1, bold = F, border_right = T  )  %>%
 	kableExtra::footnote(general = ' ', symbol = c( 
-                      "step1: removing variants with missing crucial values.",
-                      "step2: removing monomorphic, duplicated and chromosomal variants.",
+                      "step1: removing variants with missing crucial values and duplicated lines.",
+                      "step2: removing monomorphic variants and specified chromosomes.",
                       "step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified."))
 					  
 					  
@@ -319,7 +318,7 @@ count.table2 <- t(data.table(
     "<span class='mainItem'>Low Quality variants</span>" = calculatePercent(.QC$thisStudy$LQ.count,
                                               .QC$thisStudy$rowcount.step3,
                                               pretty = T),
-    "<span class='mainItem'>Palindromic variants</span>" = calculatePercent(.QC$thisStudy$palindromic.rows,
+    "<span class='mainItem'>Palindromic variants*</span>" = calculatePercent(.QC$thisStudy$palindromic.rows,
                                               .QC$thisStudy$rowcount.step3,
                                               pretty = T),
     "<span class='mainItem'>Non-Palindromic variants</span>" = calculatePercent(.QC$thisStudy$non.palindromic.rows,
@@ -328,11 +327,11 @@ count.table2 <- t(data.table(
     "<span class='mainItem'>Palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$palindormicHighDiffEAF,
                                     .QC$thisStudy$palindromic.rows,
                                     pretty = T),
+	"<span class='mainItem'>Non-palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$nonpalindormicHighDiffEAF ,
+                                      .QC$thisStudy$non.palindromic.rows,
+                                      pretty = T),
     "<span class='mainItem'>Palindromic variants with opposite allele frequency \"compared to the reference\" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)</span>" =  calculatePercent(.QC$thisStudy$palindormicExtremeDiffEAF ,
                                       .QC$thisStudy$palindromic.rows,
-                                      pretty = T),
-    "<span class='mainItem'>Non-palindromic variants with high allele frequency difference (> 0.15)</span>" = calculatePercent(.QC$thisStudy$nonpalindormicHighDiffEAF ,
-                                      .QC$thisStudy$non.palindromic.rows,
                                       pretty = T)))
 
   colnames(count.table) <- 'Count'
@@ -404,7 +403,7 @@ if(nrow(.QC$thisStudy$tables$multi_allele_count_preProcess) > 1)
 
  
 `r  count.table1 <- t(data.table(
-    "<span class='mainItem'>Found variants</span>" = calculatePercent(.QC$thisStudy$found.rows.std,
+    "<span class='mainItem'>Verified variants</span>" = calculatePercent(.QC$thisStudy$found.rows.std,
                                         .QC$thisStudy$rowcount.step2,
                                         decimal.place=3,
                                         pretty=TRUE),
@@ -412,18 +411,6 @@ if(nrow(.QC$thisStudy$tables$multi_allele_count_preProcess) > 1)
                                             .QC$thisStudy$rowcount.step2,
                                             decimal.place=3,
                                             pretty=TRUE),
-    "<span class='mainItem'>Mismatch variants</span>" = calculatePercent(.QC$thisStudy$mismatched.rows.std,
-                                           .QC$thisStudy$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
-    "<span class='mainItem'>Non-verified multiallelic variants</span>" = calculatePercent(.QC$thisStudy$multiAlleleVariants.rowcount,
-                                           .QC$thisStudy$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
-    "<span class='mainItem'>Ambiguous variants</span>" = calculatePercent(.QC$thisStudy$ambiguos.rows,
-                                           .QC$thisStudy$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
     "<span class='mainItem'>Flipped variants</span>" = calculatePercent(.QC$thisStudy$flipped.rows.std,
                                           .QC$thisStudy$found.rows.std,
                                           pretty=TRUE),
@@ -472,7 +459,7 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
 `r if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt)){
  
  count.table2 <- t(data.table(
-      "<span class='mainItem'>Found variants</span>" = calculatePercent(.QC$thisStudy$found.rows.alt ,
+      "<span class='mainItem'>Verified variants</span>" = calculatePercent(.QC$thisStudy$found.rows.alt ,
                                           .QC$thisStudy$not.found.rows.std,
                                           decimal.place=3,
                                           pretty=TRUE),
@@ -480,10 +467,6 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
                                               .QC$thisStudy$not.found.rows.std,
                                               decimal.place=3,
                                               pretty=TRUE),
-      "<span class='mainItem'>Mismatch variants</span>" = calculatePercent(.QC$thisStudy$mismatched.rows.alt ,
-                                             .QC$thisStudy$found.rows.alt,
-                                             decimal.place=3,
-                                             pretty=TRUE),
       "<span class='mainItem'>Flipped variants</span>" = calculatePercent(.QC$thisStudy$flipped.rows.alt ,
                                             .QC$thisStudy$found.rows.alt,
                                             pretty=TRUE),
@@ -520,7 +503,7 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
 `
 
 
-<h3 class="header1">Summary statistics</h3>
+<h3 class="header1">QC summary statistics</h3>
 
 
   
@@ -607,7 +590,7 @@ kable(t(.QC$thisStudy$tables$variable.summary), format = "html")%>%
 
 
 
-<h4 class="header2">Effect allele distribution</h4>
+<h4 class="header2">Effect allele distribution in SNP variants</h4>
 `r 
 
 tbl = merge(.QC$thisStudy$tables$EFFECT_ALL.tbl,
@@ -628,7 +611,7 @@ kableExtra::column_spec(2, width = "10em")`
 
 
 
-<h4 class="header2">Other allele distribution</h4>
+<h4 class="header2">Other allele distribution in SNP variants</h4>
 `r 
 
 tbl = merge(.QC$thisStudy$tables$OTHER_ALL.tbl,

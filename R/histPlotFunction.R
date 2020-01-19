@@ -120,6 +120,7 @@ plot.variable.frequency.histograms<-function(input.data, study , plot.title.text
              y="Density",
              # subtitle="Imputed SNPs only",
              title="Imputation Quality") +
+        coord_cartesian(xlim = c(0, 1.2)) +
         theme_classic() +
         theme(strip.background = element_blank(),
               strip.text.x = element_text(size=8, face = "bold")

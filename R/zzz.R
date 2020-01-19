@@ -95,5 +95,8 @@ utils::globalVariables(c('PVALUE',
                        'sebeta',
                        'lambda.estimate',
                        'lambda.se',
+					   'SWITCHED_EFFECT_ALL',
+                       'SWITCHED_OTHER_ALL',
                        '..density..',
-                       '.'))
+                       '.',
+					              'match_result'))

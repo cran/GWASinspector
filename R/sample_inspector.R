@@ -6,9 +6,9 @@
 #' @return QC reports from running the algorithm on a sample GWAS file are generated and saved in the specified folder.
 #' @examples
 #' \donttest{
-#' sample.inspector(tempdir())
+#' demo.inspector(tempdir())
 #' }
-sample.inspector <- function(result.dir)
+demo.inspector <- function(result.dir)
 {
 
   if(missing(result.dir))

@@ -305,10 +305,8 @@ input.data.preAnalysis.report <- function(input.data)
   if('CHR' %in% names(input.data))
   {
 
-    tbl <- input.data[, .N ,keyby=CHR]
-
-    print.and.log('Chromosome distribution in input file...','info',display=.QC$config$debug$verbose)
-    print.and.log(kable(tbl,format = "rst"),
+    print.and.log('Variants distribution on each chromosome in input file...','info',display=.QC$config$debug$verbose)
+    print.and.log(kable(input.data[, .N ,by=CHR][order(as.numeric(CHR))],format = "rst"),
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)

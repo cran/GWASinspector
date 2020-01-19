@@ -255,7 +255,7 @@ report.to.txt.file <- function(study) {
   # input file spec
   writeTXTreport(sprintf('Input file name: %s', basename( study$file.path)))
   writeTXTreport(sprintf('Input file line count (including header): %s', study$file.line.count))
-  writeTXTreport(sprintf('Duplicated lines: %s', format(.QC$thisStudy$dup_lines_count,big.mark = ',',scientific = FALSE)))
+  # writeTXTreport(sprintf('Duplicated lines: %s', format(.QC$thisStudy$dup_lines_count,big.mark = ',',scientific = FALSE)))
 
   # it is mentioned in log file
   # if(study$hanNoneBaseAlleles)
@@ -298,7 +298,8 @@ report.to.txt.file <- function(study) {
                                     ' '),
 
                     'EFFECT' = c(abs(study$column.NA.list$EFFECT - study$column.INVALID.list$EFFECT) ,
-                                 study$column.INVALID.list$EFFECT,
+                                # study$column.INVALID.list$EFFECT,
+                                 ' ',
                                  ' '),
 
                     'STDERR' = c(abs(study$column.NA.list$STDERR - study$column.INVALID.list$STDERR - study$column.INVALID.list$zero.STDERR) ,
@@ -326,7 +327,7 @@ report.to.txt.file <- function(study) {
                                       ' '),
 
                     'MARKER' = c(abs(study$column.NA.list$MARKER - study$column.INVALID.list$MARKER) ,
-                                 study$column.INVALID.list$MARKER,
+                                 ' ',
                                  ' '),
 
                     'N_TOTAL' = c(abs(study$column.NA.list$N_TOTAL - study$column.INVALID.list$N_TOTAL) ,
@@ -355,8 +356,8 @@ report.to.txt.file <- function(study) {
   writeTXTreport('================= Variant processing ==================')
   writeTXTreport('=======================================================')
 
-  writeTXTreport('* step1: removing variants with missing crucial values.')
-  writeTXTreport('** step2: removing monomorphic, duplicated and chromosomal variants.')
+  writeTXTreport('* step1: removing variants with missing crucial values and duplicated lines.')
+  writeTXTreport('** step2: removing monomorphic variants and specified chromosomes.')
   writeTXTreport('*** step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.')
   writeTXTreport(' ')
 
@@ -366,6 +367,9 @@ report.to.txt.file <- function(study) {
     'Missing crucial variable' = calculatePercent(study$missing.crucial.rowcount,
                                                   study$input.data.rowcount,
                                                   pretty = TRUE),
+    'Duplicated variants' = calculatePercent(study$duplicate.count,
+                                             study$input.data.rowcount,
+                                             pretty = TRUE),
     "variant count after step 1 *"= calculatePercent(study$rowcount.step1,
                                                      study$input.data.rowcount,
                                                      decimal.place=3,
@@ -373,9 +377,6 @@ report.to.txt.file <- function(study) {
     'Monomorphic variants' = calculatePercent(study$monomorphic.count,
                                               study$input.data.rowcount,
                                               pretty = TRUE),
-    'Duplicated variants' = calculatePercent(study$duplicate.count,
-                                             study$input.data.rowcount,
-                                             pretty = TRUE),
     "variant count after step 2 **"= calculatePercent(study$rowcount.step2,
                                                       study$input.data.rowcount,
                                                       decimal.place=3,
@@ -418,11 +419,11 @@ report.to.txt.file <- function(study) {
     'variants +' = calculatePercent(study$palindormicHighDiffEAF,
                                     study$palindromic.rows,
                                     pretty = TRUE),
-    'variants ++' =  calculatePercent(study$palindormicExtremeDiffEAF ,
-                                      study$palindromic.rows,
-                                      pretty = TRUE),
-    'variants +++' = calculatePercent(study$nonpalindormicHighDiffEAF ,
+    'variants ++' = calculatePercent(study$nonpalindormicHighDiffEAF ,
                                       study$non.palindromic.rows,
+                                      pretty = TRUE),
+    'variants +++' =  calculatePercent(study$palindormicExtremeDiffEAF ,
+                                      study$palindromic.rows,
                                       pretty = TRUE)))
 
   colnames(count.table) <- 'count'
@@ -434,10 +435,11 @@ report.to.txt.file <- function(study) {
   writeTXTreport(sprintf('+ Palindromic variants with high allele frequency difference (> %s)',
                          .QC$config$filters$threshold_diffEAF))
 
-  writeTXTreport('++ Palindromic variants with opposite allele frequency "compared to the reference" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)')
-
-  writeTXTreport(sprintf('+++ Non-palindromic variants with high allele frequency difference (> %s)',
+ writeTXTreport(sprintf('++ Non-palindromic variants with high allele frequency difference (> %s)',
                          .QC$config$filters$threshold_diffEAF))
+
+  writeTXTreport('+++ Palindromic variants with opposite allele frequency "compared to the reference" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)')
+
   writeTXTreport(' ')
 
   ###
@@ -464,33 +466,34 @@ report.to.txt.file <- function(study) {
 
 
   writeTXTreport(' ')
-  writeTXTreport('==================================================')
-  writeTXTreport('================ Matching references =============')
-  # writeTXTreport('==================================================')
+  writeTXTreport('========================================================')
+  writeTXTreport('= Result from matching with standard reference dataset =')
+  writeTXTreport('========================================================')
 
-  match.table1 <- study$tables$match.ref.table
-  colnames(match.table1)[colnames(match.table1) == 'Std_ref'] <- 'Standard Reference'
-
-
-
-  match.table <- data.table(apply(match.table1,2, function(x)
-    return(calculatePercent(x,
-                            study$rowcount.step2,
-                            pretty = TRUE,
-                            decimal.place = 3)
-    )
-  ))
-
-  match.table <- cbind(colnames(match.table1),match.table)
-  colnames(match.table) <- c('Reference' ,'Count')
-
-
-  writeTXTreport(kable(match.table,format = "rst"))
+  ## not helpful anymore
+  # match.table1 <- study$tables$match.ref.table
+  # colnames(match.table1)[colnames(match.table1) == 'Std_ref'] <- 'Standard Reference'
+  #
+  #
+  #
+  # match.table <- data.table(apply(match.table1,2, function(x)
+  #   return(calculatePercent(x,
+  #                           study$rowcount.step2,
+  #                           pretty = TRUE,
+  #                           decimal.place = 3)
+  #   )
+  # ))
+  #
+  # match.table <- cbind(colnames(match.table1),match.table)
+  # colnames(match.table) <- c('Reference' ,'Count')
+  #
+  #
+  # writeTXTreport(kable(match.table,format = "rst"))
 
   writeTXTreport(' ')
 
 
-  writeTXTreport('Variant types after matching with reference datasets\n')
+  #writeTXTreport('Variant types after matching with reference datasets\n')
   writeTXTreport(kable(study$tables$multi_allele_count_preProcess,format = "rst"))
 
   writeTXTreport(' ')
@@ -499,12 +502,12 @@ report.to.txt.file <- function(study) {
   # print.and.log('--------[Result from matching with standard reference file!]--------','info', cat = FALSE)
 
   writeTXTreport(' ')
-  writeTXTreport('========================================================')
-  writeTXTreport('= Result from matching with standard reference dataset =')
+  # writeTXTreport('========================================================')
+  # writeTXTreport('= Result from matching with standard reference dataset =')
   # writeTXTreport('========================================================')
 
   count.table <- t(data.table(
-    'Found variants' = calculatePercent(study$found.rows.std,
+    'Verified variants' = calculatePercent(study$found.rows.std,
                                         study$rowcount.step2,
                                         decimal.place=3,
                                         pretty=TRUE),
@@ -512,17 +515,17 @@ report.to.txt.file <- function(study) {
                                             study$rowcount.step2,
                                             decimal.place=3,
                                             pretty=TRUE),
-    'Mismatch variants' = calculatePercent(study$mismatched.rows.std,
-                                           study$found.rows.std,
-                                           decimal.place=3,
-                                           pretty=TRUE),
-    'Non-verified multiallelic variants' = calculatePercent(study$multiAlleleVariants.rowcount,
-                                                            study$found.rows.std,
-                                                            decimal.place=3,
-                                                            pretty=TRUE),
-    'Ambiguous variants' = calculatePercent(study$ambiguos.rows,
-                                            study$found.rows.std,
-                                            pretty=TRUE),
+    # 'Mismatch variants' = calculatePercent(study$mismatched.rows.std,
+    #                                        study$found.rows.std,
+    #                                        decimal.place=3,
+    #                                        pretty=TRUE),
+    # 'Non-verified multiallelic variants' = calculatePercent(study$multiAlleleVariants.rowcount,
+    #                                                         study$found.rows.std,
+    #                                                         decimal.place=3,
+    #                                                         pretty=TRUE),
+    # 'Ambiguous variants' = calculatePercent(study$ambiguos.rows,
+    #                                         study$found.rows.std,
+    #                                         pretty=TRUE),
     'Flipped variants' = calculatePercent(study$flipped.rows.std,
                                           study$found.rows.std,
                                           pretty=TRUE),
@@ -540,12 +543,6 @@ report.to.txt.file <- function(study) {
 
 
   writeTXTreport(kable(count.table,format = "rst"))
-
-  writeTXTreport(' ')
-  writeTXTreport('= Allele frequency correlation report for each chromosome =')
-  writeTXTreport(kable(study$AFcor.std_ref.CHR ,format = "rst",col.names = NULL))
-
-
   writeTXTreport(' ')
 
   ##=========================================
@@ -556,10 +553,10 @@ report.to.txt.file <- function(study) {
     writeTXTreport(' ')
     writeTXTreport('=========================================================')
     writeTXTreport('= Result from matching with alternate reference dataset =')
-    # writeTXTreport('=========================================================')
+    writeTXTreport('=========================================================')
 
     count.table <- t(data.table(
-      'Found variants' = calculatePercent(study$found.rows.alt ,
+      'Verified variants' = calculatePercent(study$found.rows.alt ,
                                           study$not.found.rows.std,
                                           decimal.place=3,
                                           pretty=TRUE),
@@ -567,10 +564,10 @@ report.to.txt.file <- function(study) {
                                               study$not.found.rows.std,
                                               decimal.place=3,
                                               pretty=TRUE),
-      'Mismatch variants' = calculatePercent(study$mismatched.rows.alt ,
-                                             study$found.rows.alt,
-                                             decimal.place=3,
-                                             pretty=TRUE),
+      # 'Mismatch variants' = calculatePercent(study$mismatched.rows.alt ,
+      #                                        study$found.rows.alt,
+      #                                        decimal.place=3,
+      #                                        pretty=TRUE),
       'Flipped variants' = calculatePercent(study$flipped.rows.alt ,
                                             study$found.rows.alt,
                                             pretty=TRUE),
@@ -587,20 +584,22 @@ report.to.txt.file <- function(study) {
 
 
     writeTXTreport(kable(count.table,format = "rst"))
-
     writeTXTreport(' ')
 
   }
 
   ##========================================
   writeTXTreport(' ')
+  writeTXTreport('AF correlation for each chromosome')
+  writeTXTreport(kable(study$AFcor.std_ref.CHR ,format = "rst",align = "c"))
+
 
   ##=========================================
   # print.and.log('-------[Calculated variables]-------','info', cat = FALSE)
   writeTXTreport(' ')
   writeTXTreport('==============================================')
-  writeTXTreport('============== Summary statistics ============')
-  # writeTXTreport('==============================================')
+  writeTXTreport('============ QC summary statistics ===========')
+  writeTXTreport('==============================================')
   writeTXTreport(' ')
 
   writeTXTreport('Pvalue correlation (observed vs expected)')
@@ -649,17 +648,19 @@ report.to.txt.file <- function(study) {
   # print.and.log('-------[Calculated variables]-------','info', cat = FALSE)
   writeTXTreport(' ')
   writeTXTreport('==============================================')
-  writeTXTreport('======== Variables summary statistics ========')
+  writeTXTreport('========== Distribution statistics  ==========')
+  writeTXTreport('==============================================')
+  writeTXTreport(' ')
 
   writeTXTreport(kable(t(study$tables$variable.summary), format = "rst"))
   writeTXTreport(' ')
 
 
   ##========================================
-  writeTXTreport(' ')
-  writeTXTreport('==============================================')
-  writeTXTreport('============= Column statistics  =============')
-  writeTXTreport(' ')
+  # writeTXTreport(' ')
+  # writeTXTreport('==============================================')
+  # writeTXTreport('============= Column statistics  =============')
+  # writeTXTreport(' ')
 
 
   ### chromosome table
@@ -679,7 +680,7 @@ report.to.txt.file <- function(study) {
 
   ### alleles
   writeTXTreport(' ')
-  writeTXTreport('Effect allele distribution')
+  writeTXTreport('Effect allele distribution in SNP variants')
 
   tbl = merge(study$tables$EFFECT_ALL.tbl,
               study$tables$EFFECT_ALL.post.matching.tbl,
@@ -696,7 +697,7 @@ report.to.txt.file <- function(study) {
 
   ###
   writeTXTreport(' ')
-  writeTXTreport('Other allele distribution')
+  writeTXTreport('Other allele distribution in SNP variants')
   tbl = merge(study$tables$OTHER_ALL.tbl,
               study$tables$OTHER_ALL.post.matching.tbl,
               by="OTHER_ALL",

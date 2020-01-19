@@ -116,7 +116,7 @@ run.inspector <- function(inspector, test.run=FALSE)
 
   # display study files, missing columns and line number to user
   # ask if algorithm should be done
- # verify.files.with.user(.QC$qc.study.list)
+  # verify.files.with.user(.QC$qc.study.list)
 
 
 
@@ -209,7 +209,7 @@ run.inspector <- function(inspector, test.run=FALSE)
   #print.and.log(mem_used(),'info',cat= FALSE)
 
   .QC$qc.study.list <- lapply(.QC$qc.study.list,
-                                process.each.file)
+                              process.each.file)
 
 
   # remove null files from list
@@ -248,6 +248,8 @@ run.inspector <- function(inspector, test.run=FALSE)
   # remove refrence and alt reference data from RAM
   # remove effect plot of each study from RAM
   # ===========================
+  if(exists("reference.data",envir = .QC) && class(.QC$reference.data) == "SQLiteConnection")
+    RSQLite::dbDisconnect(.QC$reference.data)
 
   rm(reference.data , envir = .QC)
   rm(alt.reference.data , envir = .QC)
@@ -261,11 +263,6 @@ run.inspector <- function(inspector, test.run=FALSE)
   invisible(gc())
 
 
-
-  ## FOR DEBUGGING
-  ## FIXME DELETE
-  # saveRDS(.QC$qc.study.list , paste0(.QC$config$paths$dir_output,'/studyVariables.rds'))
-  # saveRDS(.QC$config , paste0(.QC$config$paths$dir_output,'/configVariables.rds'))
 
 
   #print.and.log(mem_used(),'info',cat= FALSE)

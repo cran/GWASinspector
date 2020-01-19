@@ -61,5 +61,5 @@
 
 ## ------------------------------------------------------------------------
 #  require(GWASinspector)
-#  sample.inspector('/sample_dir')
+#  demo.inspector('/sample_dir')
 

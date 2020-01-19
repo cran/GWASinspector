@@ -23,7 +23,7 @@ removeChromosomeVariants<-function(input.data){
 find.and.remove.ChromosomeVariant<-function(input.data){
 	config <- .QC$config
 
-	message('\n--- [removing specified chromosomes ...] ---')
+	print.and.log("Removing specified chromosomes ...")
 
   ##REMOVE a chromosome from input file
   if(config$remove_chromosomes$remove_X == TRUE){
@@ -120,7 +120,8 @@ removeMonomorphicVariants <- function(input.data){
                 .QC$thisStudy$SNPs_monomorphic.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
 
     print.and.log(sprintf('\'%s\' monomorphic variants removed from file (step 2)!',
                           thousand.sep(length(monomorphic.alleles))),
@@ -136,11 +137,12 @@ removeMonomorphicVariants <- function(input.data){
 removeDuplicateVariants <- function(input.data)
 {
 
-	setkey(input.data,CHR)
+	setkey(input.data,CHR,POSITION,EFFECT_ALL,OTHER_ALL)
+
 	dup.allele <- which(
                         # duplicated(input.data$hID) | duplicated(input.data$hID, fromLast = TRUE)
-                        duplicated(input.data,by=c('CHR','POSITION','EFFECT_ALL','OTHER_ALL')) |
-                        duplicated(input.data,by=c('CHR','POSITION','EFFECT_ALL','OTHER_ALL'),fromLast = TRUE)
+                        duplicated(input.data, by = key(input.data)) |
+                        duplicated(input.data, by = key(input.data), fromLast = TRUE)
                     )
 
   if(length(dup.allele) > 0)
@@ -151,7 +153,8 @@ removeDuplicateVariants <- function(input.data)
                 .QC$thisStudy$SNPs_duplicates.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
 
 
 
@@ -171,7 +174,7 @@ removeDuplicateVariants <- function(input.data)
 
     .QC$thisStudy$duplicate.count <- length(dup.allele)
 
-    print.and.log(sprintf('\'%s\' duplicated variants removed from file (step 2)!',
+    print.and.log(sprintf('\'%s\' duplicated variants removed from file.',
                           thousand.sep(length(dup.allele))),
                   'warning',display=.QC$config$debug$verbose)
   }

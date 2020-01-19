@@ -133,7 +133,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
                             param = list(x = rn))
 
   ## merging data
-  if(data.table::key(input.data) != 'hID')
+  if(is.null(data.table::key(input.data)) || data.table::key(input.data) != 'hID')
     data.table::setkey(input.data,hID)
 
   rs <- data.table::setDT(rs,key = 'hID')
@@ -148,7 +148,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
   # multi allelic variants will be matched more than once and create duplicated lines.
   # only the first one is requiored and the rest should be removed.
-  dup.allele <- which(duplicated(input.data,by=c('CHR','POSITION','EFFECT_ALL','OTHER_ALL','REF','ALT')))
+  dup.allele <- which(duplicated(input.data,by=c('hID','EFFECT_ALL','OTHER_ALL','REF','ALT')))
 
   if(length(dup.allele) > 0)
   {
@@ -186,14 +186,20 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
 
   # find multi-allelic variants
-  input.data[, MULTI_ALLELIC := ifelse(grepl(',',AF),1,0)]
+  input.data[, MULTI_ALLELIC := ifelse(is.na(AF),
+                                       NA,
+                                       ifelse(grepl(',',AF),
+                                              1,
+                                              0))]
+
 
   ## get frequency table for multi-allelic variants
-  .QC$thisStudy$tables$multi_allele_count_preProcess <- getMultiAlleleCountTbl(input.data,'AF')
+  ## moved to after step 3
+  ##.QC$thisStudy$tables$multi_allele_count_preProcess <- getMultiAlleleCountTbl(input.data,'AF')
 
   ## try allele matching on multi-allelic variants
   # if(is.element('Yes',.QC$thisStudy$tables$multi_allele_count_preProcess$`Multi-allelic`))
-  if(any(input.data$MULTI_ALLELIC == 1))
+  if(any(input.data$MULTI_ALLELIC == 1, na.rm = TRUE))
   {
     input.data[MULTI_ALLELIC == 1,
                c('ALT','AF') := clean.multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
@@ -213,7 +219,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
 
   # AF column may be character type due to remaining ',' => convert to numeric
-  # AF of multi-allelics than could notbe matched are set as NA
+  # AF of multi-allelics that could notbe matched are set to NA
   if(!is.numeric(input.data$AF))
     input.data[, AF := as.numeric(AF)]
 

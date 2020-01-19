@@ -41,7 +41,7 @@ result.inspector <- function(inspector)
     dt <- rbind(dt, data.table(`#` = i,
                                Name = basename(study@File$file.path),
                                Result = success,
-                Rows = study@Counts$rowcount.step1,
+                Rows = study@Counts$input.data.rowcount,
                 "Output rows" = study@Counts$rowcount.step3,
                 "Found in Ref" = study@Counts$found.rows,
                 "AF correlation (std)" =study@Correlations$AFcor.std_ref,

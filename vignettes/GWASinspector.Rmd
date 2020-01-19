@@ -210,7 +210,7 @@ You can run the algorithm on a sample GWAS file which is embedded in the package
 
 ```{r}
 require(GWASinspector)
-sample.inspector('/sample_dir')
+demo.inspector('/sample_dir')
 ```
 
 ---

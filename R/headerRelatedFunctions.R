@@ -247,7 +247,7 @@ getCrucialColumnNames.onFileAnalysis<-function()
     "POSITION",
     "EFFECT_ALL",
     "OTHER_ALL",
-     "EFFECT",
+    "EFFECT",
     "STDERR"
   )
 
@@ -263,7 +263,8 @@ getNonCrucialColumnNames<-function()
                     "IMP_QUALITY",
                     "IMPUTED",
                     "CALLRATE",
-                    "N_TOTAL")
+                    "N_TOTAL",
+                    "MARKER")
 
   return(wanted.columns)
 }

@@ -55,7 +55,8 @@ process.each.file <- function(study){
 
   # remove duplicate lines of data
   # study$dup_lines_count is set
-  input.data <- removeDuplicatedLines(input.data)
+  #TODO ignored because it is very time consuming
+  #input.data <- removeDuplicatedLines(input.data)
 
 
 
@@ -105,7 +106,10 @@ process.each.file <- function(study){
   ## allele matching
   ## ==============================================
   print.and.log('Allele matching vs Allele Freq reference dataset ...','info')
-  input.data <- tryCatch(allele.match(input.data),
+
+  input.data <- tryCatch(input.data[,c("match_result","palindromic") :=
+                                      variant.match(EFFECT_ALL,OTHER_ALL,ALT,REF,VT),
+                                    by = list(EFFECT_ALL,OTHER_ALL,ALT,REF,VT)],
                          error = function(err) {
                            print.and.log(paste('Error in allele matching:' , err$message), 'warning')
                            return(NULL)
@@ -330,13 +334,17 @@ process.each.file <- function(study){
     ## allele matching for effect size plot
     ## ==============================================
     if(nrow(input.data) > 0){
-      print.and.log('Allele matching vs Effect-Size reference dataset ...','info')
-      input.data <- tryCatch(allele.match.effectPlot(input.data),
-                             error = function(err) {
-                               print.and.log(paste('Error in allele matching:' , err$message), 'warning')
-                               return(NULL)
-                             }
-      )
+
+
+
+      # THIS STEP IS NOT REQUIRED, BECAUSE DATA IS ALREADY MATCHED WITH REFERENCE DATASET
+      # print.and.log('Allele matching vs Effect-Size reference dataset ...','info')
+      # input.data <- tryCatch(allele.match.effectPlot(input.data),
+      #                        error = function(err) {
+      #                          print.and.log(paste('Error in allele matching:' , err$message), 'warning')
+      #                          return(NULL)
+      #                        }
+      # )
 
 
 
@@ -990,6 +998,31 @@ variable.statistics.post.matching <- function(input.data)
 
   # change effect column name to BETA or LN(OR)
   colnames(.QC$thisStudy$tables$variable.summary)[colnames(.QC$thisStudy$tables$variable.summary) == 'EFFECT'] <- .QC$config$input_parameters$effect_type_string
+
+  ## get frequency table for multi-allelic variants
+  .QC$thisStudy$tables$multi_allele_count_preProcess <- getMultiAlleleCountTbl(input.data)
+
+
+
+
+
+
+  # variables that are found in standard reference file
+  .QC$thisStudy$found.rows.std <- input.data[match_result != 9L & SOURCE == 'Std_ref' , .N]
+  .QC$thisStudy$switched.rows.std <- input.data[match_result == 3L & SOURCE == 'Std_ref' , .N]
+  .QC$thisStudy$flipped.rows.std <- input.data[match_result == 2L & SOURCE == 'Std_ref' , .N]
+
+  # variables that are found in alternate reference file
+  .QC$thisStudy$found.rows.alt <- input.data[match_result != 9L & SOURCE != 'Std_ref' , .N]
+  .QC$thisStudy$switched.rows.alt <- input.data[match_result == 3L & SOURCE != 'Std_ref' , .N]
+  .QC$thisStudy$flipped.rows.alt <- input.data[match_result == 2L & SOURCE != 'Std_ref' , .N]
+
+  # variables that are not found in standard reference file
+  .QC$thisStudy$not.found.rows.std <- nrow(input.data) - .QC$thisStudy$found.rows.std
+
+  # variables that are not found in either standard or alternate reference file
+  .QC$thisStudy$not.found.rows.alt <- nrow(input.data) - .QC$thisStudy$found.rows.std - .QC$thisStudy$found.rows.alt
+
 
 }
 

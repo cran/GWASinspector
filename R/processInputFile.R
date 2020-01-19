@@ -40,14 +40,14 @@ processInputFile <- function(input.data) {
 
 
   #### step 1: checking crucial variables
-  #setkey(input.data,EFFECT_ALL,OTHER_ALL) ##TODO benchmark if key matters
-  input.data.backup  <-  input.data ##a copy of input data is kept for final report (without NA)
-  input.data.backup <- as.data.table(input.data.backup)
 
   column.names <- colnames(input.data)
   .QC$thisStudy$input.data.rowcount <- nrow(input.data)
 
 
+
+  input.data.backup  <-  input.data ##a copy of input data is kept for final report (without NA)
+  input.data.backup <- as.data.table(input.data.backup)
 
   input.data <- tryCatch(processCrucialColumns(input.data), #is in this file
                          error = function(err) {
@@ -56,11 +56,7 @@ processInputFile <- function(input.data) {
                          }
   )
 
-  if(is.null(input.data))
-    return(NULL)
-
-  invisible(gc())
-  ## ------------------------------------------------
+   ## ------------------------------------------------
   #### step 2: saving unusable variants - SNPs with missing or invalid crucial variables
   ## find rows with NA in crucial columns
   ## first 100 is saved
@@ -76,6 +72,19 @@ processInputFile <- function(input.data) {
 
   if(is.null(input.data))
     return(NULL)
+
+  # remove duplicate Marker names and save as separate file
+  input.data <- tryCatch(removeDuplicateVariants(input.data),
+                         error = function(err) {
+                           print.and.log(paste('Error in processing duplicated columns:' , err$message), 'warning')
+                           return(NULL)
+                         }
+  )
+
+  if(is.null(input.data))
+    return(NULL)
+
+  invisible(gc())
 
 
   ##===============================
@@ -149,14 +158,6 @@ processInputFile <- function(input.data) {
                          }
   )
 
-  # remove duplicate Marker names and save as separate file
-  input.data <- tryCatch(removeDuplicateVariants(input.data),
-                         error = function(err) {
-                           print.and.log(paste('Error in processing duplicated columns:' , err$message), 'warning')
-                           return(NULL)
-                         }
-  )
-
 
   ## remove chormosomal snps based on user input
   input.data<-tryCatch(removeChromosomeVariants(input.data), # variantModifierFUnctions.R
@@ -176,7 +177,7 @@ processInputFile <- function(input.data) {
 
   if(remaining.rows == 0)
   {
-    print.and.log('ALL ROWS WERE DELETED IN STEP2 (MONOMORPHIC, DUPLICATE, CHROMOSOME check)! CHECK INPUT FILE FOR DATA INTEGRITY!',
+    print.and.log('ALL ROWS WERE DELETED IN STEP2! CHECK INPUT FILE FOR DATA INTEGRITY!',
                   'warning')
     return(NULL)
   }
@@ -196,20 +197,28 @@ processNonCrucialColumns <- function(input.data) {
   column.names <- colnames(input.data)
 
 
-
-  if('CHR' %in% column.names)
-    input.data <- tryCatch(process.column.CHR(input.data),
-                           error = function(err) {
-                             print.and.log(paste('Error in processing CHR:' , err$message), 'warning')
-                             return(NULL)
-                           }
-    )
+  # THIS HAS BECOME A CRUCIAL COLUMN FOR hID
+  # if('CHR' %in% column.names)
+  #   input.data <- tryCatch(process.column.CHR(input.data),
+  #                          error = function(err) {
+  #                            print.and.log(paste('Error in processing CHR:' , err$message), 'warning')
+  #                            return(NULL)
+  #                          }
+  #   )
 
 
   if('IMPUTED' %in% column.names)
     input.data <- tryCatch(process.column.IMPUTED(input.data),
                            error = function(err) {
                              print.and.log(paste('Error in processing IMPUTED:' , err$message), 'warning')
+                             return(NULL)
+                           }
+    )
+
+  if('MARKER' %in% column.names)
+    input.data <- tryCatch(process.column.MARKER(input.data),
+                           error = function(err) {
+                             print.and.log(paste('Error in processing MARKER:' , err$message), 'warning')
                              return(NULL)
                            }
     )
@@ -280,7 +289,8 @@ processCrucialColumns <- function(input.data) {
   input.data <- process.column.OTHER_ALL(input.data)
   input.data <- process.column.EFFECT(input.data)
   input.data <- process.column.STDERR(input.data)
-  input.data <- process.column.MARKER(input.data)
+ # input.data <- process.column.MARKER(input.data)
+  input.data <- process.column.CHR(input.data)
   input.data <- process.column.POSITION(input.data)
 
   return (input.data)

@@ -12,7 +12,7 @@ compareInputfileWithReferenceData <- function(input.data)
 
 
   ## 2
-  ## check the unknown variants with alternative refernce file
+  ## check the unknown variants with alternative reference file
   ## this refrence file will be empty if is not set by user and this step is automatically skipped
 
   input.data <- tryCatch(compareInputfileWithAlternateReferenceFile(input.data, input.file.colNames),
@@ -130,7 +130,52 @@ compareInputfileWithReferenceFile<-function(input.data)
   input.data[, MULTI_ALLELIC := ifelse(grepl(',',AF),1,0)]
 
   ## get frequency table for multi-allelic variants
-  .QC$thisStudy$tables$multi_allele_count_preProcess <- getMultiAlleleCountTbl(input.data,'AF')
+  ## moved to after step 3
+  ##.QC$thisStudy$tables$multi_allele_count_preProcess <- getMultiAlleleCountTbl(input.data,'AF')
+
+
+  ## TODO the following sectoin is similar to lines 194-234 rSQLiteFunctions.R
+  ## try allele matching on multi-allelic variants
+  # if(is.element('Yes',.QC$thisStudy$tables$multi_allele_count_preProcess$`Multi-allelic`))
+  if(any(input.data$MULTI_ALLELIC == 1, na.rm = TRUE))
+  {
+    input.data[MULTI_ALLELIC == 1,
+               c('ALT','AF') := clean.multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
+               by = list(EFFECT_ALL , OTHER_ALL,REF, ALT,AF)]
+
+    # some multi-allele INDEL AFs are all 0 and will be returned the same way due to missing alleles
+    # e.g. AAC,AA,TT  0,0,0   ==> this AF can be converted to 0
+    #input.data[VT == 2 & MULTI_ALLELIC == 1 &  grepl(',', AF) & all(strsplit(AF,',')[[1]] == "0") , AF := "0" ]
+    input.data[VT == 2 & MULTI_ALLELIC == 1 &  grepl(',', AF) & !grepl('[1-9]',AF) , AF := "0" ]
+
+    ## get frequency table for multi-allelic variants
+    #.QC$thisStudy$tables$multi_allele_count_postProcess <- getMultiAlleleCountTbl(input.data,'AF')
+
+  }
+
+
+
+
+  # AF column may be character type due to remaining ',' => convert to numeric
+  # AF of multi-allelics than could notbe matched are set as NA
+  if(!is.numeric(input.data$AF))
+    input.data[, AF := as.numeric(AF)]
+
+
+  # FIXME do not convert ALT to NA because it is used to count unmatched multiallelic variants
+  #input.data[is.na(AF) , `:=` (REF = NA , ALT = NA)]
+  # input.data[is.na(AF) , REF := NA ]
+
+
+
+
+  ## add column for consistency with table version
+  input.data[,DATE_ADDED := NA ]
+
+  ## add std_ref to found variants
+  input.data[!is.na(REF), SOURCE := 'Std_ref' ]
+
+  # ' REF , ALT , AF , DATE_ADDED , SOURCE' columns are added to input data
 
   return(input.data)
 }
@@ -176,7 +221,7 @@ compareInputfileWithBetaReferenceFile<-function(input.data)
 
 
 
-  # p-value of the variants in refernce dataset is < 0.001
+  # p-value of the variants in reference dataset is < 0.001
   .QC$thisStudy$effect.rho_3 <- signif(cor(matched.data$EFFECT.x ,matched.data$EFFECT.y),4)
 
 

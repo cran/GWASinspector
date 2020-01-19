@@ -22,7 +22,7 @@
 #'
 #' \code{\link{result.inspector}} This function displays a brief report about the results of running the Inspector algorithm on a list of GWAS result files.
 #'
-#' \code{\link{sample.inspector}} This function runs the algorithm on a fabricated GWAS result file. User should only set the output folder for saving the generated files. The input file and reference dataset are embedded in the package.
+#' \code{\link{demo.inspector}} This function runs the algorithm on a fabricated GWAS result file. User should only set the output folder for saving the generated files. The input file and reference dataset are embedded in the package.
 #'
 #' \code{\link{sqlite.db.check}} Displays the summary of a reference database, including how many tables are in the database file, number of data rows for each data table and the first row of each table
 #'
@@ -34,7 +34,7 @@
 #'
 #' \code{\link{compare.GWASs}} Compares result files from different analyses. So, there is no need to re-run the analysis on a result file again.
 #'
-#' \code{\link{man.plot}} Generates the Manhattan plot from a result file. This function has many features that are described in the package tutorial.
+#' \code{\link{manhattan.plot}} Generates the Manhattan plot from a result file. This function has many features that are described in the package tutorial.
 #'
 #'
 #' @docType package

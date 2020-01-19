@@ -12,8 +12,8 @@ calculate.af.correlation.std_ref <- function(input.data) {
   cor.test.rho.all<- signif(cor(input.data[VT == 1 & SOURCE == 'Std_ref']$EFF_ALL_FREQ ,
                                 input.data[VT == 1 & SOURCE == 'Std_ref']$AF),3)
 
-  cor.test.rho.non.palindromic <- signif(cor(input.data[VT == 1 & is.na(palindromic) & SOURCE == 'Std_ref']$EFF_ALL_FREQ ,
-                                             input.data[VT == 1 & is.na(palindromic) & SOURCE == 'Std_ref']$AF),3)
+  cor.test.rho.non.palindromic <- signif(cor(input.data[VT == 1 & palindromic == FALSE & SOURCE == 'Std_ref']$EFF_ALL_FREQ ,
+                                             input.data[VT == 1 & palindromic == FALSE & SOURCE == 'Std_ref']$AF),3)
 
   cor.test.rho.palindromic <- signif(cor(input.data[VT == 1 & palindromic == TRUE  & SOURCE == 'Std_ref']$EFF_ALL_FREQ ,
                                          input.data[VT == 1 & palindromic == TRUE  & SOURCE == 'Std_ref']$AF),3)
@@ -33,7 +33,9 @@ calculate.af.correlation.std_ref <- function(input.data) {
                                             function(x)
                                               c(as.character(x[1]$CHR),round(cor(x$AF,x$EFF_ALL_FREQ),3)))
 
-
+	.QC$thisStudy$AFcor.std_ref.CHR <- as.data.table(.QC$thisStudy$AFcor.std_ref.CHR)
+	.QC$thisStudy$AFcor.std_ref.CHR <- t(.QC$thisStudy$AFcor.std_ref.CHR)
+	colnames(.QC$thisStudy$AFcor.std_ref.CHR) <- c("Chromosome","AF correlation")
 
 }
 
@@ -50,8 +52,8 @@ calculate.af.correlation.alt_ref <- function(input.data) {
   cor.test.rho.all<- signif(cor(input.data[VT == 1 & !is.na(SOURCE) &  SOURCE != 'Std_ref']$EFF_ALL_FREQ ,
                                 input.data[VT == 1 & !is.na(SOURCE) &  SOURCE != 'Std_ref']$AF),3)
 
-  cor.test.rho.non.palindromic <- signif(cor(input.data[VT == 1 & is.na(palindromic) & !is.na(SOURCE) & SOURCE != 'Std_ref']$EFF_ALL_FREQ ,
-                                             input.data[VT == 1 & is.na(palindromic) & !is.na(SOURCE) & SOURCE != 'Std_ref']$AF),3)
+  cor.test.rho.non.palindromic <- signif(cor(input.data[VT == 1 & palindromic == FALSE & !is.na(SOURCE) & SOURCE != 'Std_ref']$EFF_ALL_FREQ ,
+                                             input.data[VT == 1 & palindromic == FALSE & !is.na(SOURCE) & SOURCE != 'Std_ref']$AF),3)
 
   cor.test.rho.palindromic <- signif(cor(input.data[VT == 1 & palindromic == TRUE  & !is.na(SOURCE) & SOURCE != 'Std_ref']$EFF_ALL_FREQ ,
                                          input.data[VT == 1 & palindromic == TRUE  & !is.na(SOURCE) & SOURCE != 'Std_ref']$AF),3)

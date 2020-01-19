@@ -76,15 +76,10 @@ kableExtra::column_spec(2, extra_css='text-align:left')
 													 
 	   "<span class='item'>Monomorphic variants</span>" = sapply(.QC$qc.study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
 	   
-       "<span class='item'>Duplicated variants</span>" = sapply(.QC$qc.study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
 	   "<span class='mainItem'>Variant count after step 2</span>" = sapply(.QC$qc.study.list, function(x) return(calculatePercent(x$rowcount.step2,
                                                       x$input.data.rowcount,
                                                       decimal.place=3,
                                                       pretty = T))),
-	   "<span class='item'>Mismatch variants</span>" = sapply(.QC$qc.study.list, function(x) return(calculatePercent((x$mismatched.rows.std + x$mismatched.rows.alt),
-                                           x$rowcount.step2,
-                                           decimal.place=3,
-                                           pretty=TRUE))),
 	   "<span class='mainItem'>Variant count after step 3</span>" = sapply(.QC$qc.study.list, function(x) return(calculatePercent(x$rowcount.step3,
                                                        x$input.data.rowcount,
                                                        decimal.place=4,
@@ -133,8 +128,8 @@ kableExtra::scroll_box(width = prc)
 
 `
 <br/>
-  <div>step1: removing variants with missing crucial values.</div>
-  <div>step2: removing monomorphic, duplicated and chromosomal variants.</div>
+  <div>step1: removing variants with missing crucial values and duplicated lines.</div>
+  <div>step2: removing monomorphic variants and specified chromosomes.</div>
   <div>step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.</div>
 
 

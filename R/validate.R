@@ -120,7 +120,7 @@ validate.Inspector <- function(object, printWarnings = TRUE)
 
   ##       WARNINGS
   if(object@output_parameters$save_final_dataset == FALSE)
-    warnings <- c(warnings, "Cleaned output file will not be saved.")
+    warnings <- c(warnings, "Cleaned result file will not be saved.")
 
   if(object@plot_specs$make_plots == FALSE)
     warnings <- c(warnings, "Plots are skipped.")

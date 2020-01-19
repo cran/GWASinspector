@@ -190,7 +190,7 @@ create.xlsx.report <- function(config,study.list){
     sapply(study.list, function(x) return(format(x$rowcount.step2, big.mark="," , scientific = FALSE))),
     sapply(study.list, function(x) return(format(x$rowcount.step3, big.mark="," , scientific = FALSE))),
     sapply(study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
-    sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
+    #sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[1,2]),x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[2,2]),x$rowcount.step3,pretty=TRUE))),
@@ -227,7 +227,7 @@ create.xlsx.report <- function(config,study.list){
                               'Variant count after step 2 **',
                               'Variant count after step 3 ***',
                               'Monomorphic',
-                              'Duplicates',
+#/	'Duplicates',
                               'Palindromics',
                               'Genotyped variants',
                               'Imputed variants',
@@ -267,10 +267,10 @@ create.xlsx.report <- function(config,study.list){
                      rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
 
 
-  xlsx.addTitle(sheet3, rowIndex= 40, title="step1: removing variants with missing crucial values.",
+  xlsx.addTitle(sheet3, rowIndex= 40, title="step1: removing variants with missing crucial values and duplicated lines.",
                 titleStyle = NOTE_TITLE_STYLE2)
 
-  xlsx.addTitle(sheet3, rowIndex= 41, title="step2: removing monomorphic, duplicated and chromosomal variants.",
+  xlsx.addTitle(sheet3, rowIndex= 41, title="step2: removing monomorphic variants and specified chromosomes.",
                 titleStyle = NOTE_TITLE_STYLE2)
 
   xlsx.addTitle(sheet3, rowIndex= 42, title="step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.",
@@ -295,15 +295,16 @@ create.xlsx.report <- function(config,study.list){
 
     # introduction
     tbl <- t(data.table(
-      basename(study$file.path),
-      study$file.line.count,
       format(study$starttime, "%b %d %Y - %X"),
-      format(study$endtime, "%b %d %Y - %X")))
+      format(study$endtime, "%b %d %Y - %X"),
+      basename(study$file.path),
+      study$file.line.count))
 
-    tbl<- cbind(c('Input File Name',
-                  'Input File Line Count (including header)',
-                  'Start time',
-                  'End time'), tbl)
+    tbl<- cbind(c('Start time',
+                  'End time',
+                  'Input File Name',
+                  'Input File Line Count (including header)'), tbl)
+
 
     row.index <- row.index + 2 # 3
     xlsx::addDataFrame(tbl, fileSheet, startRow = row.index , startColumn=1,
@@ -313,10 +314,25 @@ create.xlsx.report <- function(config,study.list){
     #
 
     row.index <- row.index + 6 #
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title='Column report',
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title='Column names and translation',
                   titleStyle = SUB_TITLE_STYLE)
 
 
+    column.tbl <- rbind(.QC$thisStudy$original.File.Columns.sorted,
+                        .QC$thisStudy$renamed.File.Columns.sorted)
+    rownames(column.tbl) <- c('Original', 'Renamed')
+
+    row.index <- row.index + 2 # 3
+    xlsx::addDataFrame(t(column.tbl), fileSheet, startRow = row.index , startColumn=1,
+                       colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
+                       rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = TRUE)
+
+
+
+   #
+    row.index <- row.index + ncol(column.tbl) + 2
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title='Column report',
+                  titleStyle = SUB_TITLE_STYLE)
 
     b <- t(data.frame('CHR' = c(abs(study$column.NA.list$CHR - study$column.INVALID.list$CHR) ,
                                 study$column.INVALID.list$CHR,
@@ -335,7 +351,8 @@ create.xlsx.report <- function(config,study.list){
                                       ' '),
 
                       'EFFECT' = c(abs(study$column.NA.list$EFFECT - study$column.INVALID.list$EFFECT) ,
-                                   study$column.INVALID.list$EFFECT,
+                                  # study$column.INVALID.list$EFFECT,
+                                   ' ',
                                    ' '),
 
                       'STDERR' = c(abs(study$column.NA.list$STDERR - study$column.INVALID.list$STDERR - study$column.INVALID.list$zero.STDERR) ,
@@ -363,7 +380,8 @@ create.xlsx.report <- function(config,study.list){
                                         ' '),
 
                       'MARKER' = c(abs(study$column.NA.list$MARKER - study$column.INVALID.list$MARKER) ,
-                                   study$column.INVALID.list$MARKER,
+                                  # study$column.INVALID.list$MARKER,
+                                   ' ',
                                    ' '),
 
                       'N_TOTAL' = c(abs(study$column.NA.list$N_TOTAL - study$column.INVALID.list$N_TOTAL) ,
@@ -393,16 +411,16 @@ create.xlsx.report <- function(config,study.list){
 
     row.index <- row.index + 19 # 8
 
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant Counts",
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant processing",
                   titleStyle = SUB_TITLE_STYLE)
 
 
     row.index <- row.index + 1 # 9
-    xlsx.addTitle(fileSheet, rowIndex=row.index, title="step1: removing variants with missing crucial values.",
+    xlsx.addTitle(fileSheet, rowIndex=row.index, title="step1: removing variants with missing crucial values and duplicated lines.",
                   titleStyle = NOTE_TITLE_STYLE2)
 
     row.index <- row.index + 1 # 10
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="step2: removing monomorphic, duplicated and chromosomal variants.",
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title="step2: removing monomorphic variants and specified chromosomes.",
                   titleStyle = NOTE_TITLE_STYLE2)
 
     row.index <- row.index + 1 # 11
@@ -412,6 +430,9 @@ create.xlsx.report <- function(config,study.list){
 
     tbl <- t(data.table(
       format(study$input.data.rowcount, big.mark="," , scientific = FALSE),
+      calculatePercent(study$duplicate.count,
+                       study$input.data.rowcount,
+                       pretty = TRUE),
       calculatePercent(study$missing.crucial.rowcount,
                        study$input.data.rowcount,
                        pretty = TRUE),
@@ -420,9 +441,6 @@ create.xlsx.report <- function(config,study.list){
                        decimal.place=3,
                        pretty = TRUE),
       calculatePercent(study$monomorphic.count,
-                       study$input.data.rowcount,
-                       pretty = TRUE),
-      calculatePercent(study$duplicate.count,
                        study$input.data.rowcount,
                        pretty = TRUE),
       calculatePercent(study$rowcount.step2,
@@ -437,10 +455,10 @@ create.xlsx.report <- function(config,study.list){
 
 
     tbl<- cbind(c(   "input variant count",
+                     'Duplicated variants',
                      'Missing crucial variable',
                      "variant count after step 1 *",
                      'Monomorphic variants',
-                     'Duplicated variants',
                      "variant count after step 2 **",
                      "variant count after step 3 ***"),tbl)
 
@@ -479,11 +497,11 @@ create.xlsx.report <- function(config,study.list){
       calculatePercent(study$palindormicHighDiffEAF,
                        study$palindromic.rows,
                        pretty = TRUE),
-      calculatePercent(study$palindormicExtremeDiffEAF ,
-                       study$palindromic.rows,
-                       pretty = TRUE),
       calculatePercent(study$nonpalindormicHighDiffEAF ,
                        study$non.palindromic.rows,
+                       pretty = TRUE),
+      calculatePercent(study$palindormicExtremeDiffEAF ,
+                       study$palindromic.rows,
                        pretty = TRUE)
     ))
 
@@ -509,13 +527,14 @@ create.xlsx.report <- function(config,study.list){
                   titleStyle = NOTE_TITLE_STYLE)
 
     row.index <- row.index + 1 # 32
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title='++ palindromic variants with opposite allele frequency "compared to the reference" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)',
-                  titleStyle = NOTE_TITLE_STYLE)
-
-    row.index <- row.index + 1 # 33
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title=sprintf('+++ Non-palindromic variants with high allele frequency difference (> %s)',
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title=sprintf('++ Non-palindromic variants with high allele frequency difference (> %s)',
                                                                 config$filters$threshold_diffEAF),
                   titleStyle = NOTE_TITLE_STYLE)
+
+	row.index <- row.index + 1 # 33
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title='+++ palindromic variants with opposite allele frequency "compared to the reference" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)',
+                  titleStyle = NOTE_TITLE_STYLE)
+
 
 
     ### indel-snp type
@@ -554,17 +573,17 @@ create.xlsx.report <- function(config,study.list){
                        study$rowcount.step2,
                        decimal.place=3,
                        pretty=TRUE),
-      calculatePercent(study$mismatched.rows.std,
-                       study$found.rows.std,
-                       decimal.place=3,
-                       pretty=TRUE),
-      calculatePercent(study$multiAlleleVariants.rowcount,
-                       study$found.rows.std,
-                       decimal.place=3,
-                       pretty=TRUE),
-      calculatePercent(study$ambiguos.rows,
-                       study$found.rows.std,
-                       pretty=TRUE),
+      # calculatePercent(study$mismatched.rows.std,
+      #                  study$found.rows.std,
+      #                  decimal.place=3,
+      #                  pretty=TRUE),
+      # calculatePercent(study$multiAlleleVariants.rowcount,
+      #                  study$found.rows.std,
+      #                  decimal.place=3,
+      #                  pretty=TRUE),
+      # calculatePercent(study$ambiguos.rows,
+      #                  study$found.rows.std,
+      #                  pretty=TRUE),
       calculatePercent(study$flipped.rows.std,
                        study$found.rows.std,
                        pretty=TRUE),
@@ -578,11 +597,11 @@ create.xlsx.report <- function(config,study.list){
     ))
 
     tbl <- cbind(c(
-      'Found variants',
+      'Verified variants',
       'Not-found variants',
-      'Mismatch variants',
-      'Non-verified multiallelic variants',
-      'Ambiguous variants',
+      # 'Mismatch variants',
+      # 'Non-verified multiallelic variants',
+      # 'Ambiguous variants',
       'Flipped variants',
       'Switched variants',
       'Allele frequency correlation (all variants)',
@@ -602,7 +621,7 @@ create.xlsx.report <- function(config,study.list){
 
     if(!is.na(config$supplementaryFiles$allele_ref_alt))
     {
-      row.index <- row.index + 13 # 47
+      row.index <- row.index + 10 # 47
       xlsx.addTitle(fileSheet, rowIndex= row.index, title="Result from matching with alternative reference file",
                     titleStyle = SUB_TITLE_STYLE)
 
@@ -615,10 +634,10 @@ create.xlsx.report <- function(config,study.list){
                          study$not.found.rows.std,
                          decimal.place=3,
                          pretty=TRUE),
-        calculatePercent(study$mismatched.rows.alt,
-                         study$found.rows.alt,
-                         decimal.place=3,
-                         pretty=TRUE),
+        # calculatePercent(study$mismatched.rows.alt,
+        #                  study$found.rows.alt,
+        #                  decimal.place=3,
+        #                  pretty=TRUE),
         calculatePercent(study$flipped.rows.alt,
                          study$found.rows.alt,
                          pretty=TRUE),
@@ -631,9 +650,9 @@ create.xlsx.report <- function(config,study.list){
       ))
 
       tbl <- cbind(c(
-        'Found variants',
+        'Verified variants',
         'Not-found variants',
-        'Mismatch variants',
+        # 'Mismatch variants',
         'Flipped variants',
         'Switched variants',
         'Allele frequency correlation (all variants)',
@@ -650,8 +669,22 @@ create.xlsx.report <- function(config,study.list){
     }
     #
 
-    row.index <- row.index + 12 # 58
-    xlsx.addTitle(fileSheet, rowIndex = row.index, title="Calculated variables",
+    row.index <- row.index + 11 # 58
+    xlsx.addTitle(fileSheet, rowIndex = row.index, title="AF correlation for each chromosome",
+                  titleStyle = SUB_TITLE_STYLE)
+    row.index <- row.index + 1 # 48
+
+
+
+    xlsx::addDataFrame(study$AFcor.std_ref.CHR , fileSheet, startRow= row.index, startColumn=1,
+                       col.names = TRUE ,row.names = FALSE,
+                       colnamesStyle = TABLE_COLNAMES_STYLE,
+                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+
+
+    #
+    row.index <- row.index + nrow(study$AFcor.std_ref.CHR) + 2
+    xlsx.addTitle(fileSheet, rowIndex = row.index, title="QC summary statistics",
                   titleStyle = SUB_TITLE_STYLE)
 
     tbl <- t(data.table(
@@ -704,7 +737,7 @@ create.xlsx.report <- function(config,study.list){
     # variable summary statistics
 
     row.index <- row.index + 19 # 78
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant Summary Statistics",
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Distribution statistics",
                   titleStyle = SUB_TITLE_STYLE)
 
     row.index <- row.index + 2 # 80
@@ -722,7 +755,7 @@ create.xlsx.report <- function(config,study.list){
 
 
     row.index <- row.index + 10 # 88
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Chromosome variant count",
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant count for each chromosome",
                   titleStyle = SUB_TITLE_STYLE)
 
 
@@ -731,7 +764,7 @@ create.xlsx.report <- function(config,study.list){
     chr.tbl.length <- 0
     if(!is.na(study$tables$CHR.tbl))
     {
-      chr.tbl = study$tables$CHR.tbl
+      chr.tbl <-  study$tables$CHR.tbl
       colnames(chr.tbl) <- c('Chromosome Number','Variant Count')
       chr.tbl.length <- nrow(chr.tbl)
 
@@ -743,8 +776,8 @@ create.xlsx.report <- function(config,study.list){
     }
 
     ###
-    row.index <- row.index + chr.tbl.length + 3 #
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Effect allele distribution",
+    row.index <- row.index + nrow(chr.tbl) + 3 #
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Effect allele distribution in SNP variants",
                   titleStyle = SUB_TITLE_STYLE)
 
 
@@ -766,7 +799,7 @@ create.xlsx.report <- function(config,study.list){
 
     ###
     row.index <- row.index + 6 #
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Other allele distribution",
+    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Other allele distribution in SNP variants",
                   titleStyle = SUB_TITLE_STYLE)
 
 

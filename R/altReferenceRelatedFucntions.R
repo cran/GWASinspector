@@ -185,7 +185,7 @@ save.alternate.reference <- function()
     saveDataSet(dataset = .QC$alt.reference.data,
                 file.path = .QC$config$supplementaryFiles$allele_ref_alt,
                 zipped = FALSE,
-                order = FALSE)
+				ordered = FALSE)
   }else if(file.extension == "rdata"){
     # save function can not save part of environment
     # and should be presented as a new object
@@ -201,7 +201,7 @@ save.alternate.reference <- function()
     saveDataSet(dataset = .QC$alt.reference.data,
                 file.path = .QC$config$supplementaryFiles$allele_ref_alt,
                 zipped = TRUE,
-                order = FALSE)
+				ordered = FALSE)
   }
 
 

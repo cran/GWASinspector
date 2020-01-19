@@ -79,7 +79,7 @@ process.column.EFFECT_ALL<- function(input.data){
   ## convert empty strings to NA
   input.data[trimws(EFFECT_ALL) == '' , EFFECT_ALL := NA]
 
-  invalid.items <- which(!is.na(input.data$EFFECT_ALL) & !grepl(pattern = '^[0ATCGIDR9-]+', x = input.data$EFFECT_ALL ,perl = TRUE))
+  invalid.items <- which(!is.na(input.data$EFFECT_ALL) & !grepl(pattern = '^[0ATCGIDR9-]+$', x = input.data$EFFECT_ALL ,perl = TRUE))
 
   .QC$thisStudy$column.INVALID.list$EFFECT_ALL <- invalid.items
 
@@ -93,7 +93,7 @@ process.column.EFFECT_ALL<- function(input.data){
   if(any(is.element(input.data$EFFECT_ALL,c('D','I','-','0','R'))))
   {
     .QC$thisStudy$hanNoneBaseAlleles <- TRUE
-    print.and.log('Input file has none base character for INDEL variants!','warning',display=.QC$config$debug$verbose)
+    print.and.log('Result file has none base character for alleles!','warning',display=.QC$config$debug$verbose)
   }
 
   return(input.data)
@@ -105,7 +105,7 @@ process.column.OTHER_ALL<- function(input.data){
   ## convert empty strings to NA
   input.data[trimws(OTHER_ALL) == '' , OTHER_ALL := NA]
 
-  invalid.items <- which(!is.na(input.data$OTHER_ALL) & !grepl(pattern = '^[0ATCGIDR9-]+', x = input.data$OTHER_ALL ,perl = TRUE))
+  invalid.items <- which(!is.na(input.data$OTHER_ALL) & !grepl(pattern = '^[0ATCGIDR9-]+$', x = input.data$OTHER_ALL ,perl = TRUE))
 
   .QC$thisStudy$column.INVALID.list$OTHER_ALL <- invalid.items
 
@@ -262,15 +262,15 @@ process.column.EFFECT<- function(input.data){
 
 
 
-
-  invalid.items <- which(input.data$EFFECT == -1 &
-                           (input.data$PVALUE == -1 | input.data$STDERR == -1))
-
-  .QC$thisStudy$column.INVALID.list$EFFECT <- invalid.items
-
-  if(length(invalid.items) > 0){
-    input.data[invalid.items, EFFECT := NA]
-  }
+  # EFFECT = -1 is not invalid anymore in recent analysis
+  # invalid.items <- which(input.data$EFFECT == -1 &
+  #                          (input.data$PVALUE == -1 | input.data$STDERR == -1))
+  #
+  # .QC$thisStudy$column.INVALID.list$EFFECT <- invalid.items
+  #
+  # if(length(invalid.items) > 0){
+  #   input.data[invalid.items, EFFECT := NA]
+  # }
 
   .QC$thisStudy$column.NA.list$EFFECT <- which(is.na(input.data$EFFECT))
 

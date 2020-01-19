@@ -128,7 +128,7 @@ finalReport.to.txt.file <- function(config,study.list)
     'Variant count after step 2 **' = sapply(study.list, function(x) return(x$rowcount.step2)),
     'Variant count after step 3 ***' = sapply(study.list, function(x) return(x$rowcount.step3)),
     'Monomorphic' = sapply(study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
-    'Duplicates' = sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
+#/	'Duplicates' = sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
     'Palindromics' = sapply(study.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),
     'Genotyped variants' = sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[1,2]),x$rowcount.step3,pretty=TRUE))),
     'Imputed variants' = sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[2,2]),x$rowcount.step3,pretty=TRUE))),
@@ -164,7 +164,7 @@ finalReport.to.txt.file <- function(config,study.list)
 
   writeFileComparisonTXTreport(' ')
   writeFileComparisonTXTreport('* step1: removing variants with missing crucial values.')
-  writeFileComparisonTXTreport('** step2: removing monomorphic, duplicated and chromosomal variants.')
+  writeFileComparisonTXTreport('** step2: removing monomorphic or duplicated variants, and specified chromosomes.')
   writeFileComparisonTXTreport('*** step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.')
 
 

@@ -1,16 +1,14 @@
 example.config <- function(result.dir, config)
 {
-  message('This is a example run for GWASinspector algorithm which is based on a sample fabricated GWAS result file.')
-  message('New folder will be created for saving sample output files in your active directory.')
-  message('You can check the log file for further information.')
+  message('This is a demo run for GWASinspector package.')
 
-  # Sys.sleep(3)
+   Sys.sleep(2)
 
 
   # remove the trailing backslash from path
   result.dir <- gsub('/+$', '' , result.dir)
 
-  new.dir <- paste(result.dir,'example_output',sep = '/')
+  new.dir <- paste(result.dir,'GWASinspector_demo',sep = '/')
   create.new.dir <- NULL
   create.new.dir <- tryCatch({
     if (!dir.exists(new.dir))
@@ -30,7 +28,7 @@ example.config <- function(result.dir, config)
   config$paths$dir_references <- extdata.path
   config$paths$dir_output <- new.dir
 
-  config$paths$filename <- file.path( config$paths$dir_data,'sample.txt.gz')
+  config$paths$filename <- file.path( config$paths$dir_data,'demo.txt.gz')
 
 
   config$supplementaryFiles$header_translations <- file.path(config$paths$dir_references ,'alt_headers.txt')
@@ -38,9 +36,12 @@ example.config <- function(result.dir, config)
   config$supplementaryFiles$allele_ref_std_population <- 'common'
 
   config$output_parameters$object_file <- FALSE
+  config$output_parameters$add_column_multiallelic <- FALSE
+  config$output_parameters$add_column_AFmismatch <- FALSE
+  config$output_parameters$ordered <- FALSE
 
   config$plot_specs$plot_cutoff_p <- 0.2
-  config$plot_specs$plot_title <- 'Example Run'
+  config$plot_specs$plot_title <- 'demo'
 
 
   config$input_parameters$effect_type_string <- "BETA"

@@ -13,15 +13,15 @@ saveDataSet <- function(dataset,
                         naValue = "NA",
                         decValue = '.',
                         zipped = FALSE,
-                        order = TRUE)
+                        ordered = FALSE)
 {
 
   # ORDER THE  output rows on CHR-position
   # order on RS number if CHR is not present
-  if(order){
-    if(is.element('CHR', colnames(dataset)))
+  if(ordered == TRUE){
+    if(is.element('CHR', colnames(dataset)) && is.element('POSITION', colnames(dataset)) )
       dataset <- dataset[order(CHR,POSITION)]
-    else
+    else if(is.element('MARKER', colnames(dataset)))
       dataset <- dataset[order(MARKER)]
   }
 
@@ -93,11 +93,15 @@ saveDataSet.final<-function(dataset)
 
     requiredColNames <- .QC$thisStudy$renamed.File.Columns.sorted
 
-    if(is.element('MULTI_ALLELIC',names(dataset)))
+    if(is.element('MULTI_ALLELIC',names(dataset)) && config$output_parameters$add_column_multiallelic == TRUE)
       requiredColNames <- c(requiredColNames,'MULTI_ALLELIC')
 
-    if(is.element('highDiffEAF',names(dataset)))
+    if(is.element('highDiffEAF',names(dataset)) && config$output_parameters$add_column_AFmismatch == TRUE)
       requiredColNames <- c(requiredColNames,'highDiffEAF')
+    # {
+    #   dataset[, highDiffEAF := as.numeric(highDiffEAF) ]
+    #   dataset[is.na(highDiffEAF), highDiffEAF := 0]
+    # }
 
 
     dataset <- subset(dataset ,
@@ -155,7 +159,8 @@ saveDataSet.final<-function(dataset)
                 columnSeparator = config$output_parameters$out_sep,
                 naValue = config$output_parameters$out_na,
                 decValue = config$output_parameters$out_dec,
-                zipped = config$output_parameters$gzip_final_dataset)
+                zipped = config$output_parameters$gzip_final_dataset,
+				ordered = .QC$config$output_parameters$ordered)
   }else{
     print.and.log('Saving final dataset is skipped!','warning',display=.QC$config$debug$verbose)
   }
@@ -226,7 +231,8 @@ save.NA.Dataset <- function(input.data,input.data.backup) {
                 .QC$thisStudy$SNPs_improbable_values.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
 
   }
 }
@@ -253,7 +259,8 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
                 file.path = .QC$thisStudy$SNPs_invalid.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
   }
 
   ## find rows with NA in allele columns
@@ -310,7 +317,8 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
                 file.path = .QC$thisStudy$SNPs_removed.path,
                 columnSeparator = .QC$config$output_parameters$out_sep,
                 naValue = .QC$config$output_parameters$out_na,
-                decValue = .QC$config$output_parameters$out_dec)
+                decValue = .QC$config$output_parameters$out_dec,
+				ordered = .QC$config$output_parameters$ordered)
   }
 
   ## 3
@@ -342,7 +350,8 @@ save.significant.variants <- function(input.data) {
 
   saveDataSet(sig.variants,
               .QC$thisStudy$SNPs_significant.path,
-              columnSeparator = .QC$config$output_parameters$out_sep)
+              columnSeparator = .QC$config$output_parameters$out_sep,
+				ordered = .QC$config$output_parameters$ordered)
 
 }
 

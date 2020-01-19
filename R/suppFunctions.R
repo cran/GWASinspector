@@ -11,7 +11,7 @@ not <- is.na
 ## TODO multicharacter alleles e.g.  'TCC' => 'AGG'
 switch.allele<-function(allele)
 {
-  switched.allele<-switch(allele,
+  switched.allele<-switch(as.character(allele),
                           'A'='T',
                           'T'='A',
                           'C'='G',
@@ -32,11 +32,16 @@ switch.allele.vectorized<-function(allele)
   return(switched.allele)
 }
 
-switch.alleles <- function(allele)
+switch.alleles.vectorized<-function(allele)
 {
-  allele <- strsplit(allele,'')
-  paste(sapply(allele,switch.allele), collapse = '')
+
+  ifelse(nchar(allele) == 1,
+         switch.allele.vectorized(allele), ## SNPs
+         paste(sapply(strsplit(allele,''), switch.allele.vectorized),collapse = "")) # IN/DELs
+
 }
+
+
 
 ############
 
@@ -262,14 +267,14 @@ clean.multi_alleles <- function(A1,A2,REF,ALT,AF)
         variant <- tbl[allele == A1,]
         output <- list(variant$allele, variant$freqs)
       }
-      else if (A1 == switch.allele(REF) && is.element(switch.allele(A2),tbl$allele)) # flipped and switched variants
+      else if (A1 == switch.alleles.vectorized(REF) && is.element(switch.alleles.vectorized(A2),tbl$allele)) # flipped and switched variants
       {
-        variant <- tbl[allele == switch.allele(A2),]
+        variant <- tbl[allele == switch.alleles.vectorized(A2),]
         output <- list(variant$allele, variant$freqs)
       }
-      else if(A2 == switch.allele(REF) && is.element(switch.allele(A1),tbl$allele)) # switched variants
+      else if(A2 == switch.alleles.vectorized(REF) && is.element(switch.alleles.vectorized(A1),tbl$allele)) # switched variants
       {
-        variant <- tbl[allele == switch.allele(A1),]
+        variant <- tbl[allele == switch.alleles.vectorized(A1),]
         output <- list(variant$allele, variant$freqs)
       }
 
@@ -284,7 +289,7 @@ clean.multi_alleles <- function(A1,A2,REF,ALT,AF)
 }
 
 
-getMultiAlleleCountTbl <- function(input.data, column) {
+getMultiAlleleCountTbl <- function(input.data) {
 
   tbl <- input.data[,.N, keyby=.(VT,is.na(REF), MULTI_ALLELIC)]
 
@@ -295,7 +300,7 @@ getMultiAlleleCountTbl <- function(input.data, column) {
     'Multi-allelic SNP' =  ifelse(length(tbl[VT == 1 & !(is.na) & MULTI_ALLELIC,N]) == 0 ,
                                   '0' ,
                                   format(tbl[VT == 1 & !(is.na) & MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
-    'Unfound SNPs in standard reference dataset' =  ifelse(length(tbl[VT == 1 & (is.na) ,N]) == 0 ,
+    'SNPs not found in standard reference dataset' =  ifelse(length(tbl[VT == 1 & (is.na) ,N]) == 0 ,
                                   '0' ,
                                   format(tbl[VT == 1 & (is.na),N],big.mark = ',',scientific = FALSE)),
     'Bi-allelic INDEL' = ifelse(length(tbl[VT == 2 & !(is.na) & !MULTI_ALLELIC,N]) == 0 ,
@@ -304,7 +309,7 @@ getMultiAlleleCountTbl <- function(input.data, column) {
     'Multi-allelic INDEL' =  ifelse(length(tbl[VT == 2 & !(is.na) & MULTI_ALLELIC,N]) == 0 ,
                                     '0' ,
                                     format(tbl[VT == 2 & !(is.na) & MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
-    'Unfound INDELs in standard reference dataset' =  ifelse(length(tbl[VT == 2 & (is.na) ,N]) == 0 ,
+    'INDELs not found in standard reference dataset' =  ifelse(length(tbl[VT == 2 & (is.na) ,N]) == 0 ,
                                    '0' ,
                                    format(tbl[VT == 2 & (is.na) ,N],big.mark = ',',scientific = FALSE))
   ))

@@ -92,7 +92,10 @@ Inspector <- setClass(
       out_na = NA,
       out_dec = ".",
       html_report = TRUE,
-      object_file = TRUE
+      object_file = TRUE,
+      add_column_multiallelic = FALSE,
+      add_column_AFmismatch = FALSE,
+	  ordered = FALSE
     ),
     remove_chromosomes = list(
       remove_X = FALSE,
@@ -248,15 +251,15 @@ setMethod(
     cat("\n\tSelected population:\t", object@supplementaryFiles$allele_ref_std_population)
 
     if (!is.na(object@supplementaryFiles$allele_ref_alt)) {
-      cat("\n\talternate allele reference:\t", basename(object@supplementaryFiles$allele_ref_alt))
+      cat("\n\tAlternate allele reference:\t", basename(object@supplementaryFiles$allele_ref_alt))
     }
     if (!is.na(object@supplementaryFiles$beta_ref_std)) {
-      cat("\n\tBeta reference:\t", basename(object@supplementaryFiles$beta_ref_std))
+      cat("\n\tEffect-size reference:\t", basename(object@supplementaryFiles$beta_ref_std))
     }
 
 
     cat("\n\n   Input parameters")
-    cat("\n\tcolumn separator:\t", gsub(x = object@input_parameters$column_separator, pattern = "	", replacement = "\t", fixed = T))
+    cat("\n\tColumn separator:\t", gsub(x = object@input_parameters$column_separator, pattern = "	", replacement = "\\t", fixed = T))
     cat("\n\tNA string:\t", object@input_parameters$na.string)
     cat("\n\tImputed string:\t", object@input_parameters$imputed_T)
     cat("\n\tNon-imputed string:\t", object@input_parameters$imputed_F)
@@ -264,18 +267,22 @@ setMethod(
 
 
     cat("\n\n   Output parameters")
-    cat("\n\tSave an output clean file:\t", object@output_parameters$save_final_dataset)
-    cat("\n\tCompressing the result file :\t", object@output_parameters$gzip_final_dataset)
+    cat("\n\tSave cleaned result files:\t", object@output_parameters$save_final_dataset)
+    if(object@output_parameters$save_final_dataset == TRUE)
+      cat("\n\tCompress the result file :\t", object@output_parameters$gzip_final_dataset)
     cat("\n\tResult file header:\t", object@output_parameters$out_header)
-    cat("\n\tColumn separator:\t", gsub(x = "\t", pattern = "	", replacement = "\t", fixed = T))
+    cat("\n\tColumn separator:\t", gsub(x = object@output_parameters$out_sep, pattern = "	", replacement = "\\t", fixed = T))
     cat("\n\tDecimal value:\t", object@output_parameters$out_dec)
     cat("\n\tNA string:\t", object@output_parameters$out_na)
     cat("\n\tSaving Html report file:\t", object@output_parameters$html_report)
     cat("\n\tSaving study object file:\t", object@output_parameters$object_file)
+    cat("\n\tMarking multi-allelic variants:\t", object@output_parameters$add_column_multiallelic)
+    cat("\n\tMarking variants with high AF difference:\t", object@output_parameters$add_column_AFmismatch)
+    cat("\n\tOrdering variants on chromosome:position combination:\t", object@output_parameters$add_column_AFmismatch)
 
 
 
-    cat("\n\n   Remove chromosome variants")
+    cat("\n\n   Removing specified chromosomes")
     cat("\n\tX:\t", object@remove_chromosomes$remove_X)
     cat("\n\tY:\t", object@remove_chromosomes$remove_Y)
     cat("\n\tXY:\t", object@remove_chromosomes$remove_XY)
@@ -303,7 +310,7 @@ setMethod(
     cat("\n\tHWE P_value threshold for HQ variants:\t", object@filters$HQfilter_HWE)
     cat("\n\tCall rate threshold for HQ variants:\t", object@filters$HQfilter_cal)
     cat("\n\tImp. qual. threshold for HQ variants:\t", object@filters$HQfilter_imp)
-    cat("\n\tthreshold for the difference between reported and reference AF:\t", object@filters$threshold_diffEAF)
+    cat("\n\tThreshold for the difference between reported and reference AF:\t", object@filters$threshold_diffEAF)
     cat("\n\tMinimal possible Imp. qual. :\t", object@filters$minimal_impQ_value)
     cat("\n\tMaximal possible Imp. qual. :\t", object@filters$maximal_impQ_value)
 

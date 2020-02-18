@@ -16,7 +16,6 @@ importFrom("stats", "complete.cases", "cor", "median", "na.omit",
 importFrom("utils", "data", "head", "installed.packages", "menu",
              "modifyList", "packageVersion", "read.table",
              "setTxtProgressBar", "txtProgressBar", "write.table")
-
 export(setup.inspector)
 export(run.inspector)
 export(result.inspector)

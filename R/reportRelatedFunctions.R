@@ -665,7 +665,7 @@ report.to.txt.file <- function(study) {
 
   ### chromosome table
 
-  if(!is.na(study$tables$CHR.tbl))
+  if(!all(is.na(study$tables$CHR.tbl)))
   {
     writeTXTreport(' ')
     writeTXTreport('Variant count for each chromosome')

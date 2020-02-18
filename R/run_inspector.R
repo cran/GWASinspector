@@ -248,8 +248,9 @@ run.inspector <- function(inspector, test.run=FALSE)
   # remove refrence and alt reference data from RAM
   # remove effect plot of each study from RAM
   # ===========================
-  if(exists("reference.data",envir = .QC) && class(.QC$reference.data) == "SQLiteConnection")
-    RSQLite::dbDisconnect(.QC$reference.data)
+  if(exists("reference.data",envir = .QC))
+    if(is(.QC$reference.data, "SQLiteConnection"))
+      RSQLite::dbDisconnect(.QC$reference.data)
 
   rm(reference.data , envir = .QC)
   rm(alt.reference.data , envir = .QC)

@@ -4,9 +4,9 @@
 #' Although the optional packages do not contribute to the QC itself, having them available
 #' will allow for Excel and HTML formatted log files, which are easier to read and interpret.
 #'
-#'
 #' @return System information and required functionalities for the QC algorithm are checked and reported as a data frame.
-#' @examples system.check()
+#' @examples
+#' system.check()
 #'
 system.check <- function()
 {
@@ -43,17 +43,6 @@ system.check <- function()
   # function modified according to CRAN comments
   # returns the table instead of printing it
   return(rbind(tbl,cap))
-
-  # # ==
-  # print(knitr::kable(rbind(tbl,cap),format='rst'))
-  #
-  # # ==
-  # if(.QC$java.exists){
-  #   jav <- data.frame(system('java -version',intern = TRUE))
-  #   print(knitr::kable(jav,format='rst',col.names = 'java'))
-  # }
-  # else
-  #   message('\nWarning: java not found on system!\n')
 
 
 }

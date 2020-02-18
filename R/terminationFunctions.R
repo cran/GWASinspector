@@ -16,29 +16,26 @@ removeFunctionVariablesFromRAM<-function(){
 
   print.and.log('cleaning workspace...','info')
 
-  if(exists("reference.data",envir = .QC) &&  class(.QC$reference.data) == "SQLiteConnection")
-    RSQLite::dbDisconnect(.QC$reference.data)
+  if(exists("reference.data",envir = .QC))
+    if(is(.QC$reference.data, "SQLiteConnection"))
+      RSQLite::dbDisconnect(.QC$reference.data)
 
 
   rm(.QC)
-  # rm(list = ls(envir = .QC))
 
-  # if(!is.null(dev.list()))
-  #   invisible(dev.off(dev.list()))
-
-  dev.close.result <- tryCatch({
-      invisible(graphics.off())
-      invisible(dev.off())
-      return(TRUE)
-    },
-    error = function(err){
-      return(FALSE)
-    }
- )
-
-
-  if(dev.close.result)
-    print.and.log('Graphic devices are closed.','info')
+ #  dev.close.result <- tryCatch({
+ #      invisible(graphics.off())
+ #      while (!is.null(grDevices::dev.list()))  grDevices::dev.off()
+ #      return(TRUE)
+ #    },
+ #    error = function(err){
+ #      return(FALSE)
+ #    }
+ # )
+ #
+ #
+ #  if(dev.close.result)
+ #    print.and.log('Graphic devices are closed.','info')
 
 
   invisible(gc()) ## Free RAM

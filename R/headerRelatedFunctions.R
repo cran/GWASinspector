@@ -127,7 +127,7 @@ checkRequiredColumnNames <- function(inputFile, study){
 
   ## check if file already has an EFFECT column. this is problematic and can not be continued
   if(is.element('EFFECT',original.File.Columns.upper))
-    print.and.log('EFFECT header name should be translated or replaced!'
+    print.and.log('Column EFFECT will be renamed to BETA!'
                           ,'warning')
 
   if(is.element('EFFECT',renamed.File.Columns))

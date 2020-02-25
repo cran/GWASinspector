@@ -29,8 +29,7 @@ compareInputfileWithReferenceData <- function(input.data)
 compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.colNames)
 {
   #check if alt ref data has any rows & there are unfound variants
-  if(nrow(.QC$alt.reference.data) > 0 &
-     length(which(is.na(input.data$REF))) > 0 )
+  if(nrow(.QC$alt.reference.data) > 0 & input.data[is.na(REF),.N] > 0 )
   {
     print.and.log('Comparing input file with alternate reference file ...','info')
     # we only want to check unfound variants in the alt ref dataset
@@ -47,7 +46,7 @@ compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.col
 
 
       # FIXME change merge to data table join
-      tmp.data <- merge(x = subset(input.data[is.na(REF) & MULTI_ALLELIC == 0 ,] ,
+      tmp.data <- merge(x = subset(input.data[is.na(REF) ,] ,
                                    select = input.file.colNames),
                         y = .QC$alt.reference.data,
                         by.x = "hID",

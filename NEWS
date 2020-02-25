@@ -9,13 +9,13 @@ Changes in version 1.2 (Sep 2019)
 
 Changes in version 1.3 (Nov 2019)
 ====================================
- - S4 object system is used for defining classes and main functions. Package is now much more disciplined compared to the previous version which was in S3.
- - Printing of all log messages to the terminal can now be disabled by using suppressMessages() function.
- - Minor improvement in code.
+	- S4 object system is used for defining classes and main functions. Package is now much more disciplined compared to the previous version which was in S3.
+	- Printing of all log messages to the terminal can now be disabled by using suppressMessages() function.
+	- Minor improvement in code.
 
 Changes in version 1.4 (Jan 2020)
 ====================================
-  - Allele matching for Insertion/Deletion multi-allelic variants were improved.
-  - Report files were edited.
-  - Minor bug fixes.
-  - sample.inspector function is renamed to demo.inspector.
+	- Allele matching for Insertion/Deletion multi-allelic variants were improved.
+	- Report files were edited.
+	- Minor bug fixes.
+	- sample.inspector function is renamed to demo.inspector.

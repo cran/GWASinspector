@@ -13,11 +13,20 @@ drawPlots <- function(processed.data) {
     ## because it is replaced with calculated pvalues and correlation coefficient will be 1
     if(!study$missing.PVALUE.column)
       # pValueCorPlot.R
-      tryCatch(plot.observedP.vs.expectedP(input.data = processed.data,
+      tryCatch({
+        if(study$PVcor > 0.95)
+          plot.observedP.vs.expectedP(input.data = processed.data,
                                            plot_cutoff_p = config$plot_specs$plot_cutoff_p,
                                            PVcor = study$PVcor,
                                            pvalCorPlotPath = study$pvalCorPlotPath,
-                                           plot.subtitle = study$plot.title ),
+                                           plot.subtitle = study$plot.title )
+        else
+          plot.observedP.vs.expectedP_dual(input.data = processed.data,
+                                      plot_cutoff_p = config$plot_specs$plot_cutoff_p,
+                                      PVcor = study$PVcor,
+                                      pvalCorPlotPath = study$pvalCorPlotPath,
+                                      plot.subtitle = study$plot.title )
+          },
                error = function(err)
                  print.and.log(paste('error in pvalue plot.',err$message),'warning',display=.QC$config$debug$verbose)
       )

@@ -532,11 +532,20 @@ paste(' <h4 class="header2">Standard reference allele-frequency comparison plot<
 `r 
 if(file.exists(.QC$thisStudy$pvalCorPlotPath) & .QC$graphic.device != 'tiff')
 {
-paste('<h4 class="header2">P-value correlation plot</h4>')
+  paste('<h4 class="header2">P-value correlation plot</h4>')
 
-	htmltools::img(src = knitr::image_uri(.QC$thisStudy$pvalCorPlotPath), 
-               alt = 'MAF', 
-               style = 'width:50%')
+  if(.QC$thisStudy$PVcor > 0.95)
+  {
+  	htmltools::img(src = knitr::image_uri(.QC$thisStudy$pvalCorPlotPath), 
+                 alt = 'MAF', 
+                 style = 'width:50%')
+  }
+  else
+  {
+  	htmltools::img(src = knitr::image_uri(.QC$thisStudy$pvalCorPlotPath), 
+                 alt = 'MAF', 
+                 style = 'width:100%')
+  }
 }
 `
 

@@ -1,8 +1,8 @@
 Package: GWASinspector
 Type: Package
 Title: Comprehensive and Easy to Use Quality Control of GWAS Results
-Version: 1.4.3
-Date: 2020-02-18
+Version: 1.4.4
+Date: 2020-02-25
 Authors@R: c(
   person(given = "Alireza", family = "Ani", role = c("aut", "cre"), email = "a.ani@umcg.nl"),
   person(given = "Peter J.", family = "van der Most", role = "aut"),
@@ -27,6 +27,6 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2020-02-18 14:58:19 UTC; Alireza
+Packaged: 2020-02-25 07:07:23 UTC; Alireza
 Repository: CRAN
-Date/Publication: 2020-02-18 15:50:08 UTC
+Date/Publication: 2020-02-25 07:30:02 UTC

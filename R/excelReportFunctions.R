@@ -142,7 +142,7 @@ create.xlsx.report <- function(config,study.list){
     'Call-rate',
     'Imputation quality'),tbl)
 
-  xlsx.addTitle(sheet, rowIndex=18, title="High Quality variant fileter parameters",
+  xlsx.addTitle(sheet, rowIndex=18, title="High Quality variant filter parameters",
                 titleStyle = SUB_TITLE_STYLE)
 
   xlsx::addDataFrame(tbl, sheet, startRow=19, startColumn=1,

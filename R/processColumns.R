@@ -93,7 +93,7 @@ process.column.EFFECT_ALL<- function(input.data){
   if(any(is.element(input.data$EFFECT_ALL,c('D','I','-','0','R'))))
   {
     .QC$thisStudy$hanNoneBaseAlleles <- TRUE
-    print.and.log('Result file has none base character for alleles!','warning',display=.QC$config$debug$verbose)
+    print.and.log('File uses non-standard characters for alleles!','warning',display=.QC$config$debug$verbose)
   }
 
   return(input.data)

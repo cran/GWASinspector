@@ -120,7 +120,7 @@ checkRequiredColumnNames <- function(inputFile, study){
     print.and.log(sprintf("File will be ignored. columns \'%s\' were not found.",
                           paste(crucial.columns[missing.crucial.column.indexes], collapse = '|')),
                   'warning')
-    addEmptyStudy(inputFile)
+    addEmptyStudy_pathOnly(inputFile)
     return(NULL)
   }
 

@@ -46,7 +46,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in loading!','warning')
-    addEmptyStudy(.QC$thisStudy$file.path)
+    addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
@@ -72,7 +72,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in processing!','warning')
-    addEmptyStudy(.QC$thisStudy$file.path)
+    addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
@@ -95,7 +95,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in comparing process!','warning')
-    addEmptyStudy(.QC$thisStudy$file.path)
+    addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
@@ -119,7 +119,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in allele matching!','warning')
-    addEmptyStudy(.QC$thisStudy$file.path)
+    addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
@@ -143,7 +143,7 @@ process.each.file <- function(study){
   #====================================
   if(is.null(input.data)){
     print.and.log('File removed from QC analysis due to error in variant processing!','warning')
-    addEmptyStudy(.QC$thisStudy$file.path)
+    addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
@@ -674,6 +674,7 @@ create.file.specific.config <- function(file.name){
   study$input.data.rowcount <- 0 # originla file row number - before any processing
   study$rowcount.step1 <- 0      # after processing crucial columns
   study$rowcount.step2 <- 0      # aftere removing duplicates, monomorphics and chromosal variants
+  study$rowcount.step3 <- 0      # aftere
 
   study$missing.crucial.rowcount<- 0
   study$missing.alleles.rowcount <- 0
@@ -1027,11 +1028,29 @@ variable.statistics.post.matching <- function(input.data)
 }
 
 
-addEmptyStudy <- function(study.path)
+addEmptyStudy_studyInstance <- function(study)
+{
+  faultyStudy <- new("Study")
+  faultyStudy@File$file.path <- study$file.path
+  faultyStudy@Successful_run <- FALSE
+  faultyStudy@Counts$input.data.rowcount <- study$input.data.rowcount
+  faultyStudy@Counts$rowcount.step1 <- study$rowcount.step1
+  faultyStudy@Counts$rowcount.step3 <- study$rowcount.step3
+  faultyStudy@Counts$found.rows <- NA
+  faultyStudy@Correlations$AFcor.std_ref <- NA
+  faultyStudy@Correlations$PVcor <- NA
+  faultyStudy@Statistics$lambda <- NA
+
+  .QC$StudyList@studyList <- append(.QC$StudyList@studyList , faultyStudy)
+  .QC$StudyList@studyCount <- length(.QC$StudyList@studyList)
+}
+
+addEmptyStudy_pathOnly <- function(study.path)
 {
   faultyStudy <- new("Study")
   faultyStudy@File$file.path <- study.path
   faultyStudy@Successful_run <- FALSE
+  faultyStudy@Counts$input.data.rowcount <- NA
   faultyStudy@Counts$rowcount.step1 <- NA
   faultyStudy@Counts$rowcount.step3 <- NA
   faultyStudy@Counts$found.rows <- NA

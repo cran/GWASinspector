@@ -124,30 +124,32 @@ create.xlsx.report <- function(config,study.list){
 
   #
 
-  tbl <- t(data.table(
-    format(config$filters$HQfilter_FRQ,
-           scientific = FALSE),
-    format(config$filters$HQfilter_HWE,
-           scientific = FALSE),
-    format(config$filters$HQfilter_cal,
-           scientific = FALSE),
-    format(config$filters$HQfilter_imp,
-           scientific = FALSE)
-  ))
-
-
-  tbl <- cbind(c(
-    'Allele frequency',
-    'HWE p-value',
-    'Call-rate',
-    'Imputation quality'),tbl)
-
-  xlsx.addTitle(sheet, rowIndex=18, title="High Quality variant filter parameters",
-                titleStyle = SUB_TITLE_STYLE)
-
-  xlsx::addDataFrame(tbl, sheet, startRow=19, startColumn=1,
-                     colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
-                     rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE)
+########removed to each file sheet
+#
+#   tbl <- t(data.table(
+#     format(config$filters$HQfilter_FRQ,
+#            scientific = FALSE),
+#     format(config$filters$HQfilter_HWE,
+#            scientific = FALSE),
+#     format(config$filters$HQfilter_cal,
+#            scientific = FALSE),
+#     format(config$filters$HQfilter_imp,
+#            scientific = FALSE)
+#   ))
+#
+#
+#   tbl <- cbind(c(
+#     'Allele frequency',
+#     'HWE p-value',
+#     'Call-rate',
+#     'Imputation quality'),tbl)
+#
+#   xlsx.addTitle(sheet, rowIndex=18, title="High Quality variant filter parameters",
+#                 titleStyle = SUB_TITLE_STYLE)
+#
+#   xlsx::addDataFrame(tbl, sheet, startRow=19, startColumn=1,
+#                      colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
+#                      rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE)
 
 
 
@@ -310,6 +312,43 @@ create.xlsx.report <- function(config,study.list){
     xlsx::addDataFrame(tbl, fileSheet, startRow = row.index , startColumn=1,
                        colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
                        rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE)
+
+
+    #
+    filter.table <- data.table(
+      "Allele frequency" =  format(.QC$config$filters$HQfilter_FRQ,scientific = FALSE))
+
+    if("HWE_PVAL" %in% study$renamed.File.Columns.sorted)
+      filter.table <- cbind(filter.table, "HWE p-value" = format(.QC$config$filters$HQfilter_HWE,scientific = FALSE))
+    else
+      filter.table <- cbind(filter.table, "HWE p-value" = "Not included")
+
+
+    if("CALLRATE" %in% study$renamed.File.Columns.sorted)
+      filter.table <- cbind(filter.table, "Call-rate" = format(.QC$config$filters$HQfilter_cal,scientific = FALSE))
+    else
+      filter.table <- cbind(filter.table, "Call-rate" = "Not included")
+
+
+    if("IMP_QUALITY" %in% study$renamed.File.Columns.sorted)
+      filter.table <- cbind(filter.table, "Imputation quality" = format(.QC$config$filters$HQfilter_imp,scientific = FALSE))
+    else
+      filter.table <- cbind(filter.table, "Imputation quality" = "Not included")
+
+    filter.table <- t(filter.table)
+
+    colnames(filter.table) <- 'Value'
+
+    row.index <- row.index + 6 #
+
+    xlsx.addTitle(fileSheet, rowIndex=row.index, title="Filter values for selecting High-Quality (HQ) variants",
+                  titleStyle = SUB_TITLE_STYLE)
+
+    row.index <- row.index + 1 #
+    xlsx::addDataFrame(filter.table, fileSheet, startRow=row.index, startColumn=1,
+                       colnamesStyle = TABLE_COLNAMES_STYLE,row.names = TRUE,
+                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left,col.names = FALSE)
+
 
     #
 

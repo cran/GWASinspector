@@ -118,7 +118,7 @@ check.diffEAF <- function(input.data) {
   if('EFF_ALL_FREQ' %in% colnames(input.data))
   {
 
-    input.data[, highDiffEAF := ifelse(match_result == 9L,
+    input.data[, highDiffEAF := ifelse(match_result == 9L | is.na(SOURCE) | SOURCE != "Std_ref" ,
                                        NA,
                                        ifelse(abs(EFF_ALL_FREQ - AF) > DIFFthreshold,
                                               1 ,
@@ -220,12 +220,19 @@ save.remove.ambiguous.variants <- function(input.data)
   # duplicate.positions <- which(duplicated(input.data[VT ==2,]$hID) |
   #                                duplicated(input.data[VT ==2,]$hID, fromLast = TRUE))
 
-  duplicate.positions <- which(duplicated(input.data$hID) |
-                                 duplicated(input.data$hID, fromLast = TRUE))
+  duplicate.positions <- which(duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL")) |
+                                 duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL"), fromLast = TRUE))
 
   if(length(duplicate.positions) > 0)
   {
     duplicate.positions.variants <- input.data[duplicate.positions,]
+
+
+    # duplicate.positions2 <- which(duplicated(duplicate.positions.variants, by = c("hID","REF", "ALT")) |
+    #                                 duplicated(duplicate.positions.variants, by = c("hID","REF", "ALT"), fromLast = TRUE))
+    # duplicate.positions.variants2 <- duplicate.positions.variants[duplicate.positions2,]
+    # duplicate.positions.variants3 <- duplicate.positions.variants2[!duplicated(duplicate.positions.variants2, by = c("hID","REF","ALT"))]
+
 
     #only one line if a duplicated variant in enough. remove others
     duplicate.positions.variants <- duplicate.positions.variants[!(duplicated(hID)),]

@@ -55,18 +55,33 @@ Allele frequency standard reference dataset:		**`r basename(.QC$config$supplemen
 
 <h4 class="header2">Filter values for selecting High-Quality (HQ) variants</h4>
 
-`r count.table <- t(data.table(
-    "<span class='mainItem'>Allele frequency</span>" =  format(.QC$config$filters$HQfilter_FRQ,
-                                 scientific = FALSE),
-    "<span class='mainItem'>HWE p-value</span>" = format(.QC$config$filters$HQfilter_HWE,
-                          scientific = FALSE),
-    "<span class='mainItem'>Call-rate</span>" =  format(.QC$config$filters$HQfilter_cal,
-                          scientific = FALSE),
-    "<span class='mainItem'>Imputation quality</span>" = format(.QC$config$filters$HQfilter_imp,
-                                  scientific = FALSE)))
+`r 
 
-  colnames(count.table) <- 'Value'
-  kable(count.table,escape='FALSE', align = "c",format = "html") %>% 
+  filter.table <- data.table(
+    "<span class='mainItem'>Allele frequency</span>" =  format(.QC$config$filters$HQfilter_FRQ,
+                                 scientific = FALSE))
+
+  ifelse("HWE_PVAL" %in% .QC$thisStudy$renamed.File.Columns.sorted,
+    filter.table <- cbind(filter.table, "<span class='mainItem'>HWE p-value</span>" = format(.QC$config$filters$HQfilter_HWE,
+                          scientific = FALSE)),
+    filter.table <- cbind(filter.table, "<span class='mainItem'>HWE p-value</span>" = "Not included"))
+
+  ifelse("CALLRATE" %in% .QC$thisStudy$renamed.File.Columns.sorted,
+    filter.table <- cbind(filter.table, "<span class='mainItem'>Call-rate</span>" =  format(.QC$config$filters$HQfilter_cal,
+                          scientific = FALSE)),
+    filter.table <- cbind(filter.table, "<span class='mainItem'>Call-rate</span>" = "Not included"))
+
+
+  ifelse("IMP_QUALITY" %in% .QC$thisStudy$renamed.File.Columns.sorted,
+    filter.table <- cbind(filter.table, "<span class='mainItem'>Imputation quality</span>" = format(.QC$config$filters$HQfilter_imp,
+                                  scientific = FALSE)),
+    filter.table <- cbind(filter.table, "<span class='mainItem'>Imputation quality</span>" = "Not included"))
+
+                                  
+  filter.table <- t(filter.table)
+
+  colnames(filter.table) <- 'Value'
+  kable(filter.table,escape='FALSE', align = "c",format = "html") %>% 
 		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
 		full_width = F, 
 		position = "left") %>%

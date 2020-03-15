@@ -51,7 +51,7 @@ plot.DataMAF.vs.RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,
                          snp.input.data[sample(similar.palindromic.variants,100000)])
   }else
   {
-    amb.alleles <- snp.input.data[palindromic == TRUE] 
+    amb.alleles <- snp.input.data[palindromic == TRUE]
   }
 
 
@@ -192,7 +192,7 @@ plot.DataMAF.vs.RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,
     if(length(similar.indel.variants) > 100000)
     {
       indel.alleles <- rbind(indel.input.data[abs(EFF_ALL_FREQ - AF) > AF_dif_threshold],
-                             indel.input.data[sample(similar.all.variants,100000)])
+                             indel.input.data[sample(similar.indel.variants,100000)])
     }else
     {
       indel.alleles <- indel.input.data

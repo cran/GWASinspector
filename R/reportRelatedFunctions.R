@@ -230,11 +230,41 @@ report.to.txt.file <- function(study) {
   writeTXTreport('==========================================================')
   writeTXTreport('= Filter values for selecting High-Quality (HQ) variants =')
 
-  filter.table <- t(data.table(
-    "Allele frequency" =  format(.QC$config$filters$HQfilter_FRQ,scientific = FALSE),
-    "HWE p-value" = format(.QC$config$filters$HQfilter_HWE,scientific = FALSE),
-    "Call-rate" =  format(.QC$config$filters$HQfilter_cal,scientific = FALSE),
-    "Imputation quality" = format(.QC$config$filters$HQfilter_imp, scientific = FALSE)))
+  filter.table <- data.table(
+    "Allele frequency" =  format(.QC$config$filters$HQfilter_FRQ,scientific = FALSE))
+
+  if("HWE_PVAL" %in% study$renamed.File.Columns.sorted)
+    filter.table <- cbind(filter.table, "HWE p-value" = format(.QC$config$filters$HQfilter_HWE,scientific = FALSE))
+  else
+    filter.table <- cbind(filter.table, "HWE p-value" = "Not included")
+
+
+  if("CALLRATE" %in% study$renamed.File.Columns.sorted)
+    filter.table <- cbind(filter.table, "Call-rate" = format(.QC$config$filters$HQfilter_cal,scientific = FALSE))
+  else
+    filter.table <- cbind(filter.table, "Call-rate" = "Not included")
+
+
+  if("IMP_QUALITY" %in% study$renamed.File.Columns.sorted)
+    filter.table <- cbind(filter.table, "Imputation quality" = format(.QC$config$filters$HQfilter_imp,scientific = FALSE))
+  else
+    filter.table <- cbind(filter.table, "Imputation quality" = "Not included")
+
+  # filter.table <- t(data.table(
+  #   "Allele frequency" =  format(.QC$config$filters$HQfilter_FRQ,scientific = FALSE),
+  #   {
+  #
+  #   },
+  #   {
+  #     if("CALLRATE" %in% study$renamed.File.Columns.sorted)
+  #        "Call-rate" =  format(.QC$config$filters$HQfilter_cal,scientific = FALSE)
+  #   },
+  #   {
+  #     if("IMP_QUALITY" %in% study$renamed.File.Columns.sorted)
+  #        "Imputation quality" = format(.QC$config$filters$HQfilter_imp, scientific = FALSE)
+  #   }
+  #   ))
+  filter.table <- t(filter.table)
 
   colnames(filter.table) <- 'Value'
   writeTXTreport(kable(filter.table,format = "rst"))

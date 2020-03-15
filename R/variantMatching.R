@@ -75,10 +75,6 @@ variant.match <- function(effect_allele, other_allele, ALT, REF, VT) {
       return(list(9L, FALSE))
 
 
-    if(.QC$thisStudy$hanNoneBaseAlleles | (effect_allele == ALT && other_allele == REF))
-      return(list(1L, FALSE))
-
-
     if (effect_allele == "R" |
         (effect_allele == REF && other_allele == ALT) |
         (effect_allele_switched == REF && other_allele_switched == ALT))
@@ -88,6 +84,10 @@ variant.match <- function(effect_allele, other_allele, ALT, REF, VT) {
     if (other_allele_switched == REF && effect_allele_switched == ALT) {
       return(list(3L, FALSE))
     }
+
+    if(.QC$thisStudy$hanNoneBaseAlleles | (effect_allele == ALT && other_allele == REF))
+      return(list(1L, FALSE))
+
 
     return(list(4L, FALSE))
 

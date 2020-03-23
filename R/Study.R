@@ -60,7 +60,7 @@ create.Study <- function(study)
       fixed.impq = study$fixed.impq,
       fixed.n_total = study$fixed.n_total,
       MAX_N_TOTAL = study$MAX_N_TOTAL,
-      N.max = study$N.max,
+      MAX_N_CASES = study$MAX_N_CASES,
       hasINDEL = study$hasINDEL
     ),
     starttime = study$starttime,

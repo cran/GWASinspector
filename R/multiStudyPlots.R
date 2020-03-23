@@ -27,7 +27,12 @@ multi.study.precision.plot <- function(study.list, graphic.device , figure.path)
   {
     #add number to display in plot beside each point
     # precision.table$order <- 1:nrow(precision.table)
-    precision.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
+    if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
+      precision.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
+    else if(!is.null(study.list)) # if function is called independently
+      precision.table$order <- sapply(study.list, function(x) return(x$number))
+
+
     precision.table[,ordered.names := sprintf('%s- %s',order,study.names)]
 
     # minimum and maximum values for x axis
@@ -193,7 +198,18 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
 
   # order files on max sample size
   study.list = tryCatch(
-    study.list[order(sapply(study.list,'[[','MAX_N_TOTAL'))],
+    {
+      ## If all studies have N_CASES column, use this column for sorting
+      if(all(sapply(study.list, function(x) ifelse("N_CASES" %in% x$renamed.File.Columns, TRUE , FALSE))))
+      {
+        study.list[order(sapply(study.list,'[[','MAX_N_CASES'))]
+      }
+      else
+      {
+        study.list[order(sapply(study.list,'[[','MAX_N_TOTAL'))]
+      }
+
+    },
     error = function(err) {
       print.and.log(paste('Error in ordering list of files:',err$message),'warning',display=.QC$config$debug$verbose)
       return(study.list)

@@ -196,9 +196,6 @@ process.each.file <- function(study){
   ## ============================================
   .QC$thisStudy$STDERR.mean.HQ <- mean(input.data[HQ == TRUE]$STDERR,na.rm = TRUE)
 
-  .QC$thisStudy$N.max = max(input.data$N_TOTAL,na.rm = TRUE)
-  .QC$thisStudy$N.max = ifelse(.QC$thisStudy$N.max == -Inf , 'NA' , .QC$thisStudy$N.max )
-
 
   df <- data.frame(
     x = 1,
@@ -218,7 +215,11 @@ process.each.file <- function(study){
   #TODO maybe show values inside plot
   .QC$thisStudy$effect.plot.df <- df
   file.number = .QC$thisStudy$number
-  file.N.max = .QC$thisStudy$N.max
+
+  if("N_CASES" %in% .QC$thisStudy$renamed.File.Columns)
+    file.N.max = .QC$thisStudy$MAX_N_CASES
+  else
+    file.N.max = .QC$thisStudy$MAX_N_TOTAL
 
 
 
@@ -738,7 +739,6 @@ create.file.specific.config <- function(file.name){
 
   ## multi file comparison
   study$STDERR.mean.HQ <- 0
-  study$N.max <- 'NA'
   study$effect.rho_4 <- 'NA (not calculated)'
   # study$column.INVALID.list$CALLRATE <- numeric(length = 0L)
   # study$column.INVALID.list$CHR <- numeric(length = 0L)
@@ -900,7 +900,7 @@ get.skewness.kurtosis <- function(study) {
 
 get.precision.plot.values <- function(study) {
   vec <- data.table('SE.mean.HQ' = 1 / study$STDERR.mean.HQ,
-                    'sqrt.n' = sqrt(study$N.max))
+                    'sqrt.n' = sqrt(study$MAX_N_TOTAL))
 
   return(vec)
 }
@@ -961,6 +961,19 @@ variable.statistics.post.matching <- function(input.data)
 
   if(is.element('CHR' , names(input.data))){
     .QC$thisStudy$tables$CHR.tbl <- input.data[,.(.N),keyby = CHR]  ## count variants per chromosome
+
+
+    ### looking for missing chromosomes
+    chr_range = range(as.numeric(.QC$thisStudy$tables$CHR.tbl$CHR),na.rm = T)
+
+    chr_range = if(chr_range[2] <= 23)
+      seq(chr_range[1]:23)
+    else
+      seq(chr_range[1]:chr_range[2])
+
+    .QC$thisStudy$missing_chromosomes <- which(chr_range %notin% .QC$thisStudy$tables$CHR.tbl$CHR)
+    ###################################
+
     .QC$thisStudy$tables$CHR.tbl$CHR <- as.character(.QC$thisStudy$tables$CHR.tbl$CHR)
     .QC$thisStudy$tables$CHR.tbl[is.na(CHR), CHR:= 'missing']
 

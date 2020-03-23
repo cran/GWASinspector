@@ -492,6 +492,44 @@ process.column.CALLRATE<- function(input.data){
 }
 
 ##########
+
+process.column.N_CASES<- function(input.data){
+
+  if(!is.numeric(input.data$N_CASES))
+    input.data[,N_CASES := as.numeric(N_CASES)]
+
+  .QC$thisStudy$MAX_N_CASES <- max(input.data$N_CASES,na.rm = TRUE)
+
+  if(.QC$thisStudy$MAX_N_CASES == Inf | .QC$thisStudy$MAX_N_CASES == -Inf)
+  {
+    print.and.log('Maximum of N_CASES was Inf and was converted to NA!',
+                  'warning',
+                  display=.QC$config$debug$verbose)
+    .QC$thisStudy$MAX_N_CASES = NA
+  }
+  else if(.QC$thisStudy$MAX_N_CASES %% 1 != 0) # round the value if it has decimal points
+  {
+    print.and.log(sprintf("%s %s ==> %s",
+                          'Maximum of N_CASES had decimal point and was rounded!',
+                          .QC$thisStudy$MAX_N_CASES,
+                          round(.QC$thisStudy$MAX_N_CASES ,digits = 0)),
+                  'warning',display=.QC$config$debug$verbose)
+
+    .QC$thisStudy$MAX_N_CASES = round(.QC$thisStudy$MAX_N_CASES ,digits = 0)
+  }
+
+
+  # Fixed sample size
+  if(length(unique(input.data$N_CASES)) == 1)
+    print.and.log(sprintf("%s %s",
+                          'N_CASES is fixed!',
+                          input.data[1]$N_CASES),
+                  'warning',display=.QC$config$debug$verbose)
+
+}
+
+########################################
+
 process.column.N_TOTAL<- function(input.data){
   if(!is.numeric(input.data$N_TOTAL))
     input.data[,N_TOTAL := as.numeric(N_TOTAL)]
@@ -512,6 +550,26 @@ process.column.N_TOTAL<- function(input.data){
 
   # maximum number of N
   .QC$thisStudy$MAX_N_TOTAL <- max(input.data$N_TOTAL,na.rm = TRUE)
+
+  if(.QC$thisStudy$MAX_N_TOTAL == Inf | .QC$thisStudy$MAX_N_TOTAL == -Inf)
+  {
+    print.and.log(sprintf("%s %s %s",
+                          'Maximum of N_TOTAL was ', .QC$thisStudy$MAX_N_TOTAL,' and was converted to NA!'),
+                  'warning',
+                  display=.QC$config$debug$verbose)
+
+    .QC$thisStudy$MAX_N_TOTAL = NA
+  }
+  else if(.QC$thisStudy$MAX_N_TOTAL %% 1 != 0) # round the value if it has decimal points
+  {
+    print.and.log(sprintf("%s %s ==> %s",
+                          'Maximum of N_TOTAL had decimal point and was rounded!',
+                          .QC$thisStudy$MAX_N_TOTAL,
+                          round(.QC$thisStudy$MAX_N_TOTAL ,digits = 0)),
+                  'warning',display=.QC$config$debug$verbose)
+
+    .QC$thisStudy$MAX_N_TOTAL = round(.QC$thisStudy$MAX_N_TOTAL ,digits = 0)
+  }
 
 
   # Fixed sample size

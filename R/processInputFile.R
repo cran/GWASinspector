@@ -279,6 +279,11 @@ processNonCrucialColumns <- function(input.data) {
                              return(NULL)
                            }
     )
+
+  if('N_CASES' %in% column.names)
+    process.column.N_CASES(input.data)
+
+
   return(input.data)
 }
 

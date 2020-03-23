@@ -193,7 +193,7 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
   ## ======================================
   report.table <- t(data.table(
     ## 'File Names' = sapply(study.list, function(x) return(x$file.name)),
-    'Sample Size' = sapply(study.list, function(x) return(x$MAX_N_TOTAL)),
+    'Sample Size (Max)' = sapply(study.list, function(x) return(x$MAX_N_TOTAL)),
     'Missing Columns' = sapply(study.list, function(x) return(paste(x$missing.Columns, collapse = ' | '))),
     'SNPs in input file' = sapply(study.list, function(x) return(x$input.data.rowcount)),
     'Variant count after step 1 *' = sapply(study.list, function(x) return(x$rowcount.step1)),
@@ -202,8 +202,12 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
     'Monomorphic' = sapply(study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
 #/	'Duplicates' = sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
     'Palindromics' = sapply(study.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),
-    'Genotyped variants' = sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[1,2]),x$rowcount.step3,pretty=TRUE))),
-    'Imputed variants' = sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[2,2]),x$rowcount.step3,pretty=TRUE))),
+    'Genotyped variants' = sapply(study.list, function(x) return(ifelse(x$tables$imputed.tbl[IMPUTED=='genotyped',.N] == 0,
+                                                                        "NA",
+                                                                        calculatePercent(as.numeric(x$tables$imputed.tbl[IMPUTED=="genotyped",N]),x$rowcount.step3,pretty=TRUE)))),
+    'Imputed variants' = sapply(study.list, function(x) return(ifelse(x$tables$imputed.tbl[IMPUTED=='imputed',.N] == 0,
+                                                                      "NA",
+                                                                      calculatePercent(as.numeric(x$tables$imputed.tbl[IMPUTED=="imputed",N]),x$rowcount.step3,pretty=TRUE)))),
     'Negative-strand SNPs' = sapply(study.list, function(x) return(calculatePercent(x$neg.strand.count,x$rowcount.step3,pretty=TRUE))),
     'Allele Frequency Correlation (Standard Ref)' = sapply(study.list, function(x) return(x$AFcor.std_ref)),
     'Palindromic Allele Frequency correlation (Standard Ref)' = sapply(study.list, function(x) return(x$AFcor.palindromic.std_ref)),

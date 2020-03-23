@@ -213,7 +213,7 @@ Study <- setClass(
       fixed.impq = numeric(0),
       fixed.n_total = numeric(0),
       MAX_N_TOTAL = numeric(0),
-      N.max = numeric(0),
+      MAX_N_CASES = numeric(0),
       hasINDEL = FALSE
     ),
     starttime = Sys.time(),

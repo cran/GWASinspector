@@ -661,7 +661,7 @@ report.to.txt.file <- function(study) {
     'Lambda - genotyped' = study$lambda.gen,
     'Lambda - imputed' = study$lambda.imp,
     '============================' = '==============',
-    'Sample Size' = study$MAX_N_TOTAL,
+    'Sample Size (Max)' = study$MAX_N_TOTAL,
     "Fixed HWE P-value" = study$fixed.hwep,
     "Fixed Imputation Quality" = study$fixed.impq,
     "Fixed Call Rate" = study$fixed.callrate,
@@ -695,6 +695,7 @@ report.to.txt.file <- function(study) {
 
   ### chromosome table
 
+
   if(!all(is.na(study$tables$CHR.tbl)))
   {
     writeTXTreport(' ')
@@ -705,8 +706,15 @@ report.to.txt.file <- function(study) {
 
     writeTXTreport(kable(tbl, align = "c",format = "rst"))
 
-    writeTXTreport(' ')
   }
+
+  if(length(study$missing_chromosomes) >0 )
+  {
+    writeTXTreport(' ')
+    writeTXTreport(sprintf("%s %s","Missing chromosome(s) number",paste(.QC$thisStudy$missing_chromosomes,collapse = ", ")))
+  }
+
+  writeTXTreport(' ')
 
   ### alleles
   writeTXTreport(' ')

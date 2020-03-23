@@ -55,7 +55,7 @@ kable(report.table, align = "c" ,escape = FALSE, format = "html")
 <h4 class="header2">Summary of the input GWAS files</h4>
 
 `r report.table <- t(data.table(
-       "<span class='mainItem'>Sample size</span>" = sapply(.QC$qc.study.list, function(x) return(thousand.sep(x$MAX_N_TOTAL))),
+       "<span class='mainItem'>Sample size (Max)</span>" = sapply(.QC$qc.study.list, function(x) return(thousand.sep(x$MAX_N_TOTAL))),
 	   
 	    "<span class='mainItem'>Missing columns</span>" = sapply(.QC$qc.study.list, function(x) return(paste(x$missing.Columns, collapse = ' | '))), 
 		

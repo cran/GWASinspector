@@ -399,6 +399,14 @@ if(!is.na(study$tables$CHR.tbl))
 	} else{ paste('CHR column not found!')}
 `
 
+`r 
+if(length(study$missing_chromosomes) >0 )
+sprintf('* Missing chromosome(s) number <span  class="redStar">**%s**</span>', paste(.QC$thisStudy$missing_chromosomes,collapse = ', '))
+
+`
+
+<br/>
+
 
 <h3 class="header1">Result from matching variants with reference datasets</h3>
 

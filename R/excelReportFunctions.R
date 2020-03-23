@@ -194,8 +194,12 @@ create.xlsx.report <- function(config,study.list){
     sapply(study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
     #sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),
-    sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[1,2]),x$rowcount.step3,pretty=TRUE))),
-    sapply(study.list, function(x) return(calculatePercent(as.numeric(x$tables$imputed.tbl[2,2]),x$rowcount.step3,pretty=TRUE))),
+    sapply(study.list, function(x) return(ifelse(x$tables$imputed.tbl[IMPUTED=='genotyped',.N] == 0,
+                                                 "NA",
+                                                 calculatePercent(as.numeric(x$tables$imputed.tbl[IMPUTED=="genotyped",N]),x$rowcount.step3,pretty=TRUE)))),
+    sapply(study.list, function(x) return(ifelse(x$tables$imputed.tbl[IMPUTED=='imputed',.N] == 0,
+                                                 "NA",
+                                                 calculatePercent(as.numeric(x$tables$imputed.tbl[IMPUTED=="imputed",N]),x$rowcount.step3,pretty=TRUE)))),
     sapply(study.list, function(x) return(calculatePercent(x$neg.strand.count,x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(x$AFcor.std_ref)),
     sapply(study.list, function(x) return(x$AFcor.palindromic.std_ref)),
@@ -222,7 +226,7 @@ create.xlsx.report <- function(config,study.list){
   report.table <- rbind(seq(1:length(study.list)),report.table)
 
   row.names(report.table)<- c('File number',
-                              'Sample Size',
+                              'Sample Size (Max)',
                               'Missing Columns',
                               'SNPs in input file',
                               'Variant count after step 1 *',
@@ -758,7 +762,7 @@ create.xlsx.report <- function(config,study.list){
                    "Lambda - total",
                    'Lambda - genotyped',
                    'Lambda - imputed',
-                   'Sample Size',
+                   'Sample Size (Max)',
                    "Fixed HWE P-value",
                    "Fixed Imputation Quality",
                    "Fixed Call Rate",
@@ -792,8 +796,7 @@ create.xlsx.report <- function(config,study.list){
 
     # column summary statistics
 
-
-    row.index <- row.index + 10 # 88
+    row.index <- row.index + 10
     xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant count for each chromosome",
                   titleStyle = SUB_TITLE_STYLE)
 
@@ -814,8 +817,23 @@ create.xlsx.report <- function(config,study.list){
 
     }
 
+    if(length(.QC$thisStudy$missing_chromosomes) >0 )
+    {
+
+      row.index <- row.index + nrow(chr.tbl) + 2
+      xlsx.addTitle(fileSheet, rowIndex= row.index,
+                    title=sprintf("%s %s","Missing chromosome(s) number",paste(.QC$thisStudy$missing_chromosomes,collapse = ", ")),
+                    titleStyle = SUB_TITLE_STYLE)
+
+      row.index <- row.index + 2
+    }
+    else
+    {
+      row.index <- row.index + nrow(chr.tbl) + 2 #
+    }
+
+    ###############
     ###
-    row.index <- row.index + nrow(chr.tbl) + 3 #
     xlsx.addTitle(fileSheet, rowIndex= row.index, title="Effect allele distribution in SNP variants",
                   titleStyle = SUB_TITLE_STYLE)
 

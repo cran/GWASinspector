@@ -192,11 +192,11 @@ report.to.txt.file <- function(study) {
     file.remove(study$txt.report.path)
 
   # report intro
-  writeTXTreport('==========================================================')
+  writeTXTreport('============================================================')
   writeTXTreport(sprintf('================= %s v.%s ==================',
                          .QC$package.name,
                          .QC$script.version))
-  writeTXTreport('==========================================================')
+  writeTXTreport('============================================================')
 
   writeTXTreport(' ')
   writeTXTreport(paste('Script version:', .QC$script.version))

@@ -352,7 +352,7 @@ add_hIDcolumn <- function(input.data, data.file = TRUE){
   }
   else{
     # VT column is already added to file
-    input.data[,hID := paste(CHR,POSITION,VT,sep = ':')]
+    input.data[,hID := paste(CHR,format(POSITION,scientific = FALSE,trim = TRUE),VT,sep = ':')]
      #input.data[,hID := sprintf('%s:%s_%s_%s',CHR,POSITION,EFFECT_ALL,OTHER_ALL)]
 
 

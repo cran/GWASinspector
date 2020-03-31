@@ -36,7 +36,30 @@ switch.flip.variant <- function(matched.data){
   return(matched.data)
 }
 
+removeDuplicatedINDELs <- function(matched.data)
+{
+  # some indels might match with more than one row in DB
+  # 11:106373032:2    TTG    T      T       TTGTG
+  # 11:106373032:2    TTG     T     T       TTG
+  # it is important to only remove the wrong one
+  # TODO ALso, maybe this variant is a mismatch. one instance should be kept to be saved in mismatch files, e.g.
+  # 11:106373032:2    TG    T      T       TTGTG
+  # 11:106373032:2    TG     T     T       TTG
+
+  matched.data <- matched.data[!(VT == 2 &
+                                (duplicated(matched.data, by = c("hID","OTHER_ALL", "EFFECT_ALL")) |
+                                                  duplicated(matched.data, by = c("hID","OTHER_ALL", "EFFECT_ALL"),
+                                                             fromLast = TRUE)) &
+                                # !duplicated(matched.data, by = c("hID","OTHER_ALL", "EFFECT_ALL", "match_result")) &
+                                match_result == 4),]
+
+  matched.data
+}
+
 process.matched.data <- function(matched.data) {
+
+  # remove duplicated INDELs
+  matched.data <- removeDuplicatedINDELs(matched.data)
 
   #report about unknown and mismatches
   reportAlleleMatchStat(matched.data)
@@ -60,6 +83,21 @@ process.matched.data <- function(matched.data) {
   save.pre_modification.file(matched.data)
 
   matched.data <- switch.flip.variant(matched.data)
+
+  # remove duplicate Marker names and save as separate file after matching with reference dataset
+  # this is the second duplicated variant check
+  # it is possible that a variant and its flipped format are present in the file. So, it will show up only after flipping of the alleles.
+  matched.data <- removeDuplicateVariants_postMatching(matched.data)
+
+  if(nrow(matched.data) == 0)
+  {
+    print.and.log('ALL ROWS WERE DELETED AFTER POST VARIANT MATCHING DUPLICATE CHECKING (step 3)!',
+                  'warning')
+
+    return(NULL)
+  }
+
+  .QC$thisStudy$rowcount.step3 <- nrow(matched.data)
 
   variable.statistics.post.matching(matched.data)
 
@@ -199,7 +237,7 @@ save.remove.mismatch.Variants <- function(input.data) {
 
   }
 
-  .QC$thisStudy$rowcount.step3 <- nrow(input.data)
+  # .QC$thisStudy$rowcount.step3 <- nrow(input.data)
 
 
   return(input.data)
@@ -220,19 +258,14 @@ save.remove.ambiguous.variants <- function(input.data)
   # duplicate.positions <- which(duplicated(input.data[VT ==2,]$hID) |
   #                                duplicated(input.data[VT ==2,]$hID, fromLast = TRUE))
 
-  duplicate.positions <- which(duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL")) |
-                                 duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL"), fromLast = TRUE))
+  # duplicate.positions <- which(duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL")) |
+  #                                duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL"), fromLast = TRUE))
+  duplicate.positions.variants <- input.data[EFFECT_ALL %in% c("R","D","I") &
+                                (duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL")) |
+                                  duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL"), fromLast = TRUE)),]
 
-  if(length(duplicate.positions) > 0)
+  if(nrow(duplicate.positions.variants) > 0)
   {
-    duplicate.positions.variants <- input.data[duplicate.positions,]
-
-
-    # duplicate.positions2 <- which(duplicated(duplicate.positions.variants, by = c("hID","REF", "ALT")) |
-    #                                 duplicated(duplicate.positions.variants, by = c("hID","REF", "ALT"), fromLast = TRUE))
-    # duplicate.positions.variants2 <- duplicate.positions.variants[duplicate.positions2,]
-    # duplicate.positions.variants3 <- duplicate.positions.variants2[!duplicated(duplicate.positions.variants2, by = c("hID","REF","ALT"))]
-
 
     #only one line if a duplicated variant in enough. remove others
     duplicate.positions.variants <- duplicate.positions.variants[!(duplicated(hID)),]
@@ -249,10 +282,11 @@ save.remove.ambiguous.variants <- function(input.data)
                 decValue = .QC$config$output_parameters$out_dec,
 				ordered = .QC$config$output_parameters$ordered)
 
-    input.data <- input.data[!duplicate.positions, ]
+    input.data <- input.data[!(EFFECT_ALL %in% c("R","D","I") &
+                               (duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL")) |
+                                  duplicated(input.data, by = c("hID","OTHER_ALL", "EFFECT_ALL"), fromLast = TRUE))),]
 
     rm(duplicate.positions.variants)
-    rm(duplicate.positions)
   }
 
   return(input.data)

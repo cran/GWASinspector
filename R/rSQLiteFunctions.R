@@ -193,9 +193,6 @@ compareInputfileWithReferenceDataBase <- function(input.data)
                                               0))]
 
 
-  ## get frequency table for multi-allelic variants
-  ## moved to after step 3
-  ##.QC$thisStudy$tables$multi_allele_count_preProcess <- getMultiAlleleCountTbl(input.data,'AF')
 
   ## try allele matching on multi-allelic variants
   # if(is.element('Yes',.QC$thisStudy$tables$multi_allele_count_preProcess$`Multi-allelic`))

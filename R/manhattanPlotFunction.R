@@ -32,7 +32,6 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
   study.sample <- fill.missing.chr.positions(study.sample)
 
   man.plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
-    geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red") +
     scale_y_continuous(log10P, limits=c(y.scale.min,p.Min)) + #, breaks = plot.scale) +
     labs(x="Chromosome",y=" Observed -log(P-value)",
          subtitle=plot.subtitle , title=plot.title) +
@@ -49,7 +48,8 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
           ,plot.subtitle=element_text(size=15, face="bold",hjust = 0.5)
           ,axis.text.y=element_text(size=15)
           ,axis.title.x=element_text(size=25)
-          ,axis.title.y=element_text(size=25))
+          ,axis.title.y=element_text(size=25)) +
+    geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red")
 
 
   ggsave(plot=man.plot,
@@ -144,7 +144,6 @@ plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
   study.sample <- fill.missing.chr.positions(study.sample)
 
   man.plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
-    geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red") +
     scale_y_continuous(log10P, limits=c(y.scale.min,p.Min)) + #, breaks = plot.scale) +
     labs(x="Chromosome",y=" Observed -log(P-value)",
          subtitle=plot.subtitle , title=plot.title) +
@@ -161,7 +160,8 @@ plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
           ,plot.subtitle=element_text(size=15, face="bold",hjust = 0.5)
           ,axis.text.y=element_text(size=15)
           ,axis.title.x=element_text(size=25)
-          ,axis.title.y=element_text(size=25))
+          ,axis.title.y=element_text(size=25)) +
+    geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red")
 
 
   ggsave(plot=man.plot,

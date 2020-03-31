@@ -1,6 +1,6 @@
-#' Runs the Inspector algorithm on a list of GWAS result files
+#' Runs the QC pipeline on a set of GWAS result files
 #'
-#' This is the main function of the package, which runs the QC algorithm on GWAS result files.
+#' This is the main function of the package for running the QC algorithm on a set of GWAS result files.
 #' It requires an object of class \linkS4class{Inspector} which should be created by \code{\link{setup.inspector}}.
 #' Check the package vignette and tutorial for more details on this topic.
 #'
@@ -69,11 +69,11 @@ run.inspector <- function(inspector, test.run=FALSE)
   inspector@start_time <- .QC$config$new_items$starttime
 
   #### 1
-  message('\n=============================================')
+  message('\n===============================================')
   message(sprintf('=========== %s v.%s ===========',
                   .QC$package.name,
                   .QC$script.version))
-  message('=============================================')
+  message('===============================================')
 
 
   # assign(x = "config" , value = config , envir = .QC)

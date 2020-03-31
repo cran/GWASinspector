@@ -114,6 +114,8 @@ saveDataSet.final<-function(dataset)
     if(.QC$thisStudy$character.chromosome)
       dataset <- deconvert.column.CHR(dataset)
 
+    # make sure position is not saved as scientific number ,e.g. 8e-6
+    dataset$POSITION<-format(dataset$POSITION,scientific = FALSE,trim = TRUE)
 
 
     ## rename columns based on user preference

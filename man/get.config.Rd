@@ -2,7 +2,7 @@
 % Please edit documentation in R/getConfig.R
 \name{get.config}
 \alias{get.config}
-\title{Save a sample configuration file}
+\title{Copies the template configuration file to the local machine}
 \usage{
 get.config(dir.path)
 }
@@ -10,12 +10,11 @@ get.config(dir.path)
 \item{dir.path}{Path to the folder for saving a sample configuration file.}
 }
 \value{
-Saves a sample configuration file (config.ini) in the specified folder.
+Copies a sample configuration file (config.ini) in the specified folder.
 }
 \description{
-Save a sample configuration file for running GWASinspector package. This templates should be edited and then used for running the QC.
-User can save multiple copies to be used for different sets of files.
-Default name is \strong{config.ini}, which can be changed while saving the file or afterwards.
+This templates should be edited and then used for setting up and running the QC pipeline.
+Default filename is \strong{config.ini}.
 }
 \examples{
 get.config(tempdir())

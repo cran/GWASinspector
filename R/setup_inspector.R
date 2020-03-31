@@ -1,7 +1,7 @@
-#' Importing a QC-configuration file into R
+#' Importing a configuration file into R for setting the pipeline parameters
 #'
-#' To run a QC in GWASinspector, first generate a config file using \code{\link{get.config}}, and edit it to suit your requirements.
-#' Next, use the function \code{\link{setup.inspector}} to check the configuration file and import it into R.
+#' To run a QC in GWASinspector, copy a template configuration file to your machine using the \code{\link{get.config}} command at first, and edit it to suit your requirements.
+#' Next, use the \code{\link{setup.inspector}} function to check the configuration file and import it into R.
 #' This will create an object of the inspector class, which can then be processed using \code{\link{run.inspector}}.
 #'
 #' @param config.file character. Path to a configuration (.ini) file. For a sample configuration file, see \code{\link{get.config}}.

@@ -1,11 +1,11 @@
-#' Compare GWAS result files
+#' Compare summary statistics of GWAS result files
 #'
 #' This function compares the key metrics of previously inspected files.
-#' This allows the user to check that the results of these studies are comparable (important when running a meta-analysis) and that there are no significant anomalies.
+#' This allows the user to check if the results of these studies are comparable (important when running a meta-analysis) and that there are no significant anomalies.
 #'
-#' @param input.file.list list, full path of the RDS object files. Note that inspect() only produces such files if the object_file parameter is set to TRUE in the configuration file.
+#' @param input.file.list list, full path of the Inspector result files. This file is in RDS format and will be generated for each GWAS result file during the inspection algorithm.
 #' @param output.path character, full path to the folder where output files should be saved.
-#' @return Key metrics report of previously inspected files are generated and saved in the specified output folder.
+#' @return Key metrics report and plots of previously inspected files are generated and saved in the specified output folder.
 #'
 compare.GWASs <- function(input.file.list, output.path)
 {
@@ -199,6 +199,14 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
     'Variant count after step 1 *' = sapply(study.list, function(x) return(x$rowcount.step1)),
     'Variant count after step 2 **' = sapply(study.list, function(x) return(x$rowcount.step2)),
     'Variant count after step 3 ***' = sapply(study.list, function(x) return(x$rowcount.step3)),
+    'SNP variants' = sapply(study.list, function(x) return(calculatePercent(sum(as.numeric(gsub(x=x$tables$multi_allele_count_preProcess[1:3],
+                                                                                                pattern = ",",
+                                                                                                replacement = ""))),x$rowcount.step3,pretty=TRUE))),
+    'Non-SNP variants' = sapply(study.list, function(x) return(calculatePercent(sum(as.numeric(gsub(x=x$tables$multi_allele_count_preProcess[4:6],
+                                                                                                    pattern = ",",
+                                                                                                    replacement = "")))
+                                                                                ,x$rowcount.step3,
+                                                                                pretty=TRUE))),
     'Monomorphic' = sapply(study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
 #/	'Duplicates' = sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
     'Palindromics' = sapply(study.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),

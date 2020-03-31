@@ -150,13 +150,6 @@ process.each.file <- function(study){
 
   invisible(gc())
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
-
-  #variable.statistics.post.matching(input.data) moved to process.matched.data()
-
-
-  ##not used anymore
-  # .QC$thisStudy$tables$VT.tbl <- getVariantTypeCountTbl(input.data)
 
 
   ## Calculations
@@ -619,6 +612,7 @@ create.file.specific.config <- function(file.name){
 
   # duplicate variants
   study$SNPs_duplicates.path<-paste(files.prefix, 'vars_duplicates.txt' , sep='_')
+  study$SNPs_duplicates_postMatch.path<-paste(files.prefix, 'vars_duplicates_post_match.txt' , sep='_')
 
   # mismatched bi-allelic variants
   study$SNPs_mismatches.path<-paste(files.prefix, 'vars_mismatches_BA.txt' , sep='_')

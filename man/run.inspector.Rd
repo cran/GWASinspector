@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_inspector.R
 \name{run.inspector}
 \alias{run.inspector}
-\title{Runs the Inspector algorithm on a list of GWAS result files}
+\title{Runs the QC pipeline on a set of GWAS result files}
 \usage{
 run.inspector(inspector, test.run = FALSE)
 }
@@ -16,7 +16,7 @@ plots and saving the cleaned output dataset are skipped. Default value is FALSE.
 Reports from running the algorithm on a single or a series of GWAS result files are generated and saved.
 }
 \description{
-This is the main function of the package, which runs the QC algorithm on GWAS result files.
+This is the main function of the package for running the QC algorithm on a set of GWAS result files.
 It requires an object of class \linkS4class{Inspector} which should be created by \code{\link{setup.inspector}}.
 Check the package vignette and tutorial for more details on this topic.
 }

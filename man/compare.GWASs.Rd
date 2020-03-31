@@ -2,19 +2,19 @@
 % Please edit documentation in R/compare_GWASs.R
 \name{compare.GWASs}
 \alias{compare.GWASs}
-\title{Compare GWAS result files}
+\title{Compare summary statistics of GWAS result files}
 \usage{
 compare.GWASs(input.file.list, output.path)
 }
 \arguments{
-\item{input.file.list}{list, full path of the RDS object files. Note that inspect() only produces such files if the object_file parameter is set to TRUE in the configuration file.}
+\item{input.file.list}{list, full path of the Inspector result files. This file is in RDS format and will be generated for each GWAS result file during the inspection algorithm.}
 
 \item{output.path}{character, full path to the folder where output files should be saved.}
 }
 \value{
-Key metrics report of previously inspected files are generated and saved in the specified output folder.
+Key metrics report and plots of previously inspected files are generated and saved in the specified output folder.
 }
 \description{
 This function compares the key metrics of previously inspected files.
-This allows the user to check that the results of these studies are comparable (important when running a meta-analysis) and that there are no significant anomalies.
+This allows the user to check if the results of these studies are comparable (important when running a meta-analysis) and that there are no significant anomalies.
 }

@@ -182,3 +182,37 @@ removeDuplicateVariants <- function(input.data)
   return(input.data)
 }
 
+removeDuplicateVariants_postMatching <- function(input.data)
+{
+
+	setkey(input.data,CHR,POSITION,EFFECT_ALL,OTHER_ALL)
+
+	dup.allele <- which(
+                        # duplicated(input.data$hID) | duplicated(input.data$hID, fromLast = TRUE)
+                        duplicated(input.data, by = key(input.data)) |
+                        duplicated(input.data, by = key(input.data), fromLast = TRUE)
+                    )
+
+  if(length(dup.allele) > 0)
+  {
+
+    # save duplicate rows to output folder
+#     saveDataSet(input.data[head(dup.allele,100), .QC$thisStudy$renamed.File.Columns.sorted , with = FALSE],
+#                 .QC$thisStudy$SNPs_duplicates_postMatch,
+#                 columnSeparator = .QC$config$output_parameters$out_sep,
+#                 naValue = .QC$config$output_parameters$out_na,
+#                 decValue = .QC$config$output_parameters$out_dec,
+# 				ordered = .QC$config$output_parameters$ordered)
+
+
+    # remove duplicates from dataset
+    input.data<-input.data[!dup.allele,]
+
+    print.and.log(sprintf('\'%s\' duplicated variants removed from file after matching with reference dataset.',
+                          thousand.sep(length(dup.allele))),
+                  'warning',display=.QC$config$debug$verbose)
+  }
+
+  return(input.data)
+}
+

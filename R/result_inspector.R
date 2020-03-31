@@ -1,6 +1,6 @@
-#' Display the reports of running the Inspector algorithm
+#' Displays a brief report after running the QC pipeline
 #'
-#' This function displays a brief report about the results of running the Inspector algorithm on a list of GWAS result files.
+#' This function displays a brief report about the results of running the Inspector algorithm on a set of GWAS result files.
 #' The full report including plots, cleaned files and summary statistics are generated and saved in the output folder during the algorithm run.
 #'
 #' @param inspector An instance of \linkS4class{Inspector} class. Check \code{\link{setup.inspector}} for more details.

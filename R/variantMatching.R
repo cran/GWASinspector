@@ -85,7 +85,7 @@ variant.match <- function(effect_allele, other_allele, ALT, REF, VT) {
       return(list(3L, FALSE))
     }
 
-    if(.QC$thisStudy$hanNoneBaseAlleles | (effect_allele == ALT && other_allele == REF))
+    if(effect_allele %in% c("R","D","I") | (effect_allele == ALT && other_allele == REF))
       return(list(1L, FALSE))
 
 

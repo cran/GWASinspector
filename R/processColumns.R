@@ -79,7 +79,7 @@ process.column.EFFECT_ALL<- function(input.data){
   ## convert empty strings to NA
   input.data[trimws(EFFECT_ALL) == '' , EFFECT_ALL := NA]
 
-  invalid.items <- which(!is.na(input.data$EFFECT_ALL) & !grepl(pattern = '^[0ATCGIDR9-]+$', x = input.data$EFFECT_ALL ,perl = TRUE))
+  invalid.items <- which(!is.na(input.data$EFFECT_ALL) & !grepl(pattern = '^[ATCGIDR]+$', x = input.data$EFFECT_ALL ,perl = TRUE))
 
   .QC$thisStudy$column.INVALID.list$EFFECT_ALL <- invalid.items
 
@@ -90,7 +90,7 @@ process.column.EFFECT_ALL<- function(input.data){
   .QC$thisStudy$column.NA.list$EFFECT_ALL <- which(is.na(input.data$EFFECT_ALL))
 
   # chekc if allele has none Base characters
-  if(any(is.element(input.data$EFFECT_ALL,c('D','I','-','0','R'))))
+  if(any(is.element(input.data$EFFECT_ALL,c('D','I','R'))))
   {
     .QC$thisStudy$hanNoneBaseAlleles <- TRUE
     print.and.log('File uses non-standard characters for alleles!','warning',display=.QC$config$debug$verbose)
@@ -105,7 +105,7 @@ process.column.OTHER_ALL<- function(input.data){
   ## convert empty strings to NA
   input.data[trimws(OTHER_ALL) == '' , OTHER_ALL := NA]
 
-  invalid.items <- which(!is.na(input.data$OTHER_ALL) & !grepl(pattern = '^[0ATCGIDR9-]+$', x = input.data$OTHER_ALL ,perl = TRUE))
+  invalid.items <- which(!is.na(input.data$OTHER_ALL) & !grepl(pattern = '^[ATCGIDR]+$', x = input.data$OTHER_ALL ,perl = TRUE))
 
   .QC$thisStudy$column.INVALID.list$OTHER_ALL <- invalid.items
 
@@ -199,7 +199,6 @@ process.column.STRAND<- function(input.data){
 process.column.POSITION<- function(input.data){
   if(!is.numeric(input.data$POSITION))
     input.data[,POSITION := as.numeric(POSITION)]
-  # input.data$POSITION<-as.numeric(input.data$POSITION)
 
 
   ## Check for inavlid or wrong or missing items => set them to NA

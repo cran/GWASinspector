@@ -2,7 +2,7 @@
 % Please edit documentation in R/result_inspector.R
 \name{result.inspector}
 \alias{result.inspector}
-\title{Display the reports of running the Inspector algorithm}
+\title{Displays a brief report after running the QC pipeline}
 \usage{
 result.inspector(inspector)
 }
@@ -13,6 +13,6 @@ result.inspector(inspector)
 A data.table containing a brief report about the results.
 }
 \description{
-This function displays a brief report about the results of running the Inspector algorithm on a list of GWAS result files.
+This function displays a brief report about the results of running the Inspector algorithm on a set of GWAS result files.
 The full report including plots, cleaned files and summary statistics are generated and saved in the output folder during the algorithm run.
 }

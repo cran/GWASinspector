@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup_inspector.R
 \name{setup.inspector}
 \alias{setup.inspector}
-\title{Importing a QC-configuration file into R}
+\title{Importing a configuration file into R for setting the pipeline parameters}
 \usage{
 setup.inspector(config.file, validate = TRUE)
 }
@@ -15,8 +15,8 @@ setup.inspector(config.file, validate = TRUE)
 returns a new instance of \linkS4class{Inspector} class.
 }
 \description{
-To run a QC in GWASinspector, first generate a config file using \code{\link{get.config}}, and edit it to suit your requirements.
-Next, use the function \code{\link{setup.inspector}} to check the configuration file and import it into R.
+To run a QC in GWASinspector, copy a template configuration file to your machine using the \code{\link{get.config}} command at first, and edit it to suit your requirements.
+Next, use the \code{\link{setup.inspector}} function to check the configuration file and import it into R.
 This will create an object of the inspector class, which can then be processed using \code{\link{run.inspector}}.
 }
 \examples{

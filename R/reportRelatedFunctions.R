@@ -285,6 +285,7 @@ report.to.txt.file <- function(study) {
   # input file spec
   writeTXTreport(sprintf('Input file name: %s', basename( study$file.path)))
   writeTXTreport(sprintf('Input file line count (including header): %s', study$file.line.count))
+  writeTXTreport(sprintf('Input file ends with a new line: %s', study$file.endsWithNewLine))
   # writeTXTreport(sprintf('Duplicated lines: %s', format(.QC$thisStudy$dup_lines_count,big.mark = ',',scientific = FALSE)))
 
   # it is mentioned in log file

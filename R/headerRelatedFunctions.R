@@ -49,36 +49,39 @@ checkRequiredColumnNames <- function(inputFile, study){
                        header = TRUE,
                        na.strings = na.string,
                        nrows=100,
-                       fill = TRUE)
+                       fill = TRUE,
+                       check.names = FALSE)
 
     close(unz(
       description = inputFile,
       filename = embeded.file)
     )
 
-  } else if (file.extension == "gz"){
+  # } else if (file.extension == "gz"){
+  #
+  #   sep.strings <- ifelse(sep.strings == 'auto' , '' , sep.strings)
+  #
+  #   data <- read.table(gzfile(inputFile),
+  #                      sep = sep.strings,
+  #                      header = TRUE,
+  #                      nrows = 100,
+  #                      na.strings = na.string,
+  #                      fill = TRUE,
+  #                      check.names = FALSE)
+  #
+  #   close(gzfile(inputFile))
 
-    sep.strings <- ifelse(sep.strings == 'auto' , '' , sep.strings)
-
-    data <- read.table(gzfile(inputFile),
-                       sep = sep.strings,
-                       header = TRUE,
-                       nrows = 100,
-                       na.strings = na.string,
-                       fill = TRUE)
-
-    close(gzfile(inputFile))
-
-  }else if(file.extension %in% c('txt','dat','csv'))
+  }else if(file.extension %in% c('txt','dat','csv','gz'))
   {
-    sep.strings <- ifelse(sep.strings == 'auto' , '' , sep.strings)
+   # sep.strings <- ifelse(sep.strings == 'auto' , '' , sep.strings)
 
-    data <- read.table(file = inputFile,
+    data <- fread(file = inputFile,
                        sep = sep.strings,
                        header = TRUE,
                        nrows = 100,
                        na.strings = na.string,
-                       fill = TRUE)
+                       fill = TRUE,
+                       check.names = FALSE)
 
     # data<-fread(inputFile,
     #             nrows=100,

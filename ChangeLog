@@ -35,3 +35,9 @@ Changes in version 1.4 (Jan 2020)
 	- Report files were synchronized.
 	- Minor bugs were fixed.
 	- sample.inspector() is renamed to demo.inspector().
+
+Changes in version 1.4.7 (Apr 2020)
+====================================
+	- R.utils package is imported for reading gz files.
+	- 'cmd' parameter is no more used in data.table::fread().
+	- data.table V1.12.8 is required for directly writing gz files.

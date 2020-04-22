@@ -58,7 +58,7 @@ changeROptions<-function(){
   options(error= NULL)
   options(warn= -1)
 
-  options(java.parameters = "- Xmx1024m")
+  options(java.parameters = "- Xmx1024m") # for xlsx package
 
   if(capabilities('cairo'))
     options(bitmapType='cairo')

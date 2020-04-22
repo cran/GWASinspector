@@ -94,82 +94,81 @@ uploadInputFile<-function()
       }
     )
   }
-  else if (file.extension == "gz")
-  {
-
-    input.data = tryCatch(
-      {
-
-        if(.QC$gzip.exists){
-
-            input.data = fread(cmd = sprintf('gzip -cd "%s"',file.path),
-                               na.strings = na.string,
-                               sep = sep.strings,
-                               colClasses = study$renamed.File.Columns.classes,
-                               data.table = TRUE,
-                               showProgress = FALSE,
-                               nrows = {if(config$test.run) config$debug$test_row_count else -1},
-                               fill = TRUE)
-
-
-        }else # if RTools is not found
-        {
-          sep.strings = ifelse(sep.strings == 'auto' , '' , sep.strings)
-          read.method <- 'read.table'
-
-          if(config$test.run)
-
-
-            input.data = read.table(gzfile(file.path),
-                                    sep = sep.strings,
-                                    header = TRUE,
-                                    na.strings = na.string,
-                                    stringsAsFactors = FALSE,
-                                    fill = TRUE,
-                                    nrows = {if(config$test.run) config$debug$test_row_count else -1})
-
-
-          close(gzfile(file.path))
-
-        }
-
-
-        #
-
-        # convert to data.table from read.table function
-        if(!is.data.table(input.data))
-          setDT(input.data)
-
-
-        ####Rename columns from user-defined names to standard names
-        if(ncol(input.data) == length(study$renamed.File.Columns))
-          colnames(input.data) <- study$renamed.File.Columns
-
-        input.data
-      }
-      ,error=function(err) {
-        print.and.log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
-        return(NULL)
-      }
-    )
-
-  }
-  else if(file.extension %in% c('txt','dat','csv'))
+  # else if (file.extension == "gz")
+  # {
+  #
+  #   input.data = tryCatch(
+  #     {
+  #
+  #       if(.QC$gzip.exists){
+  #
+  #           input.data = fread(cmd = sprintf('gzip -cd "%s"',file.path),
+  #                              na.strings = na.string,
+  #                              sep = sep.strings,
+  #                              colClasses = study$renamed.File.Columns.classes,
+  #                              data.table = TRUE,
+  #                              showProgress = FALSE,
+  #                              nrows = {if(config$test.run) config$debug$test_row_count else -1},
+  #                              fill = TRUE)
+  #
+  #
+  #       }else # if RTools is not found
+  #       {
+  #         sep.strings = ifelse(sep.strings == 'auto' , '' , sep.strings)
+  #         read.method <- 'read.table'
+  #
+  #         if(config$test.run)
+  #
+  #
+  #           input.data = read.table(gzfile(file.path),
+  #                                   sep = sep.strings,
+  #                                   header = TRUE,
+  #                                   na.strings = na.string,
+  #                                   stringsAsFactors = FALSE,
+  #                                   fill = TRUE,
+  #                                   nrows = {if(config$test.run) config$debug$test_row_count else -1})
+  #
+  #
+  #         close(gzfile(file.path))
+  #
+  #       }
+  #
+  #
+  #       #
+  #
+  #       # convert to data.table from read.table function
+  #       if(!is.data.table(input.data))
+  #         setDT(input.data)
+  #
+  #
+  #       ####Rename columns from user-defined names to standard names
+  #       if(ncol(input.data) == length(study$renamed.File.Columns))
+  #         colnames(input.data) <- study$renamed.File.Columns
+  #
+  #       input.data
+  #     }
+  #     ,error=function(err) {
+  #       print.and.log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
+  #       return(NULL)
+  #     }
+  #   )
+  #
+  # }
+  else if(file.extension %in% c('txt','dat','csv','gz'))
   {
     # first try fread for loading the file
     input.data = tryCatch(
       {
 
-
-          input.data = fread( file.path,
-                              select = study$original.File.Columns.sorted,
-                              na.strings = na.string,
-                              sep = sep.strings,
-                              colClasses = study$renamed.File.Columns.classes,
-                              data.table = TRUE,
-                              showProgress = FALSE,
-                              fill = TRUE,
-                              nrows = {if(config$test.run) config$debug$test_row_count else -1})
+        input.data = fread(file.path,
+                            select = study$original.File.Columns.sorted,
+                            na.strings = na.string,
+                            sep = sep.strings,
+                            colClasses = study$renamed.File.Columns.classes,
+                            data.table = TRUE,
+                            showProgress = FALSE,
+                            fill = TRUE,
+                            nrows = {if(config$test.run) config$debug$test_row_count else -1})
 
         colnames(input.data) <- study$renamed.File.Columns.sorted
 

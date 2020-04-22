@@ -2,8 +2,6 @@ compareInputfileWithReferenceData <- function(input.data)
 {
   #  .QC$reference.data ==> this can be a data table or a database object
   #  .QC$alt.reference.data
-  input.file.colNames <- names(input.data)
-
   ## 1
   if(is.data.table(.QC$reference.data))
     input.data <- compareInputfileWithReferenceFile(input.data)
@@ -15,7 +13,7 @@ compareInputfileWithReferenceData <- function(input.data)
   ## check the unknown variants with alternative reference file
   ## this refrence file will be empty if is not set by user and this step is automatically skipped
 
-  input.data <- tryCatch(compareInputfileWithAlternateReferenceFile(input.data, input.file.colNames),
+  input.data <- tryCatch(compareInputfileWithAlternateReferenceFile(input.data),
                          error = function(x)
                          {
                            print.and.log(paste('Error in searching alternate reference database:',x$message),
@@ -26,7 +24,7 @@ compareInputfileWithReferenceData <- function(input.data)
   return(input.data)
 }
 
-compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.colNames)
+compareInputfileWithAlternateReferenceFile <- function(input.data)
 {
   #check if alt ref data has any rows & there are unfound variants
   if(nrow(.QC$alt.reference.data) > 0 & input.data[is.na(REF),.N] > 0 )
@@ -46,8 +44,7 @@ compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.col
 
 
       # FIXME change merge to data table join
-      tmp.data <- merge(x = subset(input.data[is.na(REF) ,] ,
-                                   select = input.file.colNames),
+      tmp.data <- merge(x = input.data[is.na(REF) ,!c("REF","ALT","SOURCE","DATE_ADDED","AF")],
                         y = .QC$alt.reference.data,
                         by.x = "hID",
                         by.y = "hID",
@@ -59,8 +56,7 @@ compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.col
       setkey(input.data,"MARKER")
       setkey(.QC$alt.reference.data,"ID")
 
-      tmp.data <- merge(x = subset(input.data[is.na(REF),] ,
-                                   select = input.file.colNames),
+      tmp.data <- merge(x = input.data[is.na(REF) ,!c("REF","ALT","SOURCE","DATE_ADDED","AF")],
                         y = subset(.QC$alt.reference.data,
                                    select = c('ID','REF','ALT','AF','DATE_ADDED','SOURCE')),
                         by.x = "MARKER",
@@ -69,8 +65,6 @@ compareInputfileWithAlternateReferenceFile <- function(input.data,input.file.col
     }
 
 
-    # if(!is.element('TSA', names(tmp.data)))
-    #   tmp.data[,TSA := NA] ## added for consistency with reference data
 
     # reomve ID column from alternate reference file
     if(is.element('ID', names(tmp.data)))

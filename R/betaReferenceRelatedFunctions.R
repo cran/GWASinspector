@@ -6,7 +6,7 @@ uploadBetaReferenceFile<-function()
   file.extension<-tolower(file_ext(betaReferenceFile))
 
   #load the file based on its extension
-  if(file.extension %in% c('csv','txt','dat')){
+  if(file.extension %in% c("csv","txt","dat","gz")){
     beta_ref_std<-fread(betaReferenceFile,
                         data.table = TRUE)
   }else if(file.extension == "rdata"){
@@ -19,14 +19,15 @@ uploadBetaReferenceFile<-function()
   }else if(file.extension == 'rds')
   {
     beta_ref_std<-readRDS(betaReferenceFile)
-  }else if (file.extension == "gz"){
-    beta_ref_std <- read.table(gzfile(betaReferenceFile),
-                               sep = "",
-                               header = TRUE,
-                               stringsAsFactors = FALSE)
-
-    close(gzfile(betaReferenceFile))
   }
+  # }else if (file.extension == ){
+  #   beta_ref_std <- read.table(gzfile(betaReferenceFile),
+  #                              sep = "",
+  #                              header = TRUE,
+  #                              stringsAsFactors = FALSE)
+  #
+  #   close(gzfile(betaReferenceFile))
+  # }
 
   # convert to data.table
   if(!is.data.table(beta_ref_std))

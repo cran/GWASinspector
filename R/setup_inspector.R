@@ -57,6 +57,8 @@ setup.inspector <- function(config.file , validate = TRUE)
       object_file =  configuration$output_parameters$object_file,
       add_column_multiallelic =  configuration$output_parameters$add_column_multiallelic,
       add_column_AFmismatch =  configuration$output_parameters$add_column_AFmismatch,
+      add_column_AF =  configuration$output_parameters$add_column_AF,
+      add_column_rsid =  configuration$output_parameters$add_column_rsid,
       ordered =  configuration$output_parameters$ordered
     ),
     remove_chromosomes = list(

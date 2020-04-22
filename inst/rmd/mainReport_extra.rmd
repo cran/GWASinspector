@@ -102,6 +102,8 @@ Input file:		**`r basename(.QC$thisStudy$file.path)`**
 
 Input file line count (including header):		**`r .QC$thisStudy$file.line.count`**
 
+Input file ends with a new line:		**`r .QC$thisStudy$file.endsWithNewLine`**
+
 
 
 <br/>

@@ -8,6 +8,7 @@ create.Study <- function(study)
       file.name = study$file.name,
       file.extension = study$file.extension,
       file.line.count = study$file.line.count,
+      file.line.count = study$file.endsWithNewLine,
       dup_lines_count = study$dup_lines_count,
       original.File.Columns = study$original.File.Columns,
       renamed.File.Columns.sorted = study$renamed.File.Columns.sorted

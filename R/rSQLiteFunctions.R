@@ -126,11 +126,20 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
   rn <- unlist(input.data$hID)
 
+  if(.QC$config$output_parameters$add_column_rsid &&  ## get REF_RSID if user has selected in config file
+     is.element("REF_RSID",RSQLite::dbListFields(.QC$reference.data,'variants')))
+    {
+      rs <- RSQLite::dbGetQuery(.QC$reference.data,
+                              sprintf('SELECT hID,REF_RSID,REF,ALT , %s as AF FROM variants WHERE "hID" = :x' ,
+                                      .QC$config$supplementaryFiles$allele_ref_std_population) ,
+                              param = list(x = rn))
+      } else {
+        rs <- RSQLite::dbGetQuery(.QC$reference.data,
+                              sprintf('SELECT hID,REF,ALT , %s as AF FROM variants WHERE "hID" = :x' ,
+                                      .QC$config$supplementaryFiles$allele_ref_std_population) ,
+                              param = list(x = rn))
+    }
 
-  rs <- RSQLite::dbGetQuery(.QC$reference.data,
-                            sprintf('SELECT hID,REF,ALT , %s as AF FROM variants WHERE "hID" = :x' ,
-                                    .QC$config$supplementaryFiles$allele_ref_std_population) ,
-                            param = list(x = rn))
 
   ## merging data
   if(is.null(data.table::key(input.data)) || data.table::key(input.data) != 'hID')

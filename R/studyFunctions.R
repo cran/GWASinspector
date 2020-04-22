@@ -556,12 +556,20 @@ create.file.specific.config <- function(file.name){
                 'info')
 
   # get file line count if file is not zipped
-  if(config$test.run) # do not count the lines if it is a test run
-    study$file.line.count <- 'NA (test run)'
-  else if(study$zipped.File)  # do not count the lines if it is zipped
-    study$file.line.count <- 'NA (zipped file)'
-  else
-    study$file.line.count <- get.file.line.count(file.name)
+  # if(config$test.run) # do not count the lines if it is a test run
+  #   study$file.line.count <- 'NA (test run)'
+  # else if(study$zipped.File)  # do not count the lines if it is zipped
+  #   study$file.line.count <- 'NA (zipped file)'
+  # else
+  #   study$file.line.count <- get.file.line.count(file.name)
+
+  # get file line count if file is not zipped
+  if(study$file.extension != 'zip') # do not count the lines if it is a test run
+  {
+    fileInspection <- get.file.line.count_RUtils(file.name)
+    study$file.line.count <- fileInspection[1]
+    study$file.endsWithNewLine <- fileInspection[2]
+  }
 
 
   ###### ==== file names ==== ##########
@@ -875,6 +883,32 @@ get.file.line.count <- function(file.path)
   {
     file.line.count <- 'NA (command not accessible)'
   }
+
+  return(file.line.count)
+}
+
+get.file.line.count_RUtils <- function(file.path)
+{
+
+  ## get line count of input file
+  # this values is used to compare count of file lines with count of vatriants in input datset
+  # if they  do not match , it means some lines are not read
+  # skip if input file is zipped (because line number is binary line count)
+
+  file.line.count <- tryCatch({
+
+    line <- R.utils::countLines(file.path)
+
+    file_ends_withNewline <- as.character(attr(line,"lastLineHasNewline"))
+
+    line <- format(line,
+                   big.mark="," ,
+                   scientific = FALSE)
+
+    return(list(line,file_ends_withNewline))
+    },
+    error = function(err) return("NA (command not accessible)","NA")
+    )
 
   return(file.line.count)
 }

@@ -6,7 +6,7 @@ uploadAltReferenceFile<-function()
   file.extension<-tolower(file_ext(altReferenceFile))
 
   #load the file based on its extension
-  if(file.extension %in% c('csv','txt','dat')){
+  if(file.extension %in% c('csv','txt','dat','gz')){
     allele_ref_alt_std<-fread(altReferenceFile,
                               data.table = TRUE)
   }else if(file.extension == "rdata"){
@@ -40,14 +40,14 @@ uploadAltReferenceFile<-function()
     )
 
 
-  } else if (file.extension == "gz"){
-    allele_ref_alt_std <- read.table(gzfile(altReferenceFile),
-                                     sep = "",
-                                     header = TRUE,
-                                     stringsAsFactors = FALSE)
-
-    close(gzfile(altReferenceFile))
-  }
+  } #else if (file.extension == "gz"){
+  #   allele_ref_alt_std <- read.table(gzfile(altReferenceFile),
+  #                                    sep = "",
+  #                                    header = TRUE,
+  #                                    stringsAsFactors = FALSE)
+  #
+  #   close(gzfile(altReferenceFile))
+  # }
 
 
   # convert to data.table and set KEY
@@ -85,7 +85,7 @@ checkAltReferenceFileIntegrity <- function() {
   ref.col.names <- colnames(.QC$alt.reference.data)
 
   ##TODO set this is a setting file
-  required.ref.col.names <- c("hID","ID", "REF" ,"ALT", "AF" ,'DATE_ADDED','SOURCE')
+  required.ref.col.names <- c("hID", "REF" ,"ALT", "AF" ,'DATE_ADDED','SOURCE')
 
   missing.ref.col.index <- which(required.ref.col.names %notin% ref.col.names)
 
@@ -125,23 +125,15 @@ checkDuplicatedHID_in_Alt_Ref <- function()
 
 update.alternate.reference <- function(input.data) {
 
-  if(any(c('MARKER','CHR','POSITION') %notin% colnames(input.data)))
-  {
-    print.and.log('Alternate allele frequency data set was not updated due to a missing column in dataset.','warning',display=.QC$config$debug$verbose)
-    return(NULL)
-  }
-
-
 
   # find variants that were not dounf in either references and have a valid allele frequency
   unknown.variants <- subset(input.data[is.na(REF) & !is.na(EFF_ALL_FREQ)],
-                               select=c('MARKER','hID','EFFECT_ALL','OTHER_ALL','EFF_ALL_FREQ'))
+                               select=c('hID','EFFECT_ALL','OTHER_ALL','EFF_ALL_FREQ'))
 
 
   if(nrow(unknown.variants) > 0 )
   {
     # rename columns according to refrence file standard
-    names(unknown.variants)[names(unknown.variants) == 'MARKER'] <- 'ID'
     names(unknown.variants)[names(unknown.variants) == 'EFFECT_ALL'] <- 'ALT'
     names(unknown.variants)[names(unknown.variants) == 'OTHER_ALL'] <- 'REF'
     names(unknown.variants)[names(unknown.variants) == 'EFF_ALL_FREQ'] <- 'AF'
@@ -185,7 +177,7 @@ save.alternate.reference <- function()
     saveDataSet(dataset = .QC$alt.reference.data,
                 file.path = .QC$config$supplementaryFiles$allele_ref_alt,
                 zipped = FALSE,
-				ordered = FALSE)
+			        	ordered = FALSE)
   }else if(file.extension == "rdata"){
     # save function can not save part of environment
     # and should be presented as a new object
@@ -201,7 +193,7 @@ save.alternate.reference <- function()
     saveDataSet(dataset = .QC$alt.reference.data,
                 file.path = .QC$config$supplementaryFiles$allele_ref_alt,
                 zipped = TRUE,
-				ordered = FALSE)
+				        ordered = FALSE)
   }
 
 

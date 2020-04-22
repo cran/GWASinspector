@@ -31,13 +31,20 @@ saveDataSet <- function(dataset,
   if(zipped){
     # much slower tha fwrite
     tryCatch(
-      write.table(dataset,
-                  dec = decValue,
-                  na = naValue,
-                  quote = FALSE,
-                  sep = columnSeparator,
-                  row.names = FALSE,
-                  file = gzfile(file.path ,compression = 3)),
+      # write.table(dataset,
+      #             dec = decValue,
+      #             na = naValue,
+      #             quote = FALSE,
+      #             sep = columnSeparator,
+      #             row.names = FALSE,
+      #             file = gzfile(file.path ,compression = 3)),
+      fwrite(x = dataset,
+             file = file.path,
+             sep = columnSeparator,
+             na = naValue,
+             dec = decValue,
+             quote = FALSE,
+             compress = "auto"),
       error = function(err)
       {
         print.and.log(sprintf("Error saving file! check below message for more information:\n%s",
@@ -98,14 +105,16 @@ saveDataSet.final<-function(dataset)
 
     if(is.element('highDiffEAF',names(dataset)) && config$output_parameters$add_column_AFmismatch == TRUE)
       requiredColNames <- c(requiredColNames,'highDiffEAF')
-    # {
-    #   dataset[, highDiffEAF := as.numeric(highDiffEAF) ]
-    #   dataset[is.na(highDiffEAF), highDiffEAF := 0]
-    # }
+
+    if(is.element('AF',names(dataset)) && config$output_parameters$add_column_AF == TRUE)
+      requiredColNames <- c(requiredColNames,'AF')
+
+    if(is.element('REF_RSID',names(dataset)) && config$output_parameters$add_column_rsid == TRUE)
+      requiredColNames <- c(requiredColNames,'REF_RSID')
 
 
-    dataset <- subset(dataset ,
-                      select = requiredColNames)
+
+    dataset <- subset(dataset , select = requiredColNames)
 
 
 

@@ -354,6 +354,16 @@ checkConfigFile <- function(config.file) {
                           'logical',
                           FALSE)
 
+  config$output_parameters$add_column_rsid <-
+    checkConfigParameters(config$output_parameters$add_column_rsid,
+                          'logical',
+                          FALSE)
+
+  config$output_parameters$add_column_AF <-
+    checkConfigParameters(config$output_parameters$add_column_AF,
+                          'logical',
+                          FALSE)
+
   config$output_parameters$add_column_AFmismatch <-
     checkConfigParameters(config$output_parameters$add_column_AFmismatch,
                           'logical',
@@ -672,6 +682,8 @@ make.config <- function(object)
       object_file = object@output_parameters$object_file,
       add_column_multiallelic = object@output_parameters$add_column_multiallelic,
       add_column_AFmismatch = object@output_parameters$add_column_AFmismatch,
+      add_column_rsid = object@output_parameters$add_column_rsid,
+      add_column_AF = object@output_parameters$add_column_AF,
       ordered = object@output_parameters$ordered
     ),
     remove_chromosomes = list(

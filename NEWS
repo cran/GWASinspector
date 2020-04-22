@@ -19,3 +19,8 @@ Changes in version 1.4 (Jan 2020)
 	- Report files were edited.
 	- Minor bug fixes.
 	- sample.inspector function is renamed to demo.inspector.
+
+	Changes in version 1.4.7 (Apr 2020)
+====================================
+	- data.table package (1.12.8) is now capable of directly writing gz files. This will be used for saving output zipped files.
+	- R.utils package is now added to dependecy list. This will be used to read gz files with data.table::fread() function.

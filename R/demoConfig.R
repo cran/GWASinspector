@@ -38,6 +38,8 @@ example.config <- function(result.dir, config)
   config$output_parameters$object_file <- FALSE
   config$output_parameters$add_column_multiallelic <- FALSE
   config$output_parameters$add_column_AFmismatch <- FALSE
+  config$output_parameters$add_column_rsid <- FALSE
+  config$output_parameters$add_column_AF <- FALSE
   config$output_parameters$ordered <- FALSE
 
   config$plot_specs$plot_cutoff_p <- 0.2

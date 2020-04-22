@@ -314,12 +314,14 @@ create.xlsx.report <- function(config,study.list){
       format(study$starttime, "%b %d %Y - %X"),
       format(study$endtime, "%b %d %Y - %X"),
       basename(study$file.path),
-      study$file.line.count))
+      study$file.line.count,
+      study$file.endsWithNewLine))
 
     tbl<- cbind(c('Start time',
                   'End time',
                   'Input File Name',
-                  'Input File Line Count (including header)'), tbl)
+                  'Input File Line Count (including header)', 
+                  'Input File ends with a new line'), tbl)
 
 
     row.index <- row.index + 2 # 3

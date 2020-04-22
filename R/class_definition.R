@@ -95,6 +95,8 @@ Inspector <- setClass(
       object_file = TRUE,
       add_column_multiallelic = FALSE,
       add_column_AFmismatch = FALSE,
+      add_column_rsid = FALSE,
+      add_column_AF = FALSE,
 	  ordered = FALSE
     ),
     remove_chromosomes = list(
@@ -161,6 +163,7 @@ Study <- setClass(
       file.name = character(0),
       file.extension = character(0),
       file.line.count = numeric(0),
+      file.endsWithNewLine = character(0),
       dup_lines_count = numeric(0),
       original.File.Columns = c(character(0)),
       renamed.File.Columns.sorted = c(character(0))

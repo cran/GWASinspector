@@ -192,13 +192,13 @@ create.xlsx.report <- function(config,study.list){
     sapply(study.list, function(x) return(format(x$rowcount.step2, big.mark="," , scientific = FALSE))),
     sapply(study.list, function(x) return(format(x$rowcount.step3, big.mark="," , scientific = FALSE))),
     sapply(study.list, function(x) return(calculatePercent(sum(as.numeric(gsub(x=x$tables$multi_allele_count_preProcess[1:3],
-                                                                                                pattern = ",",
-                                                                                                replacement = ""))),x$rowcount.step3,pretty=TRUE))),
+                                                                               pattern = ",",
+                                                                               replacement = ""))),x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(sum(as.numeric(gsub(x=x$tables$multi_allele_count_preProcess[4:6],
-                                                                                                    pattern = ",",
-                                                                                                    replacement = "")))
-                                                                                ,x$rowcount.step3,
-                                                                                pretty=TRUE))),
+                                                                               pattern = ",",
+                                                                               replacement = "")))
+                                                           ,x$rowcount.step3,
+                                                           pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(x$monomorphic.count,x$rowcount.step3,pretty=TRUE))),
     #sapply(study.list, function(x) return(calculatePercent(x$duplicate.count,x$rowcount.step3,pretty=TRUE))),
     sapply(study.list, function(x) return(calculatePercent(x$palindromic.rows,x$rowcount.step3,pretty=TRUE))),
@@ -218,6 +218,10 @@ create.xlsx.report <- function(config,study.list){
     sapply(study.list, function(x) return(x$lambda.imp)),
     sapply(study.list, function(x) return(x$PVcor)),
     sapply(study.list, function(x) return(x$Visschers.stat.HQ)),
+    sapply(study.list, function(x) return(x$fixed.hwep)),
+    sapply(study.list, function(x) return(x$fixed.impq)),
+    sapply(study.list, function(x) return(x$fixed.n_total)),
+    sapply(study.list, function(x) return(x$fixed.callrate)),
     rep(' ', length(study.list)),
     sapply(study.list, function(x) return(x$tables$variable.summary['Min.', .QC$config$input_parameters$effect_type_string])),
     sapply(study.list, function(x) return(x$tables$variable.summary['1st Qu.', .QC$config$input_parameters$effect_type_string])),
@@ -225,50 +229,64 @@ create.xlsx.report <- function(config,study.list){
     sapply(study.list, function(x) return(x$tables$variable.summary['Mean', .QC$config$input_parameters$effect_type_string])),
     sapply(study.list, function(x) return(x$tables$variable.summary['3rd Qu.', .QC$config$input_parameters$effect_type_string])),
     sapply(study.list, function(x) return(x$tables$variable.summary['Max.', .QC$config$input_parameters$effect_type_string])),
+    sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+                                                 x$tables$variable.summary.HQ['Min.', .QC$config$input_parameters$effect_type_string],
+                                          NA))),
+    sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+                                                 x$tables$variable.summary.HQ['Max.', .QC$config$input_parameters$effect_type_string],
+                                          NA))),
     sapply(study.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
-    sapply(study.list, function(x) return(x$fixed.hwep)),
-    sapply(study.list, function(x) return(x$fixed.impq)),
-    sapply(study.list, function(x) return(x$fixed.n_total)),
-    sapply(study.list, function(x) return(x$fixed.callrate))))
+    sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+                                                 x$tables$variable.summary.HQ['Median','STDERR'],
+                                          NA)))
+
+    ))
+
+
 
   report.table <- rbind(seq(1:length(study.list)),report.table)
 
-  row.names(report.table)<- c('File number',
-                              'Sample Size (Max)',
-                              'Missing Columns',
-                              'SNPs in input file',
-                              'Variant count after step 1 *',
-                              'Variant count after step 2 **',
-                              'Variant count after step 3 ***',
-                              'SNP variants',
-                              'Non-SNP variants',
-                              'Monomorphic',
-#/	'Duplicates',
-                              'Palindromics',
-                              'Genotyped variants',
-                              'Imputed variants',
-                              'Negative-strand SNPs',
-                              'Allele Frequency Correlation (Standard Ref)',
-                              'Palindromic Allele Frequency correlation (Standard Ref)',
-                              'Allele Frequency Correlation (Alternative Ref)',
-                              'Palindromic Allele Frequency correlation (Alternative Ref)',
-                              'Lambda - Total',
-                              'Lambda - Genotyped',
-                              'Lambda - Imputed',
-                              'P-value Correlation',
-                              "Visscher's Statistic (HQ variants)",
-                              .QC$config$input_parameters$effect_type_string,
-                              "      Min.",
-                              "      1st Qu.",
-                              "      Median",
-                              "      Mean",
-                              "      3rd Qu.",
-                              "      Max.",
-                              "Standard Error (median)",
-                              "Fixed HWE P-value",
-                              "Fixed Imputation Quality",
-                              "Fixed Sample Size",
-                              "Fixed Call Rate")
+  row.names(report.table) <- c("File number",
+                    "Sample Size (Max)",
+                    "Missing Columns",
+                    "SNPs in input file",
+                    "Variant count after step 1 *",
+                    "Variant count after step 2 **",
+                    "Variant count after step 3 ***",
+                    "SNP variants",
+                    "Non-SNP variants",
+                    "Monomorphic",
+                    #/	"Duplicates",
+                    "Palindromics",
+                    "Genotyped variants",
+                    "Imputed variants",
+                    "Negative-strand SNPs",
+                    "Allele Frequency Correlation (Standard Ref)",
+                    "Palindromic Allele Frequency correlation (Standard Ref)",
+                    "Allele Frequency Correlation (Alternative Ref)",
+                    "Palindromic Allele Frequency correlation (Alternative Ref)",
+                    "Lambda - Total",
+                    "Lambda - Genotyped",
+                    "Lambda - Imputed",
+                    "P-value Correlation",
+                    "Visscher's Statistic (HQ variants)",
+                    "Fixed HWE P-value",
+                    "Fixed Imputation Quality",
+                    "Fixed Sample Size",
+                    "Fixed Call Rate",
+                    .QC$config$input_parameters$effect_type_string,
+                    "-      Min.",
+                    "-      1st Qu.",
+                    "-      Median",
+                    "-      Mean",
+                    "-      3rd Qu.",
+                    "-      Max.",
+                    "-      Min. (HQ variants)",
+                    "-      Max. (HQ variants)",
+                    "Standard Error (median)",
+                    "Standard Error (median) (HQ variants)")
+
+
 
   # colnames(report.table) <- c(seq(1:length(study.list)))
   colnames(report.table) <- sapply(.QC$qc.study.list, function(x) return(x$number))
@@ -283,13 +301,13 @@ create.xlsx.report <- function(config,study.list){
                      rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
 
 
-  xlsx.addTitle(sheet3, rowIndex= 40, title="step1: removing variants with missing crucial values and duplicated lines.",
+  xlsx.addTitle(sheet3, rowIndex= 42, title="step1: removing variants with missing crucial values and duplicated lines.",
                 titleStyle = NOTE_TITLE_STYLE2)
 
-  xlsx.addTitle(sheet3, rowIndex= 41, title="step2: removing monomorphic variants and specified chromosomes.",
+  xlsx.addTitle(sheet3, rowIndex= 43, title="step2: removing monomorphic variants and specified chromosomes.",
                 titleStyle = NOTE_TITLE_STYLE2)
 
-  xlsx.addTitle(sheet3, rowIndex= 42, title="step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.",
+  xlsx.addTitle(sheet3, rowIndex= 44, title="step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.",
                 titleStyle = NOTE_TITLE_STYLE2)
 
   xlsx::setColumnWidth(sheet3, colIndex= 1, colWidth = 70)
@@ -320,7 +338,7 @@ create.xlsx.report <- function(config,study.list){
     tbl<- cbind(c('Start time',
                   'End time',
                   'Input File Name',
-                  'Input File Line Count (including header)', 
+                  'Input File Line Count (including header)',
                   'Input File ends with a new line'), tbl)
 
 
@@ -797,6 +815,10 @@ create.xlsx.report <- function(config,study.list){
 
     row.index <- row.index + 2 # 80
 
+    xlsx.addTitle(fileSheet, rowIndex=row.index, title="All variants",
+                  titleStyle = NOTE_TITLE_STYLE2)
+    row.index <- row.index + 1
+
     row.names(study$tables$variable.summary) <- c("min.","first_quartile","median","mean","third_quartile","max." )
     xlsx::addDataFrame(t(study$tables$variable.summary), fileSheet, startRow= row.index, startColumn=1,
                        col.names = TRUE ,row.names = TRUE,
@@ -804,7 +826,19 @@ create.xlsx.report <- function(config,study.list){
                        rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
 
 
+    if(nrow(study$tables$variable.summary.HQ ) > 0 & study$HQ.count != study$rowcount.step3)
+    {
+      row.index <- row.index + 10
+      xlsx.addTitle(fileSheet, rowIndex=row.index, title="HQ variants only",
+                    titleStyle = NOTE_TITLE_STYLE2)
 
+      row.index <- row.index + 1
+      row.names(study$tables$variable.summary.HQ) <- c("min.","first_quartile","median","mean","third_quartile","max." )
+      xlsx::addDataFrame(t(study$tables$variable.summary.HQ), fileSheet, startRow= row.index, startColumn=1,
+                         col.names = TRUE ,row.names = TRUE,
+                         colnamesStyle = TABLE_COLNAMES_STYLE,
+                         rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+    }
 
     # column summary statistics
 
@@ -928,21 +962,28 @@ create.xlsx.report <- function(config,study.list){
 
     # effect size comparison
 
-    if(!is.na(config$supplementaryFiles$beta_ref_std)){
+    if(!is.null(.QC$thisStudy$tables$betaCor.tbl)  & !is.na(config$supplementaryFiles$beta_ref_std)){
 
       row.index <- row.index + 3 # 88
       xlsx.addTitle(fileSheet, rowIndex= row.index, title="Effect-size comparison",
                     titleStyle = SUB_TITLE_STYLE)
 
-
-      b <- t(data.frame('r' = study$effect.rho_4))
-      colnames(b) <- c('Value')
+      # b <- t(data.frame('r' = study$effect.rho_4))
+      # colnames(b) <- c('Value')
 
       row.index <- row.index + 1
-      xlsx::addDataFrame(b , fileSheet, startRow= row.index, startColumn=1,
+      xlsx::addDataFrame(.QC$thisStudy$tables$betaCor.tbl , fileSheet, startRow= row.index, startColumn=1,
                          col.names = TRUE ,row.names = TRUE,
                          colnamesStyle = TABLE_COLNAMES_STYLE,
                          rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+
+    row.index <- row.index + 6 # 9
+    xlsx.addTitle(fileSheet, rowIndex=row.index, title="* Data is presented as r(N). Variants were filtered on reference data P-values.",
+                  titleStyle = NOTE_TITLE_STYLE2)
+
+    row.index <- row.index + 1
+    xlsx.addTitle(fileSheet, rowIndex=row.index, title="** Data is presented as r(N). Variants were filtered on input result file P-values.",
+                  titleStyle = NOTE_TITLE_STYLE2)
     }
 
     ## END OF EXCEL REPORT

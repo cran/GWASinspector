@@ -56,7 +56,7 @@ getRSQLiteDatabase.SubPopulationExists <- function(database){
     available.population <- c(character(0))
 
     if(is.element('AF' , tblFields))
-      available.population <- cbind(available.population,'common')
+      available.population <- cbind(available.population,'COMMON')
 
     if(is.element('EUR_AF' , tblFields))
       available.population <- cbind(available.population,'EUR')

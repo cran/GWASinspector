@@ -1,5 +1,6 @@
 ---
 title: "Quality Check Report"
+subtitle: "<h4>GWASinspector package</h4>"
 output:
   html_document:
     css: styles_extra.css
@@ -610,6 +611,7 @@ if(file.exists(.QC$thisStudy$pvalCorPlotPath) & .QC$graphic.device != 'tiff')
 ***
  <h4 class="header2">Distribution statistics [2]</h4>
  
+ <h5>All variants</h5>
 `r 
 kable(t(.QC$thisStudy$tables$variable.summary), format = "html")%>% 
 		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
@@ -619,6 +621,21 @@ kable(t(.QC$thisStudy$tables$variable.summary), format = "html")%>%
 `
 
 
+`r if(nrow(.QC$thisStudy$tables$variable.summary.HQ ) > 0 & .QC$thisStudy$HQ.count != .QC$thisStudy$rowcount.step3){ 
+      paste('<hr/><h5>HQ variants</h5>')
+}
+`
+
+
+`r if(nrow(.QC$thisStudy$tables$variable.summary.HQ ) > 0 & .QC$thisStudy$HQ.count != .QC$thisStudy$rowcount.step3)
+  {
+    kable(t(.QC$thisStudy$tables$variable.summary.HQ), format = "html")%>% 
+		kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+		full_width = F, 
+		position = "left") %>%
+		kableExtra::column_spec(1, bold = T, border_right = T,width="15em")
+  }
+`
 
 
 
@@ -665,20 +682,27 @@ kableExtra::column_spec(2, width = "10em")`
 
 
 
-`r if(!is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
+`r if(!is.null(.QC$thisStudy$tables$betaCor.tbl)  & !is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
       paste('<h3 class="header1">Effect-size correlation</h3>')
 }
 `
 
-`r if(!is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
-      paste('* r =', .QC$thisStudy$effect.rho_4)
+`r if(!is.null(.QC$thisStudy$tables$betaCor.tbl)  & !is.na(.QC$config$supplementaryFiles$beta_ref_std)){ 
+      kable(.QC$thisStudy$tables$betaCor.tbl, align = "c",format = "html") %>%
+      kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "responsive"),
+      full_width = F,
+      position = "left") %>%
+      kableExtra::column_spec(1, bold = T, border_right = T  ) %>%
+      kableExtra::column_spec(2, width = "10em")%>%
+		  kableExtra::footnote(general = c(  
+                      "* = Data is presented as r(N). Variants were filtered on reference data P-values.",
+                      "** = Data is presented as r(N). Variants were filtered on input result file P-values."))
 			}
-
 `
 
 
 `r 
-if(file.exists(.QC$thisStudy$effPlotPath) & .QC$graphic.device != 'tiff')
+if(!is.null(.QC$thisStudy$tables$betaCor.tbl)  & file.exists(.QC$thisStudy$effPlotPath) & .QC$graphic.device != 'tiff')
 {
 
 	htmltools::img(src = knitr::image_uri(.QC$thisStudy$effPlotPath), 

@@ -199,7 +199,7 @@ report.to.txt.file <- function(study) {
   writeTXTreport('============================================================')
 
   writeTXTreport(' ')
-  writeTXTreport(paste('Script version:', .QC$script.version))
+ # writeTXTreport(paste('Script version:', .QC$script.version))
   writeTXTreport(paste('System Information:', .QC$r.version))
   writeTXTreport(sprintf('Start Time: %s', format(study$starttime, "%b %d %Y - %X")))
   writeTXTreport(sprintf('End Time: %s', format(study$endtime, "%b %d %Y - %X")))
@@ -683,8 +683,16 @@ report.to.txt.file <- function(study) {
   writeTXTreport('==============================================')
   writeTXTreport(' ')
 
+  writeTXTreport(sprintf('All variants (%s)' , prettyNum(.QC$thisStudy$rowcount.step3,big.mark = ",")))
   writeTXTreport(kable(t(study$tables$variable.summary), format = "rst"))
   writeTXTreport(' ')
+
+  if(nrow(study$tables$variable.summary.HQ ) > 0 & study$HQ.count != study$rowcount.step3)
+  {
+    writeTXTreport(sprintf('HQ variants (%s)' , prettyNum(.QC$thisStudy$HQ.count,big.mark = ",")))
+    writeTXTreport(kable(t(study$tables$variable.summary.HQ), format = "rst"))
+    writeTXTreport(' ')
+  }
 
 
   ##========================================

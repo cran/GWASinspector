@@ -20,7 +20,7 @@ compare.GWASs <- function(input.file.list, output.path)
 
   ##==========================
 
-  check.output.dir(output.path)
+  output.path <- check.output.dir(output.path)
 
 
   #
@@ -51,6 +51,14 @@ compare.GWASs <- function(input.file.list, output.path)
     .QC$input.file.list[[i]]$number = i
     #input.file.list[[i]]$effect.plot$plot_env$file.number = i
     .QC$input.file.list[[i]]$effect.plot$labels$x = i
+
+
+    ## compatibility with older versions
+    if(is.null(.QC$input.file.list[[i]]$effect_type_string))
+      .QC$input.file.list[[i]]$effect_type_string = 'BETA'
+
+    if(is.null(.QC$input.file.list[[i]]$tables$variable.summary.HQ))
+      .QC$input.file.list[[i]]$tables$variable.summary.HQ = data.table()
   }
 
 
@@ -142,10 +150,37 @@ check.each.GWAS.file <- function(GWAS.file.path)
 
 check.output.dir <- function(output.path)
 {
-  if(dir.exists(output.path))
-    return(TRUE)
+  new.dir <- NULL
+
+  if(!dir.exists(output.path))
+  {
+    stop(sprintf("%s: %s", "Output directory does not exist.",output.path))
+  }
   else
-    stop('Output directory does not exist.',call. = FALSE)
+  {
+    # remove the trailing backslash from path
+    output.path <- gsub('/+$', '' , output.path)
+
+    new.dir <- paste(output.path,'comparing_GWASs',sep = '/')
+
+    tryCatch({
+      if (!dir.exists(new.dir))
+      {
+         dir.create(new.dir)
+      }
+      else
+      {
+        new.dir <- sprintf("%s_%s", new.dir, as.numeric(Sys.time()))
+        dir.create(new.dir)
+      }
+    }, error = function(err)
+    {
+      stop(sprintf("%s: %s", 'Error creating output directory.', err$message))
+    })
+  }
+
+  message(paste("Report directory:",new.dir))
+  return(new.dir)
 }
 
 check.output.report.files <- function(output.path, filename)
@@ -226,19 +261,29 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
     'Lambda - Imputed' = sapply(study.list, function(x) return(x$lambda.imp)),
     'P-value Correlation' = sapply(study.list, function(x) return(x$PVcor)),
     "Visscher's Statistic (HQ variants)" = sapply(study.list, function(x) return(x$Visschers.stat.HQ)),
-    "Effect size" = " ",
-    "-     Min." = sapply(study.list, function(x) return(x$tables$variable.summary['Min.', 'BETA'])),
-    "-     1st Qu." = sapply(study.list, function(x) return(x$tables$variable.summary['1st Qu.','BETA'])),
-    "-     Median" = sapply(study.list, function(x) return(x$tables$variable.summary['Median','BETA'])),
-    "-     Mean" = sapply(study.list, function(x) return(x$tables$variable.summary['Mean','BETA'])),
-    "-     3rd Qu." = sapply(study.list, function(x) return(x$tables$variable.summary['3rd Qu.','BETA'])),
-    "-     Max." = sapply(study.list, function(x) return(x$tables$variable.summary['Max.','BETA'])),
-    "Standard Error (median)" = sapply(study.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
     "Fixed HWE P-value" = sapply(study.list, function(x) return(x$fixed.hwep)),
     "Fixed Imputation Quality" = sapply(study.list, function(x) return(x$fixed.impq)),
     "Fixed Sample Size" = sapply(study.list, function(x) return(x$fixed.n_total)),
-    "Fixed Call Rate" = sapply(study.list, function(x) return(x$fixed.callrate))
-  ))
+    "Fixed Call Rate" = sapply(study.list, function(x) return(x$fixed.callrate)),
+    "Effect size (All variants)" = " ",
+    "-     Min." = sapply(study.list, function(x) return(x$tables$variable.summary['Min.', x$effect_type_string])),
+    "-     1st Qu." = sapply(study.list, function(x) return(x$tables$variable.summary['1st Qu.',x$effect_type_string])),
+    "-     Median" = sapply(study.list, function(x) return(x$tables$variable.summary['Median',x$effect_type_string])),
+    "-     Mean" = sapply(study.list, function(x) return(x$tables$variable.summary['Mean',x$effect_type_string])),
+    "-     3rd Qu." = sapply(study.list, function(x) return(x$tables$variable.summary['3rd Qu.',x$effect_type_string])),
+    "-     Max." = sapply(study.list, function(x) return(x$tables$variable.summary['Max.',x$effect_type_string])),
+    "-     Min.(HQ variants)" = sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+                                                                x$tables$variable.summary.HQ['Min.', x$effect_type_string],
+                                                                NA))),
+    "-     Max.(HQ variants)" = sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+                                                                x$tables$variable.summary.HQ['Max.',x$effect_type_string],
+                                                                NA))),
+    "Standard Error (median)" = sapply(study.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
+    "Standard Error (median) (HQ variants)" = sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+                                                                                  x$tables$variable.summary.HQ['Median','STDERR'],
+                                                                                  NA)))
+  )
+)
 
   colnames(report.table) <- seq(1:length(study.list))
 
@@ -249,6 +294,10 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
   write.to.report.file('* step1: removing variants with missing crucial values.',txt.report.path)
   write.to.report.file('** step2: removing monomorphic or duplicated variants, and specified chromosomes.',txt.report.path)
   write.to.report.file('*** step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.',txt.report.path)
+
+  write.to.report.file('\n==============================================',txt.report.path)
+  write.to.report.file(sprintf('Generated by GWASinspector package - v.%s', utils::packageVersion('GWASinspector')),txt.report.path)
+  write.to.report.file(as.character(Sys.time()),txt.report.path)
 
   message(sprintf("Output file saved from %s input files." ,length(study.list)))
 }

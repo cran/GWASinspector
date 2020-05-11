@@ -1,5 +1,6 @@
 ---
 title: "Quality Check Report"
+subtitle: "<h4>GWASinspector package</h4>"
 output:
   html_document:
     css: styles_extra.css
@@ -106,25 +107,34 @@ kableExtra::column_spec(2, extra_css='text-align:left')
 	   "<span class='item'>Standard reference</span>" = sapply(.QC$qc.study.list, function(x) return(x$AFcor.std_ref)),
 	   "<span class='item'>Alternative reference</span>" = sapply(.QC$qc.study.list, function(x) return(x$AFcor.alt_ref)),
        "<span class='mainItem'>Palindromic allele frequency correlation</span>" = '',
-        "<span class='item'>Standard reference</span>" = sapply(.QC$qc.study.list, function(x) return(x$AFcor.palindromic.std_ref)),
+       "<span class='item'>Standard reference</span>" = sapply(.QC$qc.study.list, function(x) return(x$AFcor.palindromic.std_ref)),
        "<span class='item'>Alternative reference</span>" = sapply(.QC$qc.study.list, function(x) return(x$AFcor.palindromic.alt_ref)),
        "<span class='mainItem'>Lambda - total</span>" = sapply(.QC$qc.study.list, function(x) return(x$lambda)),
        "<span class='mainItem'>Lambda - genotyped</span>" = sapply(.QC$qc.study.list, function(x) return(x$lambda.gen)),
        "<span class='mainItem'>Lambda - imputed</span>" = sapply(.QC$qc.study.list, function(x) return(x$lambda.imp)),
 	   "<span class='mainItem'>P-value correlation (obs. vs exp.)</span>" = sapply(.QC$qc.study.list, function(x) return(x$PVcor)),
        "<span class='mainItem'>Visscher's statistic (HQ variants)</span>" = sapply(.QC$qc.study.list, function(x) return(x$Visschers.stat.HQ)),
-        "<span class='mainItem'>Effect size</span>" = ' ',
-        "<span class='item'>Min.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Min.',  .QC$config$input_parameters$effect_type_string])),
-	   "<span class='item'>1st Qu.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['1st Qu.',  .QC$config$input_parameters$effect_type_string])),
-    	   "<span class='item'>Median</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Median', .QC$config$input_parameters$effect_type_string])),
-	   	   "<span class='item'>Mean</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Mean', .QC$config$input_parameters$effect_type_string])),
-	   "<span class='item'>3rd Qu.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['3rd Qu.', .QC$config$input_parameters$effect_type_string])),
-	           "<span class='item'>Max.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Max.', .QC$config$input_parameters$effect_type_string])),
-	   "<span class='mainItem'>Standard error (median)</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
-       "<span class='mainItem'>Fixed HWE P-value</span>" = sapply(.QC$qc.study.list, function(x) return(x$fixed.hwep)),
+              "<span class='mainItem'>Fixed HWE P-value</span>" = sapply(.QC$qc.study.list, function(x) return(x$fixed.hwep)),
 	   "<span class='mainItem'>Fixed imputation quality</span>" = sapply(.QC$qc.study.list, function(x) return(x$fixed.impq)),
 	   "<span class='mainItem'>Fixed sample size</span>" = sapply(.QC$qc.study.list, function(x) return(x$fixed.n_total)),
-	   "<span class='mainItem'>Fixed call rate</span>" = sapply(.QC$qc.study.list, function(x) return(x$fixed.callrate))
+	   "<span class='mainItem'>Fixed call rate</span>" = sapply(.QC$qc.study.list, function(x) return(x$fixed.callrate)),
+	   "<span class='mainItem'>Effect size</span>" = ' ',
+       "<span class='item'>Min.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Min.',  .QC$config$input_parameters$effect_type_string])),
+	   "<span class='item'>1st Qu.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['1st Qu.',  .QC$config$input_parameters$effect_type_string])),
+       "<span class='item'>Median</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Median', .QC$config$input_parameters$effect_type_string])),
+	   "<span class='item'>Mean</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Mean', .QC$config$input_parameters$effect_type_string])),
+	   "<span class='item'>3rd Qu.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['3rd Qu.', .QC$config$input_parameters$effect_type_string])),
+	   "<span class='item'>Max.</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Max.', .QC$config$input_parameters$effect_type_string])),
+       "<span class='item'>Min. (HQ variants)</span>" = sapply(.QC$qc.study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+																								   x$tables$variable.summary.HQ['Min.',  .QC$config$input_parameters$effect_type_string], 
+																								   NA))),
+	   "<span class='item'>Max. (HQ variants)</span>" = sapply(.QC$qc.study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+																								   x$tables$variable.summary.HQ['Max.', .QC$config$input_parameters$effect_type_string], 
+																								   NA))),
+	    "<span class='mainItem'>Standard error (median)</span>" = sapply(.QC$qc.study.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
+		"<span class='mainItem'>Standard error (median) (HQ variants)</span>" = sapply(.QC$qc.study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
+																								   x$tables$variable.summary.HQ['Median','STDERR'], 
+																								   NA)))
        ))
       
 	    colnames(report.table) <- sapply(.QC$qc.study.list, function(x) return(x$number))

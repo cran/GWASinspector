@@ -99,5 +99,7 @@ utils::globalVariables(c('PVALUE',
                        'SWITCHED_OTHER_ALL',
                        '..density..',
                        '.',
-					              'match_result',
-					              'N_CASES'))
+					   'match_result',
+					   'N_CASES',
+					   'PVALUE.x',
+					   'PVALUE.y'))

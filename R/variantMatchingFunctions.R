@@ -1,7 +1,7 @@
 compareInputfileWithReferenceData <- function(input.data)
 {
   #  .QC$reference.data ==> this can be a data table or a database object
-  #  .QC$alt.reference.data
+  #  .QC$alt.reference.daOta
   ## 1
   if(is.data.table(.QC$reference.data))
     input.data <- compareInputfileWithReferenceFile(input.data)
@@ -186,7 +186,7 @@ compareInputfileWithBetaReferenceFile<-function(input.data)
 
   if(is.element('hID', names(input.data)))
   {
-    input.data <- input.data[,c('EFFECT_ALL', 'OTHER_ALL',  'EFFECT','HQ','hID')]
+    input.data <- input.data[,c('EFFECT_ALL', 'OTHER_ALL',  'EFFECT','HQ','hID','PVALUE')]
     setkey(.QC$reference.data.effect, "hID")
     #setkey(input.data, "hID")
 
@@ -215,18 +215,55 @@ compareInputfileWithBetaReferenceFile<-function(input.data)
 
 
   # p-value of the variants in reference dataset is < 0.001
+  # X: reference Beta
+  # Y: input file Beta
   .QC$thisStudy$effect.rho_3 <- signif(cor(matched.data$EFFECT.x ,matched.data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_3.n <- nrow(matched.data)
 
-
-  temp_data <- matched.data[PVALUE < 0.0001,]
+  temp_data <- matched.data[PVALUE.x < 0.0001,]
   .QC$thisStudy$effect.rho_4 <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_4.n <- nrow(temp_data)
 
-  temp_data <- matched.data[PVALUE < 0.00001,]
+  temp_data <- matched.data[PVALUE.x < 0.00001,]
   .QC$thisStudy$effect.rho_5 <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_5.n <- nrow(temp_data)
 
 
-  temp_data <- matched.data[PVALUE < 0.000001,]
+  temp_data <- matched.data[PVALUE.x < 0.000001,]
   .QC$thisStudy$effect.rho_6 <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_6.n <- nrow(temp_data)
 
-  return(matched.data[PVALUE < 0.0001,])
+
+    # filtering the variants in input rsult files on P_value
+  temp_data <- matched.data[PVALUE.y < 0.001,]
+  .QC$thisStudy$effect.rho_3.y <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_3.n.y <- nrow(temp_data)
+
+
+  temp_data <- matched.data[PVALUE.y < 0.0001,]
+  .QC$thisStudy$effect.rho_4.y <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_4.n.y <- nrow(temp_data)
+
+  temp_data <- matched.data[PVALUE.y < 0.00001,]
+  .QC$thisStudy$effect.rho_5.y <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_5.n.y <- nrow(temp_data)
+
+
+  temp_data <- matched.data[PVALUE.y < 0.000001,]
+  .QC$thisStudy$effect.rho_6.y <- signif(cor(temp_data$EFFECT.x ,temp_data$EFFECT.y),4)
+  .QC$thisStudy$effect.rho_6.n.y <- nrow(temp_data)
+
+
+  .QC$thisStudy$tables$betaCor.tbl <- t(data.table( 'P-value < 0.001' = c(sprintf("%s (%s)",.QC$thisStudy$effect.rho_3 , .QC$thisStudy$effect.rho_3.n),
+                                                                          sprintf("%s (%s)",.QC$thisStudy$effect.rho_3.y , .QC$thisStudy$effect.rho_3.n.y)),
+                                                    'P-value < 0.0001' = c(sprintf("%s (%s)",.QC$thisStudy$effect.rho_4 , .QC$thisStudy$effect.rho_4.n),
+                                                                           sprintf("%s (%s)",.QC$thisStudy$effect.rho_4.y , .QC$thisStudy$effect.rho_4.n.y)),
+                                                    'P-value < 0.00001' = c(sprintf("%s (%s)",.QC$thisStudy$effect.rho_5 , .QC$thisStudy$effect.rho_5.n),
+                                                                            sprintf("%s (%s)",.QC$thisStudy$effect.rho_5.y , .QC$thisStudy$effect.rho_5.n.y)),
+                                                    'P-value < 0.000001' = c(sprintf("%s (%s)",.QC$thisStudy$effect.rho_6 , .QC$thisStudy$effect.rho_6.n),
+                                                                             sprintf("%s (%s)",.QC$thisStudy$effect.rho_6.y , .QC$thisStudy$effect.rho_6.n.y))))
+
+  colnames(.QC$thisStudy$tables$betaCor.tbl) <- c('r*','r**')
+
+  return(matched.data[PVALUE.x < 0.0001,])
 }

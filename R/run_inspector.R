@@ -76,14 +76,13 @@ run.inspector <- function(inspector, test.run=FALSE)
   message('===============================================')
 
 
-  # assign(x = "config" , value = config , envir = .QC)
 
 
   log.file.path <- setupLogOptions(.QC$config)
   ##==============
-  print.and.log("Inspection started!",
-                'info')
-
+  print.and.log(sprintf('%s (v.%s) - Inspection started!',.QC$package.name, .QC$script.version),
+                'info',
+                display=.QC$config$debug$verbose)
 
   print.and.log(sprintf("Log file saved at \'%s\'",log.file.path))
 
@@ -94,35 +93,7 @@ run.inspector <- function(inspector, test.run=FALSE)
   printConfigVariables(.QC$config)
 
 
-  ## TODO move it to validation process
-  message('\n---------- [analyzing input files] ----------\n')
-
-  set.test.run.variables(test.run)
-
-  .QC$qc.study.list <- lapply(inspector@input_files,
-                              create.file.specific.config)
-
-
-  # remove problematic file from list
-  .QC$qc.study.list[sapply(.QC$qc.study.list, is.null)] <- NULL
-
-  if(length(.QC$qc.study.list) == 0 )
-    print.and.log('All Files Removed From Further Analysis During Header Checking!','fatal')
-
-
-
-
-  .QC$file.counter <- 1
-
-  # display study files, missing columns and line number to user
-  # ask if algorithm should be done
-  # verify.files.with.user(.QC$qc.study.list)
-
-
-
-
-
-  ## upload reference file
+    ## upload reference file
   ## =====================================
   message('\n\n---------- [uploading allele frequency reference file] ----------')
 
@@ -198,6 +169,31 @@ run.inspector <- function(inspector, test.run=FALSE)
     )
   }
 
+
+
+  ## TODO move it to validation process
+  message('\n---------- [analyzing input files] ----------\n')
+
+  set.test.run.variables(test.run)
+
+  .QC$qc.study.list <- lapply(inspector@input_files,
+                              create.file.specific.config)
+
+
+  # remove problematic file from list
+  .QC$qc.study.list[sapply(.QC$qc.study.list, is.null)] <- NULL
+
+  if(length(.QC$qc.study.list) == 0 )
+    print.and.log('All Files Removed From Further Analysis During Header Checking!','fatal')
+
+
+
+
+  .QC$file.counter <- 1
+
+  # display study files, missing columns and line number to user
+  # ask if algorithm should be done
+  # verify.files.with.user(.QC$qc.study.list)
 
   print.and.log('\n','info',cat=TRUE)
 

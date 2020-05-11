@@ -27,10 +27,10 @@ multi.study.precision.plot <- function(study.list, graphic.device , figure.path)
   {
     #add number to display in plot beside each point
     # precision.table$order <- 1:nrow(precision.table)
-    if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
-      precision.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
-    else if(!is.null(study.list)) # if function is called independently
+    if(!is.null(study.list)) # if function is called independently
       precision.table$order <- sapply(study.list, function(x) return(x$number))
+    else if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
+      precision.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
 
 
     precision.table[,ordered.names := sprintf('%s- %s',order,study.names)]
@@ -129,10 +129,10 @@ multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path)
 
 
 
-    if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
-      skew.kurt.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
-    else if(!is.null(study.list)) # if function is called independently
+    if(!is.null(study.list)) # if function is called independently
       skew.kurt.table$order <- sapply(study.list, function(x) return(x$number))
+    else if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
+      skew.kurt.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
 
 
 

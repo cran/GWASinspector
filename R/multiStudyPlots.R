@@ -203,6 +203,7 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
       if(all(sapply(study.list, function(x) ifelse("N_CASES" %in% x$renamed.File.Columns, TRUE , FALSE))))
       {
         study.list[order(sapply(study.list,'[[','MAX_N_CASES'))]
+        print.and.log("N_CASES column was used for ordering the plots.")
       }
       else
       {

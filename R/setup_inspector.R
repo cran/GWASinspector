@@ -48,6 +48,7 @@ setup.inspector <- function(config.file , validate = TRUE)
     ),
     output_parameters = list(
       save_final_dataset = configuration$output_parameters$save_final_dataset,
+      save_as_effectSize_reference = configuration$output_parameters$save_as_effectSize_reference,
       gzip_final_dataset = configuration$output_parameters$gzip_final_dataset,
       out_header = configuration$output_parameters$out_header,
       out_sep = configuration$output_parameters$out_sep,
@@ -56,6 +57,7 @@ setup.inspector <- function(config.file , validate = TRUE)
       html_report = configuration$output_parameters$html_report,
       object_file =  configuration$output_parameters$object_file,
       add_column_multiallelic =  configuration$output_parameters$add_column_multiallelic,
+      add_column_HQ =  configuration$output_parameters$add_column_HQ,
       add_column_AFmismatch =  configuration$output_parameters$add_column_AFmismatch,
       add_column_AF =  configuration$output_parameters$add_column_AF,
       add_column_rsid =  configuration$output_parameters$add_column_rsid,

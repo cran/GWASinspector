@@ -742,21 +742,26 @@ create.xlsx.report <- function(config,study.list){
     }
     #
 
-    row.index <- row.index + 11 # 58
-    xlsx.addTitle(fileSheet, rowIndex = row.index, title="AF correlation for each chromosome",
-                  titleStyle = SUB_TITLE_STYLE)
-    row.index <- row.index + 1 # 48
+      row.index <- row.index + 11 # 58
 
+    if( study$AFcor.std_ref.CHR != "NA" && nrow(study$AFcor.std_ref.CHR) > 0)
+    {
 
+        xlsx.addTitle(fileSheet, rowIndex = row.index, title="AF correlation for each chromosome",
+                      titleStyle = SUB_TITLE_STYLE)
 
-    xlsx::addDataFrame(study$AFcor.std_ref.CHR , fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+        row.index <- row.index + 1 # 48
 
+        xlsx::addDataFrame(study$AFcor.std_ref.CHR , fileSheet, startRow= row.index, startColumn=1,
+                           col.names = TRUE ,row.names = FALSE,
+                           colnamesStyle = TABLE_COLNAMES_STYLE,
+                           rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+
+        row.index <- row.index + nrow(study$AFcor.std_ref.CHR) + 2
+    }
 
     #
-    row.index <- row.index + nrow(study$AFcor.std_ref.CHR) + 2
+
     xlsx.addTitle(fileSheet, rowIndex = row.index, title="QC summary statistics",
                   titleStyle = SUB_TITLE_STYLE)
 

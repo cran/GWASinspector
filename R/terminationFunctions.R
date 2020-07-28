@@ -40,9 +40,12 @@ removeFunctionVariablesFromRAM<-function(){
 
   invisible(gc()) ## Free RAM
 
-  message('\n=============================================')
-  message('============= FINISHED QC ===================')
-  message('=============================================')
+  if(.QC$verbose)
+  {
+    cat('\n=============================================', fill = TRUE)
+    cat('============= FINISHED QC ===================', fill = TRUE)
+    cat('=============================================', fill = TRUE)
+  }
 
 }
 

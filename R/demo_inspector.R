@@ -67,7 +67,7 @@ demo.inspector <- function(result.dir)
   )
 
 
-  message('\n---------- [analyzing input files] ----------\n')
+  cat('\n---------- [analyzing input files] ----------\n',fill = TRUE)
   .QC$qc.study.list <- lapply(.QC$config$paths$filename,
                              create.file.specific.config)
 

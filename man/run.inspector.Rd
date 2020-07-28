@@ -4,12 +4,14 @@
 \alias{run.inspector}
 \title{Runs the QC pipeline on a set of GWAS result files}
 \usage{
-run.inspector(inspector, test.run = FALSE)
+run.inspector(inspector, verbose = TRUE, test.run = FALSE)
 }
 \arguments{
 \item{inspector}{An instance of \linkS4class{Inspector} class. Check \code{\link{setup.inspector}} for more details.}
 
-\item{test.run}{logical. If TRUE, only the first 1000 lines of each data file are loaded and analysed;
+\item{verbose}{logical. If FALSE, no messages will show up in the terminal and are only saved in the log file.}
+
+\item{test.run}{logical. If TRUE, only the first 1000 lines of each data file are loaded and analyzed;
 plots and saving the cleaned output dataset are skipped. Default value is FALSE.}
 }
 \value{

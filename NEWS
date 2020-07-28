@@ -28,3 +28,9 @@ Changes in version 1.4 (Jan 2020)
 	Changes in version 1.4.7.1 (May 2020)
 ====================================
 	- Summary statistics are generated seprately for HQ variants.
+
+	Changes in version 1.4.8 (Jul 2020)
+====================================
+	- Messages to the terminal can be supressed using `verbose` parameter.
+	- New columns can be added to the output files indicating multi-allelic or HQ variants.
+	- Allele-frequency and RSID from the reference file can be added to the result files.

@@ -2,10 +2,10 @@ plot.DataEFFECT.vs.RefEFFECT<-function(input.data, effPlotPath, plot.title.text)
 {
 
 
-  eff.ggplot <- ggplot(data = input.data, aes(x = EFFECT.x, y = EFFECT.y,colour = HQ)) +
+  eff.ggplot <- ggplot(data = input.data, aes(x = EFFECT.x, y = EFFECT.y,colour = as.factor(HQ))) +
     geom_point( size = .8) +
     #geom_rug() +
-    geom_smooth(method=lm, aes(fill=HQ),fullrange=TRUE)+
+    geom_smooth(method=lm, aes(fill= as.factor(HQ)),fullrange=TRUE)+
     labs(title="Effect-Size comparison plot",
          x="reference effect-size",
          y="reported effect-size",
@@ -16,7 +16,7 @@ plot.DataEFFECT.vs.RefEFFECT<-function(input.data, effPlotPath, plot.title.text)
     theme(strip.background = element_blank(),
           strip.text.x = element_text(size=8, face = "bold")
           ,strip.text.y = element_text(size=8, face = "bold")
-          ,legend.position = 'top'
+          ,legend.position = 'none'
           ,plot.title=element_text(size=10, face="bold",hjust = 0.5)
           ,plot.subtitle = element_text(size=8, hjust=0.5, face="italic", color="darkblue")
     ) +

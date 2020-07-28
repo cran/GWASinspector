@@ -333,7 +333,12 @@ checkConfigFile <- function(config.file) {
                           'logical',
                           FALSE)
 
-  config$output_parameters$gzip_final_dataset <-
+  config$output_parameters$save_as_effectSize_reference <-
+    checkConfigParameters(config$output_parameters$save_as_effectSize_reference,
+                          'logical',
+                          FALSE)
+
+    config$output_parameters$gzip_final_dataset <-
     checkConfigParameters(config$output_parameters$gzip_final_dataset,
                           'logical',
                           FALSE)
@@ -351,6 +356,11 @@ checkConfigFile <- function(config.file) {
 
   config$output_parameters$add_column_multiallelic <-
 	checkConfigParameters(config$output_parameters$add_column_multiallelic,
+                          'logical',
+                          FALSE)
+
+  config$output_parameters$add_column_HQ <-
+	checkConfigParameters(config$output_parameters$add_column_HQ,
                           'logical',
                           FALSE)
 
@@ -673,6 +683,7 @@ make.config <- function(object)
     ),
     output_parameters = list(
       save_final_dataset = object@output_parameters$save_final_dataset,
+      save_as_effectSize_reference = object@output_parameters$save_as_effectSize_reference,
       gzip_final_dataset = object@output_parameters$gzip_final_dataset,
       out_header = object@output_parameters$out_header,
       out_sep = object@output_parameters$out_sep,
@@ -681,6 +692,7 @@ make.config <- function(object)
       html_report = object@output_parameters$html_report,
       object_file = object@output_parameters$object_file,
       add_column_multiallelic = object@output_parameters$add_column_multiallelic,
+      add_column_HQ= object@output_parameters$add_column_HQ,
       add_column_AFmismatch = object@output_parameters$add_column_AFmismatch,
       add_column_rsid = object@output_parameters$add_column_rsid,
       add_column_AF = object@output_parameters$add_column_AF,

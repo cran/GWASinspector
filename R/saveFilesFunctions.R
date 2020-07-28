@@ -94,7 +94,14 @@ saveDataSet.final<-function(dataset)
 
   if(config$output_parameters$save_final_dataset){
 
-    ## remove reference addded columns from final dataset
+    ## save and effect-size reference rds object from input file
+    ## only significant variants are saved based on pvalue
+    if(config$output_parameters$save_as_effectSize_reference)
+      effect_size_ref_make(dataset,
+                           .QC$thisStudy$effect_size_ref.output.path)
+
+
+    ## remove reference added columns from final dataset
     ## MULTOI_ALLELIC column is needed if it is generated
     ## =========================================
 
@@ -102,6 +109,12 @@ saveDataSet.final<-function(dataset)
 
     if(is.element('MULTI_ALLELIC',names(dataset)) && config$output_parameters$add_column_multiallelic == TRUE)
       requiredColNames <- c(requiredColNames,'MULTI_ALLELIC')
+
+    if(is.element('HQ',names(dataset)) && config$output_parameters$add_column_HQ == TRUE)
+    {
+      requiredColNames <- c(requiredColNames,'HQ')
+      dataset[,HQ := as.numeric(HQ)] # convert TRUE/FALSE to 1/0
+    }
 
     if(is.element('highDiffEAF',names(dataset)) && config$output_parameters$add_column_AFmismatch == TRUE)
       requiredColNames <- c(requiredColNames,'highDiffEAF')
@@ -172,6 +185,8 @@ saveDataSet.final<-function(dataset)
                 decValue = config$output_parameters$out_dec,
                 zipped = config$output_parameters$gzip_final_dataset,
 				ordered = .QC$config$output_parameters$ordered)
+
+
   }else{
     print.and.log('Saving final dataset is skipped!','warning',display=.QC$config$debug$verbose)
   }

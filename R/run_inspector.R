@@ -5,7 +5,8 @@
 #' Check the package vignette and tutorial for more details on this topic.
 #'
 #' @param inspector An instance of \linkS4class{Inspector} class. Check \code{\link{setup.inspector}} for more details.
-#' @param test.run logical. If TRUE, only the first 1000 lines of each data file are loaded and analysed;
+#' @param verbose logical. If FALSE, no messages will show up in the terminal and are only saved in the log file.
+#' @param test.run logical. If TRUE, only the first 1000 lines of each data file are loaded and analyzed;
 #' plots and saving the cleaned output dataset are skipped. Default value is FALSE.
 #' @return Reports from running the algorithm on a single or a series of GWAS result files are generated and saved.
 #' @examples
@@ -27,7 +28,7 @@
 #' result.inspector(job)
 #' }
 #'
-run.inspector <- function(inspector, test.run=FALSE)
+run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 {
 
   if(missing(inspector))
@@ -39,7 +40,7 @@ run.inspector <- function(inspector, test.run=FALSE)
   if(!validate.Inspector(inspector, printWarnings = FALSE))
     stop("Function interrupted.", call. = FALSE)
 
-
+.QC$verbose <- verbose
 
 
 
@@ -69,11 +70,14 @@ run.inspector <- function(inspector, test.run=FALSE)
   inspector@start_time <- .QC$config$new_items$starttime
 
   #### 1
-  message('\n===============================================')
-  message(sprintf('=========== %s v.%s ===========',
-                  .QC$package.name,
-                  .QC$script.version))
-  message('===============================================')
+  if(.QC$verbose)
+  {
+    cat('\n=============================================', fill = TRUE)
+    cat(sprintf('=========== %s v.%s ===========',
+                    .QC$package.name,
+                    .QC$script.version), fill = TRUE)
+    cat('=============================================', fill = TRUE)
+  }
 
 
 
@@ -95,7 +99,8 @@ run.inspector <- function(inspector, test.run=FALSE)
 
     ## upload reference file
   ## =====================================
-  message('\n\n---------- [uploading allele frequency reference file] ----------')
+  if(.QC$verbose)
+    cat('\n---------- [uploading allele frequency reference file] ----------', fill = TRUE)
 
   # the following variable can be a data table or a database object
   # this is decided from the file extension
@@ -116,7 +121,8 @@ run.inspector <- function(inspector, test.run=FALSE)
      !is.na(.QC$config$supplementaryFiles$allele_ref_alt) &&
      .QC$config$alt_ref_file_exists)
   { # load the file if exists
-    message('\n\n---------- [uploading allele frequency alternative reference file] ----------')
+    if(.QC$verbose)
+      cat('\n---------- [uploading allele frequency alternative reference file] ----------', fill = TRUE)
 
 
     .QC$alt.reference.data <- tryCatch(uploadAltReferenceFile(),
@@ -148,7 +154,9 @@ run.inspector <- function(inspector, test.run=FALSE)
 
   if(!is.na(.QC$config$supplementaryFiles$beta_ref_std))
   {
-    message('\n\n---------- [uploading Beta (Effect) reference file] ----------')
+    if(.QC$verbose)
+      cat('\n---------- [uploading Beta (Effect) reference file] ----------', fill = TRUE)
+
     .QC$reference.data.effect <- tryCatch(uploadBetaReferenceFile(),
                                           error= function(err)
                                           {
@@ -172,7 +180,8 @@ run.inspector <- function(inspector, test.run=FALSE)
 
 
   ## TODO move it to validation process
-  message('\n---------- [analyzing input files] ----------\n')
+  if(.QC$verbose)
+    cat('\n---------- [analyzing input files] ----------\n', fill = TRUE)
 
   set.test.run.variables(test.run)
 

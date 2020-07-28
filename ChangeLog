@@ -45,3 +45,16 @@ Changes in version 1.4.7 (Apr 2020)
 Changes in version 1.4.7.1 (May 2020)
 ====================================
 	- Summary statistics are generated seprately for HQ variants.
+
+Changes in version 1.4.8 (Jul 2020)
+====================================
+	- New parameter added to run.inspectior() function. The `verbose` parameter can be used to suppress messages in the terminal.
+	- New parameters aded to [output_parameters] section in the configuration file for saving additional columns in the result files:
+		* add_column_multiallelic
+		* add_column_AFmismatch
+		* add_column_HQ
+		* add_column_rsid
+	- New parameter added to [output_parameters] section in the configuration file for ordering the variants in the result files based on CHR:POS values.
+		* ordered
+
+

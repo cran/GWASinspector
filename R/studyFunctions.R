@@ -224,7 +224,10 @@ process.each.file <- function(study){
   file.number = .QC$thisStudy$number
 
   if("N_CASES" %in% .QC$thisStudy$renamed.File.Columns)
+  {
     file.N.max = .QC$thisStudy$MAX_N_CASES
+    print.and.log("N_CASES will be used for MAX_N value.")
+  }
   else
     file.N.max = .QC$thisStudy$MAX_N_TOTAL
 
@@ -667,6 +670,10 @@ create.file.specific.config <- function(file.name){
 
   # cleaned output file
   study$output.path<-paste(files.prefix, '.txt' , sep='')
+
+
+  # effect-size reference dataset path
+  study$effect_size_ref.output.path<-paste(files.prefix, 'effect-size_ref.rds' , sep='_')
 
 
   # html report file

@@ -7,6 +7,9 @@ calculate.af.correlation.std_ref <- function(input.data) {
   # remove Multu allelic variants from dataset
   input.data <- input.data[!is.na(EFF_ALL_FREQ) & !is.na(AF)]
 
+  if(nrow(input.data)  == 0)
+    return(NULL)
+
 
   # only variants that are matched with standard reference are required
   cor.test.rho.all<- signif(cor(input.data[VT == 1 & SOURCE == 'Std_ref']$EFF_ALL_FREQ ,

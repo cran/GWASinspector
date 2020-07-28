@@ -19,10 +19,12 @@ print.and.log <- function(message,
                           level = "info",
                           cat = TRUE,
                           display = TRUE) {
-  if (cat & display) {
-    message(paste("-", toupper(level), " : ", message, sep = " "))
+
+
+  if (.QC$verbose & cat & display) {
+    cat(paste("-", toupper(level), " : ", message, sep = " "), fill = TRUE)
   }
-  else if (display) {
+  else if (.QC$verbose & display) {
     print(message, quote = FALSE)
   }
 

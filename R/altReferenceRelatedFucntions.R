@@ -170,7 +170,8 @@ save.alternate.reference <- function()
   altReferenceFile <- .QC$config$supplementaryFiles$allele_ref_alt
   file.extension <- tolower(file_ext(altReferenceFile))
 
-  message('\n---------- [saving alternate reference file] ----------')
+  if(.QC$verbose)
+    message('\n---------- [saving alternate reference file] ----------')
 
   #load the file based on its extension
   if(file.extension %in% c('csv','txt','dat')){

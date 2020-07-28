@@ -86,6 +86,7 @@ Inspector <- setClass(
     ),
     output_parameters = list(
       save_final_dataset = FALSE,
+      save_as_effectSize_reference = FALSE,
       gzip_final_dataset = TRUE,
       out_header = "standard",
       out_sep = "\t",
@@ -94,6 +95,7 @@ Inspector <- setClass(
       html_report = TRUE,
       object_file = TRUE,
       add_column_multiallelic = FALSE,
+      add_column_HQ = FALSE,
       add_column_AFmismatch = FALSE,
       add_column_rsid = FALSE,
       add_column_AF = FALSE,
@@ -273,6 +275,7 @@ setMethod(
     cat("\n\tSave cleaned result files:\t", object@output_parameters$save_final_dataset)
     if(object@output_parameters$save_final_dataset == TRUE)
       cat("\n\tCompress the result file :\t", object@output_parameters$gzip_final_dataset)
+    cat("\n\tSave as effect-size reference file:\t", object@output_parameters$save_as_effectSize_reference)
     cat("\n\tResult file header:\t", object@output_parameters$out_header)
     cat("\n\tColumn separator:\t", gsub(x = object@output_parameters$out_sep, pattern = "	", replacement = "\\t", fixed = T))
     cat("\n\tDecimal value:\t", object@output_parameters$out_dec)
@@ -280,6 +283,7 @@ setMethod(
     cat("\n\tSaving Html report file:\t", object@output_parameters$html_report)
     cat("\n\tSaving study object file:\t", object@output_parameters$object_file)
     cat("\n\tMarking multi-allelic variants:\t", object@output_parameters$add_column_multiallelic)
+    cat("\n\tMarking HQ variants:\t", object@output_parameters$add_column_HQ)
     cat("\n\tMarking variants with high AF difference:\t", object@output_parameters$add_column_AFmismatch)
     cat("\n\tOrdering variants on chromosome:position combination:\t", object@output_parameters$add_column_AFmismatch)
 

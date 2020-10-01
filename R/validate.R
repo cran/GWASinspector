@@ -21,7 +21,7 @@ validate.Inspector <- function(object, printWarnings = TRUE)
     tryCatch(
       dir.create(object@paths$dir_output),
       error = function(err) {
-        msg <- sprintf("Could not create outpur directory at \'%s\'! %s",
+        msg <- sprintf("Could not create outpur directory at \'%s\'. %s",
                        object@paths$dir_output,
                        err)
         errors <- c(errors, msg)
@@ -59,7 +59,7 @@ validate.Inspector <- function(object, printWarnings = TRUE)
     c(
       errors,
       sprintf(
-        "Alternative Header file not found at \'%s\'!",
+        "Alternative Header file not found at \'%s\'.",
         object@supplementaryFiles$header_translations
       )
     )
@@ -77,13 +77,13 @@ validate.Inspector <- function(object, printWarnings = TRUE)
         errors <-
           c(errors,
             sprintf(
-              '\'headerTable\' should have two columns but has %s!',
+              '\'headerTable\' should have two columns but has %s.',
               ncol(headerTable)
             ))
 
       if (any(duplicated(headerTable[, 2])))
         errors <-
-          c(errors, 'Duplicated items found in header table!')
+          c(errors, 'Duplicated items found in header table.')
 
     },
     error = function(err)
@@ -100,10 +100,49 @@ validate.Inspector <- function(object, printWarnings = TRUE)
     c(
       errors,
       sprintf(
-        "Reference file not found at \'%s\'!",
+        "Reference file not found at \'%s\'.",
         object@supplementaryFiles$allele_ref_std
       )
     )
+  else if (endsWith(object@supplementaryFiles$allele_ref_std,"sqlite.gz")) ## check if rsqlite reference file is still gzipped
+    errors <-
+    c(
+      errors,
+      sprintf(
+        "SQLite Reference file should be unzipped (use gzip -d command).",
+        object@supplementaryFiles$allele_ref_std
+      )
+    )
+  else if(endsWith(object@supplementaryFiles$allele_ref_std,"sqlite")) # if sqlite is found , read the table and columns
+  {
+    DB<-RSQLite::dbConnect(RSQLite::SQLite(),object@supplementaryFiles$allele_ref_std)
+
+    if(!grepl("variant",RSQLite::dbListTables(DB))) # check if a variant table exists
+    {
+      errors <- c(errors,sprintf("Reference file \"%s\" does not have a \"variants\" tables.",
+                                 base::basename(object@supplementaryFiles$allele_ref_std)))
+    }else{
+
+      tblFields <- RSQLite::dbListFields(DB, RSQLite::dbListTables(DB)[1]) # load table columns and check the selected population
+
+      population.Column = switch(object@supplementaryFiles$allele_ref_std_population,
+                                 'AMR'= 'AMR_AF',
+                                 'EUR'= 'EUR_AF',
+                                 'SAS'= 'SAS_AF',
+                                 'EAS' = 'EAS_AF',
+                                 'AFR'='AFR_AF',
+                                 'COMMON' = 'AF')
+
+
+      if(!is.element(population.Column , tblFields))
+      {
+        errors <- c(errors,sprintf("Data for \"%s\" population not found in \"%s\" reference file.",
+                                   object@supplementaryFiles$allele_ref_std_population,
+                                   base::basename(object@supplementaryFiles$allele_ref_std)))
+      }
+    }
+    RSQLite::dbDisconnect(DB)
+  }
 
 
   ## check if beta reference file exists
@@ -112,7 +151,7 @@ validate.Inspector <- function(object, printWarnings = TRUE)
     errors <- c(
       errors,
       sprintf(
-        "Beta (effect) reference file not found at \'%s\'!",
+        "Beta (effect) reference file not found at \'%s\'.",
         object@supplementaryFiles$beta_ref_std
       )
     )

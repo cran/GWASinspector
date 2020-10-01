@@ -217,23 +217,90 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
     }
   )
 
-  effect.plot.list <- lapply(study.list, function(x) return(x$effect.plot))
+  ## Generate effect-size plot instead of loading it
+  ##effect.plot.list <- lapply(study.list, function(x) return(x$effect.plot))
+  effect.plot.list <- lapply(study.list, function(x) return(generateEffectSizePlot(x)))
+
+  if(any(sapply(effect.plot.list,is.null)))
+  {
+    print.and.log("Effect-size box plot NOT saved!",'warning')
+  }
+  else
+  {
+    ggsave(plot = arrangeGrob(grobs = effect.plot.list,
+                              ncol = length(effect.plot.list)),
+           filename = figure.path ,
+           device = graphic.device ,
+           units = c('mm'),
+           # width = length(effect.plot.list) * 120,
+           width = length(effect.plot.list) * 40,
+           height =50,
+           dpi=150,
+           limitsize = FALSE )
 
 
-  ggsave(plot = arrangeGrob(grobs = effect.plot.list,
-                            ncol = length(effect.plot.list)),
-         filename = figure.path ,
-         device = graphic.device ,
-         units = c('mm'),
-         # width = length(effect.plot.list) * 120,
-         width = length(effect.plot.list) * 40,
-         height =50,
-         dpi=150,
-         limitsize = FALSE )
+    invisible(gc())
 
 
-  invisible(gc())
+    print.and.log("Effect-size box plot is saved!",'info')
+  }
+}
 
 
-  print.and.log("Effect-size box plot is saved!",'info')
+generateEffectSizePlot <- function(study)
+{
+
+  if(is.null(study$effect.plot.df))
+  {
+    return(NULL)
+  }else
+  {
+    df <- study$effect.plot.df
+
+    file.number = study$number
+
+    if("N_CASES" %in% study$renamed.File.Columns)
+    {
+      file.N.max = study$MAX_N_CASES
+      print.and.log("N_CASES will be used for MAX_N value.")
+    }
+    else
+      file.N.max = study$MAX_N_TOTAL
+
+
+
+    plot = ggplot(df, aes(x)) +
+      geom_boxplot(
+        aes(ymin = y0,
+            lower = y25,
+            middle = y50,
+            upper = y75,
+            ymax = y100),
+        stat = "identity") +
+      labs(x= file.number ,
+           y="effect size",
+           subtitle = sprintf('N = %s', file.N.max)) +
+      theme_classic(base_size = 8)+
+      coord_cartesian(ylim = c(-0.6,0.6)) +
+      geom_hline(yintercept = 0.1,
+                 linetype = 2,
+                 color='red') +
+      geom_hline(yintercept = -0.1,
+                 linetype = 2,
+                 color='red') +
+      theme(axis.text.x=element_blank()) +
+      if(!is.null(study$effect.plot.df_y_upper) && !is.null(study$effect.plot.df_y_lower))
+      {
+        geom_errorbar(aes(ymin=study$effect.plot.df_y_lower,
+                          ymax=study$effect.plot.df_y_upper),
+                      width=0.6,
+                      position=position_dodge(.9))
+      }
+
+
+    if(is.null(study$effect.plot.df_y_upper) || is.null(study$effect.plot.df_y_lower))
+      print.and.log("Error-bars missing for effect-size plot. Horizontal lines are at -0.1 and 0.1.","warning")
+
+    return(plot)
+  }
 }

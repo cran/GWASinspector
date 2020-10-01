@@ -21,6 +21,9 @@ print.and.log <- function(message,
                           display = TRUE) {
 
 
+  ## conver to FALSE if called from outside the paclage pipeline
+  .QC$verbose <- ifelse(is.null(.QC$verbose),FALSE,.QC$verbose)
+
   if (.QC$verbose & cat & display) {
     cat(paste("-", toupper(level), " : ", message, sep = " "), fill = TRUE)
   }

@@ -157,13 +157,24 @@ checkConfigFile <- function(config.file) {
   }
 
 
-  config$supplementaryFiles$allele_ref_std_population <-
-    checkConfigParameters(
-      toupper(config$supplementaryFiles$allele_ref_std_population),
-      'list',
-      'EUR' ,
-      c('COMMON', 'EAS', 'AMR', 'AFR', 'EUR', 'SAS')
-    )
+  # config$supplementaryFiles$allele_ref_std_population <-
+  #   checkConfigParameters(
+  #     toupper(config$supplementaryFiles$allele_ref_std_population),
+  #     'list',
+  #     config$supplementaryFiles$allele_ref_std_population , # return the input string if not one of the below
+  #     c('COMMON', 'EAS', 'AMR', 'AFR', 'EUR', 'SAS')
+  #   )
+
+  ## check if population string is correct
+  if(grepl(pattern = "sqlite",x = config$supplementaryFiles$allele_ref_std )
+     && is.empty(config$supplementaryFiles$allele_ref_std_population))
+    runStopCommand("allele_ref_std_population parameter can not be empty.")
+
+  if(!is.element(toupper(config$supplementaryFiles$allele_ref_std_population),
+                 c('COMMON', 'EAS', 'AMR', 'AFR', 'EUR', 'SAS')))
+    runStopCommand(sprintf("Population \"%s\" not available.",config$supplementaryFiles$allele_ref_std_population))
+  else
+    config$supplementaryFiles$allele_ref_std_population <- toupper(config$supplementaryFiles$allele_ref_std_population)
 
 
 

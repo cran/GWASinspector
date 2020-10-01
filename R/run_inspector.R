@@ -72,11 +72,11 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   #### 1
   if(.QC$verbose)
   {
-    cat('\n=============================================', fill = TRUE)
+    cat('\n===============================================', fill = TRUE)
     cat(sprintf('=========== %s v.%s ===========',
                     .QC$package.name,
                     .QC$script.version), fill = TRUE)
-    cat('=============================================', fill = TRUE)
+    cat('===============================================', fill = TRUE)
   }
 
 

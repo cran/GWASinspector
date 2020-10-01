@@ -30,8 +30,9 @@ compare.GWASs <- function(input.file.list, output.path)
 
   .QC$package.description <- 'Comprehensive, efficient and easy to use quality control of genome-wide association study results'
 
-  .QC$script.version <- '1.1.2'
+  .QC$script.version <- '1.4.8.2'
 
+  .QC$verbose <- FALSE
   #
 
   .QC$txt.report.path  <-  paste(output.path,'report.txt',sep = '/')
@@ -97,21 +98,21 @@ create.comparison.plots <- function(input.file.list,
                                                         graphic.device ,
                                                         precisionPlotPath)),
             error = function(err){
-              message(paste('error in plotting precision plot:',err$message))
+              message(paste('Warning in precision plot:',err$message))
             }
   )
 
   # skew-kurt plot
   tryCatch(multi.study.skew.kurt.plot(input.file.list, graphic.device , skew_kurt),
            error = function(err){
-             message(paste('error in plotting skewness-kurtosis plot:',err$message))
+             message(paste('Warning in skewness-kurtosis plot:',err$message))
            }
   )
 
   # boxplot effects
   tryCatch(multi.study.eff.plot(input.file.list , graphic.device , effsizePlotPath),
            error = function(err){
-             message(paste('error in plotting effect-size comparison plot:',err$message))
+             message(paste('Warning in effect-size comparison plot:',err$message))
            }
   )
 }

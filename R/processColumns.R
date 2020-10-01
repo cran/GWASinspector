@@ -120,6 +120,37 @@ process.column.OTHER_ALL<- function(input.data){
 
 
 ##########
+
+process.column.BOTH_ALL <- function(input.data) {
+
+  invalid.items <- which(nchar(input.data$OTHER_ALL) > 1 & nchar(input.data$EFFECT_ALL) > 1)
+
+  if(length(invalid.items) > 0){
+
+    .QC$thisStudy$column.INVALID.list$BOTH_ALL <- invalid.items
+    reqColumns <- .QC$thisStudy$renamed.File.Columns.sorted
+    sample.data <- input.data[head(invalid.items,100), ..reqColumns] ## 100 samples are saved
+
+    saveDataSet(sample.data,
+                  file.path = .QC$thisStudy$SNPs_invalid_both.path,
+                  columnSeparator = .QC$config$output_parameters$out_sep,
+                  naValue = .QC$config$output_parameters$out_na,
+                  decValue = .QC$config$output_parameters$out_dec,
+                  ordered = .QC$config$output_parameters$ordered)
+
+
+    print.and.log(sprintf('%s variants with conflicting alleles were found.',
+                          thousand.sep(length(invalid.items))),
+                  'warning',
+                  display=.QC$config$debug$verbose)
+
+	input.data <- input.data[!invalid.items,]
+
+  }
+  return(input.data)
+}
+
+##########
 process.column.IMPUTED<- function(input.data){
   config <- .QC$config
   # FIXME check if convert to uppercase is required for as.logical function

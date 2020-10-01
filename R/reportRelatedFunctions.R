@@ -769,15 +769,14 @@ report.to.txt.file <- function(study) {
 # to compare different files after each is run separately
 save.rds.file <- function(study) {
 
-  #study2 = study
 
-  rm(list=setdiff(ls(envir =  study$effect.plot$plot_env),
-                  c('y_lower','y_upper','df','file.N.max','file.number')),
-     envir =  study$effect.plot$plot_env)
-  #
-  rm('.QC' , envir =  study$effect.plot$plot_env)
-  rm('study' , envir =  study$effect.plot$plot_env)
-  rm('input.data' , envir =  study$effect.plot$plot_env)
+  # rm(list=setdiff(ls(envir =  study$effect.plot$plot_env),
+  #                 c('y_lower','y_upper','df','file.N.max','file.number')),
+  #    envir =  study$effect.plot$plot_env)
+  # #
+  # rm('.QC' , envir =  study$effect.plot$plot_env)
+  # rm('study' , envir =  study$effect.plot$plot_env)
+  # rm('input.data' , envir =  study$effect.plot$plot_env)
 
 
   tryCatch(

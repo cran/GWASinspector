@@ -364,6 +364,11 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
   }
 
 
+  # also remove variants wher nchar(EA) > 1 and nchar(OA) > 1
+  # e.g.    EA = GCGCGCGTA and OA = TGTG
+  # input.data <- process.column.BOTH_ALL(input.data)
+
+
   return(input.data)
 }
 

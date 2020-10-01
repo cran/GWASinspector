@@ -221,30 +221,34 @@ process.each.file <- function(study){
 
   #TODO maybe show values inside plot
   .QC$thisStudy$effect.plot.df <- df
-  file.number = .QC$thisStudy$number
+  .QC$thisStudy$effect.plot.df_y_upper <- y_upper
+  .QC$thisStudy$effect.plot.df_y_lower <- y_lower
 
-  if("N_CASES" %in% .QC$thisStudy$renamed.File.Columns)
-  {
-    file.N.max = .QC$thisStudy$MAX_N_CASES
-    print.and.log("N_CASES will be used for MAX_N value.")
-  }
-  else
-    file.N.max = .QC$thisStudy$MAX_N_TOTAL
-
-
-
-  .QC$thisStudy$effect.plot = ggplot(df, aes(x)) +
-    geom_boxplot(
-      aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
-      stat = "identity") +
-    geom_errorbar(aes(ymin=y_lower, ymax=y_upper), width=0.6,
-                  position=position_dodge(.9)) +
-    labs(x= file.number ,y="effect size",subtitle = sprintf('N = %s', file.N.max)) +
-    theme_classic(base_size = 8)+
-    coord_cartesian(ylim = c(-0.6,0.6)) +
-    geom_hline(yintercept = 0.1,linetype = 2,color='red') +
-    geom_hline(yintercept = -0.1,linetype = 2,color='red') +
-    theme(axis.text.x=element_blank())
+  # generate the plot usin generateEffectSizePlot() function instead of saving the plot
+  # file.number = .QC$thisStudy$number
+  #
+  # if("N_CASES" %in% .QC$thisStudy$renamed.File.Columns)
+  # {
+  #   file.N.max = .QC$thisStudy$MAX_N_CASES
+  #   print.and.log("N_CASES will be used for MAX_N value.")
+  # }
+  # else
+  #   file.N.max = .QC$thisStudy$MAX_N_TOTAL
+  #
+  #
+  #
+  # .QC$thisStudy$effect.plot = ggplot(df, aes(x)) +
+  #   geom_boxplot(
+  #     aes(ymin = y0, lower = y25, middle = y50, upper = y75, ymax = y100),
+  #     stat = "identity") +
+  #   geom_errorbar(aes(ymin=y_lower, ymax=y_upper), width=0.6,
+  #                 position=position_dodge(.9)) +
+  #   labs(x= file.number ,y="effect size",subtitle = sprintf('N = %s', file.N.max)) +
+  #   theme_classic(base_size = 8)+
+  #   coord_cartesian(ylim = c(-0.6,0.6)) +
+  #   geom_hline(yintercept = 0.1,linetype = 2,color='red') +
+  #   geom_hline(yintercept = -0.1,linetype = 2,color='red') +
+  #   theme(axis.text.x=element_blank())
 
 
   ### ===================== END of multi study variables =====================
@@ -642,6 +646,8 @@ create.file.specific.config <- function(file.name){
   #variant with invalid allele values
   study$SNPs_removed.path<-paste(files.prefix, 'vars_removed.txt' , sep='_')
 
+  #variant with invalid both allele values
+  study$SNPs_invalid_both.path<-paste(files.prefix, 'vars_invalid_alleles.txt' , sep='_')
 
   #variant with missing non-crucial values
   study$SNPs_improbable_values.path<-paste(files.prefix, 'vars_improbable_values.txt' , sep='_')
@@ -809,6 +815,7 @@ create.file.specific.config <- function(file.name){
   study$column.INVALID.list$MARKER = numeric(length = 0L)
   study$column.INVALID.list$N_TOTAL = numeric(length = 0L)
   study$column.INVALID.list$OTHER_ALL = numeric(length = 0L)
+  study$column.INVALID.list$BOTH_ALL = numeric(length = 0L)
   study$column.INVALID.list$POSITION = numeric(length = 0L)
   study$column.INVALID.list$PVALUE = numeric(length = 0L)
   study$column.INVALID.list$STDERR = numeric(length = 0L)

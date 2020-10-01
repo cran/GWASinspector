@@ -295,15 +295,15 @@ getMultiAlleleCountTbl <- function(input.data) {
   tbl <- input.data[,.N, keyby=.(VT,(SOURCE != "Std_ref" | is.na(SOURCE)), MULTI_ALLELIC)]
 
   tbl <- t(data.table(
-   'Bi-allelic SNP' =  ifelse(length(tbl[VT == 1 & !(SOURCE) & !MULTI_ALLELIC,N]) == 0 ,
-                                '0',
-                                format(tbl[VT == 1 & !(SOURCE) & !MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
+    'Bi-allelic SNP' =  ifelse(length(tbl[VT == 1 & !(SOURCE) & !MULTI_ALLELIC,N]) == 0 ,
+                               '0',
+                               format(tbl[VT == 1 & !(SOURCE) & !MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
     'Multi-allelic SNP' =  ifelse(length(tbl[VT == 1 & !(SOURCE) & MULTI_ALLELIC,N]) == 0 ,
                                   '0' ,
                                   format(tbl[VT == 1 & !(SOURCE) & MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
     'SNPs not found in standard reference dataset' =  ifelse(length(tbl[VT == 1 & (SOURCE) ,N]) == 0 ,
-                                  '0' ,
-                                  format(tbl[VT == 1 & (SOURCE),N],big.mark = ',',scientific = FALSE)),
+                                                             '0' ,
+                                                             format(tbl[VT == 1 & (SOURCE),N],big.mark = ',',scientific = FALSE)),
     'Bi-allelic INDEL' = ifelse(length(tbl[VT == 2 & !(SOURCE) & !MULTI_ALLELIC,N]) == 0 ,
                                 '0' ,
                                 format( tbl[VT == 2 & !(SOURCE) & !MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
@@ -311,8 +311,8 @@ getMultiAlleleCountTbl <- function(input.data) {
                                     '0' ,
                                     format(tbl[VT == 2 & !(SOURCE) & MULTI_ALLELIC,N],big.mark = ',',scientific = FALSE)),
     'INDELs not found in standard reference dataset' =  ifelse(length(tbl[VT == 2 & (SOURCE) ,N]) == 0 ,
-                                   '0' ,
-                                   format(tbl[VT == 2 & (SOURCE) ,N],big.mark = ',',scientific = FALSE))
+                                                               '0' ,
+                                                               format(tbl[VT == 2 & (SOURCE) ,N],big.mark = ',',scientific = FALSE))
   ))
 
   colnames(tbl) <- 'count'

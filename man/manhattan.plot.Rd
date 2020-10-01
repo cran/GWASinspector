@@ -4,10 +4,20 @@
 \alias{manhattan.plot}
 \title{Creates the Manhattan plot}
 \usage{
-manhattan.plot(dataset, chr, pvalue, position, fileName,
-  plot.title = "Manhattan Plot", plot.subtitle = "",
-  p.threshold = 0.01, sig.threshold.log = -log10(5 * 10^-8),
-  beta = NULL, std.error = NULL, check.columns = TRUE)
+manhattan.plot(
+  dataset,
+  chr,
+  pvalue,
+  position,
+  fileName,
+  plot.title = "Manhattan Plot",
+  plot.subtitle = "",
+  p.threshold = 0.01,
+  sig.threshold.log = -log10(5 * 10^-8),
+  beta = NULL,
+  std.error = NULL,
+  check.columns = TRUE
+)
 }
 \arguments{
 \item{dataset}{Data frame or data table containing the below columns}

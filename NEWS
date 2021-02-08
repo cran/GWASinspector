@@ -34,3 +34,13 @@ Changes in version 1.4 (Jan 2020)
 	- Messages to the terminal can be supressed using `verbose` parameter.
 	- New columns can be added to the output files indicating multi-allelic or HQ variants.
 	- Allele-frequency and RSID from the reference file can be added to the result files.
+
+	Changes in version 1.4.8.3 (Dec 2020)
+====================================
+	- A new column containing CHR:POS:EFF_ALL_OTHER_ALL can be added to the output files.
+
+	Changes in version 1.4.8.4 (Jan 2021)
+====================================
+	- File order can be set with a string parameter.
+	- Allele frequency scatter plot is replaced with Smooth Scatter.
+	- Search of variants in the reference dataset is improved.

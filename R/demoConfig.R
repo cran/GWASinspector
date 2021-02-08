@@ -41,6 +41,7 @@ example.config <- function(result.dir, config)
   config$output_parameters$add_column_HQ <- FALSE
   config$output_parameters$add_column_AFmismatch <- FALSE
   config$output_parameters$add_column_rsid <- FALSE
+  config$output_parameters$add_column_hid <- FALSE
   config$output_parameters$add_column_AF <- FALSE
   config$output_parameters$ordered <- FALSE
 

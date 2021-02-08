@@ -154,7 +154,7 @@ uploadInputFile<-function()
   #   )
   #
   # }
-  else if(file.extension %in% c('txt','dat','csv','gz'))
+  else if(file.extension %in% c('txt','dat','csv','gz','bz2'))
   {
     # first try fread for loading the file
     input.data = tryCatch(

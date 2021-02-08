@@ -290,3 +290,175 @@ plot.DataMAF.vs.RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,
   invisible(gc())
 
 }
+
+plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,AFcor.palindromic,AFcor.INDEL,plot.title.text)
+{
+  if(!is.numeric(AFcor) || !is.numeric(AFcor.palindromic)){
+    print.and.log('Allele frequency plot is skipped!','warning',display=.QC$config$debug$verbose)
+    return(NULL)
+  }
+
+
+  p.height <- 3000
+  p.width <- 5500
+  p.r <- 2
+  p.c <- 3
+  p.title.margin <- -31
+  hasIndel <- .QC$thisStudy$hasINDEL
+  hasLQ <- FALSE
+
+  if(.QC$thisStudy$LQ.count > 0)
+    hasLQ <- TRUE
+
+
+  if(!hasIndel)
+  {
+    p.width <- 4000
+    p.c <- 2
+    p.title.margin <- -25
+  }
+
+  if(!hasLQ)
+  {
+    p.height <- 2000
+    p.r <- 1
+  }
+
+  ###
+
+
+  if(.QC$img.extension == 'png')
+    png(stdMafSmPlotPath , width = p.width, height = p.height, units = 'px',res=400)
+  else
+    jpeg(stdMafSmPlotPath , width = p.width, height = p.height, units = 'px',res=400)
+
+  par(mfrow = c(p.r, p.c),mar=c(5, 6, 6, 2),cex.main=1.2, cex.lab=1.2, font.main=1)
+
+
+  ### palette colors
+  Lab.palette.HQ <- colorRampPalette(c("white",  "darkblue"), space = "Lab")
+
+  Lab.palette.LQ <- colorRampPalette(c("white",  "darkred"), space = "Lab")
+
+
+  ## HQ plots
+
+  # all
+  smoothScatter(x=input.data[HQ == TRUE]$EFF_ALL_FREQ,
+                y= input.data[HQ == TRUE]$AF,
+                pch='.',
+                xlab = "Reported allele frequency",
+                ylab = "Reference allele frequency",
+                nrpoints = 10000,
+                col='darkblue',
+                colramp = Lab.palette.HQ,
+                cex=2)
+
+  # title(sprintf('All SNPs (r = %.3f)',AFcor), adj = 0.5, line = 1)
+  title('All SNPs', adj = 0.5, line = 1)
+
+  # palindromics
+  smoothScatter(x=input.data[HQ == TRUE & palindromic == TRUE]$EFF_ALL_FREQ,
+                y= input.data[HQ == TRUE & palindromic == TRUE]$AF,
+                pch='.',
+                xlab = "Reported allele frequency",
+                ylab = "Reference allele frequency",
+                nrpoints = 10000,
+                col='darkblue',
+                colramp = Lab.palette.HQ,
+                cex=2)
+
+
+  # title(sprintf('Palindromic SNPs (r = %.3f)',AFcor.palindromic), adj = 0.5, line = 1)
+  title('Palindromic SNPs', adj = 0.5, line = 1)
+
+  #non-SNPs
+  if(hasIndel)
+  {
+
+    if(input.data[HQ == TRUE & VT == 2,.N] > 0)
+    {
+      smoothScatter(x=input.data[HQ == TRUE & VT == 2]$EFF_ALL_FREQ,
+                    y= input.data[HQ == TRUE & VT == 2]$AF,
+                    pch='.',
+                    xlab = "Reported allele frequency",
+                    ylab = "Reference allele frequency",
+                    nrpoints = 10000,
+                    col='darkblue',
+                    colramp = Lab.palette.HQ,
+                    cex=2)
+
+
+      # title(sprintf('All non-SNPs (r = %.3f)',AFcor.INDEL), adj = 0.5, line = 1)
+      title('All non-SNPs', adj = 0.5, line = 1)
+    }
+    else
+      plot.new()
+  }
+
+
+  title(plot.title.text,line=-2, outer = TRUE, cex.main=2)
+  title("Standard Reference (HQ variants)", line=-3.7, outer = TRUE,cex.main=1.6)
+
+
+
+  ## LQ plots
+  if(hasLQ)
+  {
+    # all
+    smoothScatter(x=input.data[HQ == FALSE]$EFF_ALL_FREQ,
+                  y= input.data[HQ == FALSE]$AF,
+                  pch='.',
+                  xlab = "Reported allele frequency",
+                  ylab = "Reference allele frequency",
+                  nrpoints = 10000,
+                  col='darkred',
+                  colramp = Lab.palette.LQ,
+                  cex=2)
+
+    title("All SNPs", adj = 0.5, line = 1)
+
+  # palindromics
+    smoothScatter(x=input.data[HQ == FALSE & palindromic == TRUE]$EFF_ALL_FREQ,
+                  y= input.data[HQ == FALSE & palindromic == TRUE]$AF,
+                  pch='.',
+                  xlab = "Reported allele frequency",
+                  ylab = "Reference allele frequency",
+                  nrpoints = 10000,
+                  col='darkred',
+                  colramp = Lab.palette.LQ,
+                  cex=2)
+    title("Palindromic SNPs", adj = 0.5, line = 1)
+
+  # non-snps
+    if(hasIndel)
+    {
+      if(input.data[HQ == FALSE & VT == 2,.N]>0)
+      {
+        smoothScatter(x=input.data[HQ == FALSE & VT == 2]$EFF_ALL_FREQ,
+                      y= input.data[HQ == FALSE & VT == 2]$AF,
+                      pch='.',
+                      xlab = "Reported allele frequency",
+                      ylab = "Reference allele frequency",
+                      nrpoints = 10000,
+                      col='darkred',
+                      colramp = Lab.palette.LQ,
+                      cex=2)
+        title("All non-SNPs", adj = 0.5, line = 1)
+      } else
+        plot.new()
+    }
+
+    title("Standard Reference (LQ variants)",line= p.title.margin, outer = TRUE,cex.main=1.6)
+  }
+
+
+
+  dev.off()
+
+
+  print.and.log(sprintf("Allele frequency correlation plot saved!"),
+                'info')
+
+
+}

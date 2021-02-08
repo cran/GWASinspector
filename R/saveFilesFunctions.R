@@ -126,12 +126,26 @@ saveDataSet.final<-function(dataset)
       requiredColNames <- c(requiredColNames,'REF_RSID')
 
 
-
+    #select the required columns
     dataset <- subset(dataset , select = requiredColNames)
 
+    #add hid column: CHR-pos-alleles
+    if(config$output_parameters$add_column_hid == TRUE)
+      {
+        if(!is.data.table(dataset))
+          setDT(dataset)
+
+        varID = NULL
+
+        dataset[, varID := paste(CHR,
+                                 format(POSITION,scientific = FALSE,trim = TRUE),
+                                 EFFECT_ALL,
+                                 OTHER_ALL,
+                                 sep = ':')]
+        }
 
 
-    # check if there were characters in chromosme column that shold be deconverted to characters
+    # check if there were characters in chromosome column that should be reconverted to characters
     ## =========================================
     if(.QC$thisStudy$character.chromosome)
       dataset <- deconvert.column.CHR(dataset)

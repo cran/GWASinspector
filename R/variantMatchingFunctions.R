@@ -3,7 +3,9 @@ compareInputfileWithReferenceData <- function(input.data)
   #  .QC$reference.data ==> this can be a data table or a database object
   #  .QC$alt.reference.daOta
   ## 1
-  if(is.data.table(.QC$reference.data))
+  if(!is.null(.QC$stored.reference.data))
+    input.data <- compareInputfileWithStoredReferenceFile(input.data)
+  else if(is.data.table(.QC$reference.data))
     input.data <- compareInputfileWithReferenceFile(input.data)
   else
     input.data <- compareInputfileWithReferenceDataBase(input.data)

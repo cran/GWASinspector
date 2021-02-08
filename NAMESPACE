@@ -11,12 +11,14 @@ import(RSQLite)
 import(R.utils)
 import(methods)
 importFrom(kableExtra,"%>%","kable_styling","column_spec","footnote")
-importFrom("grDevices", "dev.off", "graphics.off")
+importFrom("grDevices", "dev.off", "graphics.off", "colorRampPalette", "jpeg", "png")
 importFrom("stats", "complete.cases", "cor", "median", "na.omit",
              "pchisq", "ppoints", "qbeta", "qchisq", "sd")
 importFrom("utils", "data", "head", "installed.packages", "menu",
              "modifyList", "packageVersion", "read.table",
              "setTxtProgressBar", "txtProgressBar", "write.table")
+importFrom("graphics", "par", "plot.new", "smoothScatter", "text",
+             "title")
 export(setup.inspector)
 export(run.inspector)
 export(result.inspector)

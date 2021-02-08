@@ -82,7 +82,8 @@ Inspector <- setClass(
       na.strings = c(),
       imputed_T = "",
       imputed_F = "",
-      calculate_missing_p = FALSE
+      calculate_missing_p = FALSE,
+      file_order_string = ""
     ),
     output_parameters = list(
       save_final_dataset = FALSE,
@@ -98,6 +99,7 @@ Inspector <- setClass(
       add_column_HQ = FALSE,
       add_column_AFmismatch = FALSE,
       add_column_rsid = FALSE,
+      add_column_hid = FALSE,
       add_column_AF = FALSE,
 	  ordered = FALSE
     ),
@@ -269,6 +271,7 @@ setMethod(
     cat("\n\tImputed string:\t", object@input_parameters$imputed_T)
     cat("\n\tNon-imputed string:\t", object@input_parameters$imputed_F)
     cat("\n\tEffect-type:\t", object@input_parameters$effect_type)
+    cat("\n\tFile order string:\t", object@input_parameters$file_order_string)
 
 
     cat("\n\n   Output parameters")
@@ -285,7 +288,9 @@ setMethod(
     cat("\n\tMarking multi-allelic variants:\t", object@output_parameters$add_column_multiallelic)
     cat("\n\tMarking HQ variants:\t", object@output_parameters$add_column_HQ)
     cat("\n\tMarking variants with high AF difference:\t", object@output_parameters$add_column_AFmismatch)
-    cat("\n\tOrdering variants on chromosome:position combination:\t", object@output_parameters$add_column_AFmismatch)
+    cat("\n\tAdding rsIDs from the reference file:\t", object@output_parameters$add_column_rsid)
+    cat("\n\tAdding harmonized IDs (chr:pos:alleles):\t", object@output_parameters$add_column_hid)
+    cat("\n\tOrdering variants on (chr:pos) combination:\t", object@output_parameters$ordered)
 
 
 

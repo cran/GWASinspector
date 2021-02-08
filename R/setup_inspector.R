@@ -44,7 +44,8 @@ setup.inspector <- function(config.file , validate = TRUE)
       na.string = configuration$input_parameters$na.string,
       imputed_T = paste(configuration$input_parameters$imputed_T,collapse = '|'),
       imputed_F = paste(configuration$input_parameters$imputed_F,collapse = '|'),
-      calculate_missing_p = configuration$input_parameters$calculate_missing_p
+      calculate_missing_p = configuration$input_parameters$calculate_missing_p,
+      file_order_string = paste(configuration$input_parameters$file_order_string,collapse = '|')
     ),
     output_parameters = list(
       save_final_dataset = configuration$output_parameters$save_final_dataset,
@@ -61,6 +62,7 @@ setup.inspector <- function(config.file , validate = TRUE)
       add_column_AFmismatch =  configuration$output_parameters$add_column_AFmismatch,
       add_column_AF =  configuration$output_parameters$add_column_AF,
       add_column_rsid =  configuration$output_parameters$add_column_rsid,
+      add_column_hid =  configuration$output_parameters$add_column_hid,
       ordered =  configuration$output_parameters$ordered
     ),
     remove_chromosomes = list(

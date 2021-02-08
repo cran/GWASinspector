@@ -57,4 +57,12 @@ Changes in version 1.4.8 (Jul 2020)
 	- New parameter added to [output_parameters] section in the configuration file for ordering the variants in the result files based on CHR:POS values.
 		* ordered
 
+Changes in version 1.4.8.3 (Dec 2020)
+====================================
+	- A new column containing CHR:POS:EFF_ALL_OTHER_ALL can be added to the output files (add_column_hid).
+
+Changes in version 1.4.8.4 (Jan 2021)
+====================================
+	- file_order_string added to configuration file.
+	- smoothScatter() function used for AF correlation scatterplot.
 

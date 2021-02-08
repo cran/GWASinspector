@@ -90,8 +90,28 @@ checkConfigFile <- function(config.file) {
     all.files = FALSE,
     ignore.case = TRUE)
 
+
+  # check file order string
+  if (is.empty(config$input_parameters$file_order_string))
+    config$input_parameters$file_order_string <- ""
+  else
+    config$input_parameters$file_order_string <-
+    paste(
+      evaluateListsAsStrings('file_order_string', config$input_parameters$file_order_string),
+      collapse = '|'
+    )
+
+  ## order the files
+  orderIndex <- grep(config$input_parameters$file_order_string,
+                     input.file.names,
+                     ignore.case = T)
+
+  if(length(orderIndex) > 0)
+    input.file.names <- c(input.file.names[orderIndex],
+                          input.file.names[-orderIndex])
+
   ## keep valid extensions
-  config$paths$input_files <-input.file.names[file_ext(input.file.names) %in% c('gz', 'zip', 'txt', 'dat', 'csv')]
+  config$paths$input_files <-input.file.names[file_ext(input.file.names) %in% c('gz', 'zip', 'txt', 'dat', 'csv', 'bz2')]
 
 
 
@@ -280,6 +300,7 @@ checkConfigFile <- function(config.file) {
       collapse = '|'
     )
 
+
   ##IMP_QUALITY
   config$filters$minimal_impQ_value  <-
     checkConfigParameters(config$filters$minimal_impQ_value, 'numeric', -0.5)
@@ -377,6 +398,11 @@ checkConfigFile <- function(config.file) {
 
   config$output_parameters$add_column_rsid <-
     checkConfigParameters(config$output_parameters$add_column_rsid,
+                          'logical',
+                          FALSE)
+
+  config$output_parameters$add_column_hid <-
+    checkConfigParameters(config$output_parameters$add_column_hid,
                           'logical',
                           FALSE)
 
@@ -706,6 +732,7 @@ make.config <- function(object)
       add_column_HQ= object@output_parameters$add_column_HQ,
       add_column_AFmismatch = object@output_parameters$add_column_AFmismatch,
       add_column_rsid = object@output_parameters$add_column_rsid,
+      add_column_hid = object@output_parameters$add_column_hid,
       add_column_AF = object@output_parameters$add_column_AF,
       ordered = object@output_parameters$ordered
     ),

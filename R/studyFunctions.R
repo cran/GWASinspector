@@ -567,7 +567,7 @@ create.file.specific.config <- function(file.name){
 
   study$zipped.File <- FALSE
 
-  if(study$file.extension %in% c('gz','zip'))
+  if(study$file.extension %in% c('gz','zip','bz2'))
     study$zipped.File <- TRUE
 
 
@@ -577,7 +577,7 @@ create.file.specific.config <- function(file.name){
 
   # remove the extension before gz
   #if(study$file.extension == 'gz' && any(endsWith(x =  study$file.name,suffix = c('.txt','.csv')))) ## replaced to be compatible with older R
-  if(study$file.extension == 'gz' && any( grepl("(txt|csv)$", x = study$file.name)))
+  if(study$file.extension %in% c('gz','bz2') && any( grepl("(txt|csv)$", x = study$file.name)))
   {
     study$file.name <- sub(x= study$file.name , pattern = '\\.(\\w{3})$', replacement = '')
   }
@@ -623,10 +623,14 @@ create.file.specific.config <- function(file.name){
 
   study$stdMafPlotPath<-paste0(files.prefix, '_graph_EAF_SR' , .QC$img.extension)
 
+  study$stdMafSmPlotPath<-paste0(files.prefix, '_graph_EAF_SR_sm' , .QC$img.extension)
+
   study$altMafPlotPath<-paste0(files.prefix, '_graph_EAF_AR' , .QC$img.extension)
 
 
   study$pvalCorPlotPath<-paste0(files.prefix, '_graph_p_correlation' , .QC$img.extension)
+
+  study$pvalCorSmPlotPath<-paste0(files.prefix, '_graph_p_correlation_sm' , .QC$img.extension)
 
 
   study$QQPlotPath<-paste0(files.prefix, '_graph_QQ' , .QC$img.extension)
@@ -710,7 +714,7 @@ create.file.specific.config <- function(file.name){
   study$hID.added <- FALSE
   study$hanNoneBaseAlleles <- FALSE
   study$HQ.count  <- 0
-  studyLQ.count  <- 0
+  study$LQ.count  <- 0
 
   study$input.data.rowcount <- 0 # originla file row number - before any processing
   study$rowcount.step1 <- 0      # after processing crucial columns

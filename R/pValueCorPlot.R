@@ -54,7 +54,7 @@ plot.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlot
           ,plot.title=element_text(size=14, face="bold",hjust = 0.5)
           ,plot.subtitle=element_text(size=10, face="bold",hjust = 0.5)
           )+
-    annotate("text",x=1,y=max(-log10(study.sample$PVALUE))
+    annotate("text",x=-log10(plot_cutoff_p),y=max(-log10(study.sample$PVALUE))
              ,hjust =0.1,
              label=sprintf('italic(r) == %.3f', PVcor),parse= TRUE) +
     boolScale
@@ -136,7 +136,7 @@ plot.observedP.vs.expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCo
           ,plot.title=element_text(size=14, face="bold",hjust = 0.5)
           ,plot.subtitle=element_text(size=10, face="bold",hjust = 0.5)
     )+
-    annotate("text",x=1,y=max(-log10(study.sample$PVALUE))
+    annotate("text",x=-log10(plot_cutoff_p),y=max(-log10(study.sample$PVALUE))
              ,hjust =0.1,
              label=sprintf('italic(r) == %.3f', PVcor),parse= TRUE) +
     boolScale
@@ -193,4 +193,61 @@ plot.observedP.vs.expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCo
   #### remove variables from RAM
   rm(study.sample, plot,plot_HQ ,boolScale)
   invisible(gc())
+}
+
+
+plotScatterSmooth.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorSmPlotPath,plot.subtitle){
+
+
+  study.sample <- input.data[PVALUE < plot_cutoff_p]
+
+  if(nrow(study.sample) < 1)
+  {
+    print.and.log('No valid P-value below threshold exist. P-value correlation plot skipped!',
+                  'warning',display=.QC$config$debug$verbose)
+    return(NULL)
+  }
+
+  # mathematical expression for x , y axis titles
+  log10Pe <- expression(paste("Expected -log"[10],  "(",italic(p),")"))
+  log10Po <- expression(paste("Observed -log"[10],  "(",italic(p),")"))
+
+
+  if(.QC$img.extension == 'png')
+    png(pvalCorSmPlotPath , width = 3300,height = 1500,units = 'px',res=200)
+  else
+    jpeg(pvalCorSmPlotPath , width = 3300,height = 1500,units = 'px',res=200)
+
+  par(mfrow = c(1, 2),mar=c(5, 6, 6, 2),cex.main=1.2, cex.lab=1.2, font.main=1)
+
+
+  smoothScatter(x = -log10(study.sample[PVALUE < plot_cutoff_p & HQ == TRUE]$PVALUE),
+                y = -log10(study.sample[PVALUE < plot_cutoff_p & HQ == TRUE]$PVALUE.calculated),
+                pch=20,
+                xlab = log10Po,
+                ylab = log10Pe,
+                nrpoints = 20000)
+  text(sprintf('r = %.3f',PVcor) ,x = -log10(plot_cutoff_p)+0.2,y= -log10(min(study.sample$PVALUE)))
+  title("HQ variants", adj = 0.5, line = 1)
+
+  if(.QC$thisStudy$LQ.count > 0)
+  {
+    smoothScatter(x = -log10(study.sample[PVALUE < plot_cutoff_p & HQ == FALSE]$PVALUE),
+                  y = -log10(study.sample[PVALUE < plot_cutoff_p & HQ == FALSE]$PVALUE.calculated),
+                  pch=20,
+                  xlab = log10Po,
+                  ylab = log10Pe,
+                  nrpoints = 20000)
+    title("LQ variants", adj = 0.5, line = 1)
+  }
+
+
+  title("P-value correlation plot",line=-2, outer = TRUE,cex.main=2)
+  title(plot.subtitle,line=-3.5, outer = TRUE,cex.main=1.6)
+
+  dev.off()
+
+  print.and.log("P-value correlation plot saved! ",
+                'info')
+
 }

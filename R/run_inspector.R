@@ -102,6 +102,11 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   if(.QC$verbose)
     cat('\n---------- [uploading allele frequency reference file] ----------', fill = TRUE)
 
+  # store data from a search and use it for future searches
+  .QC$stored.reference.data <- NULL
+  # store hIDs that were looked in the database
+  .QC$searched.hIDs <- NULL
+
   # the following variable can be a data table or a database object
   # this is decided from the file extension
   .QC$reference.data <- uploadReferenceFile()

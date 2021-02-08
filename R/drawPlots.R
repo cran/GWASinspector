@@ -14,6 +14,13 @@ drawPlots <- function(processed.data) {
     if(!study$missing.PVALUE.column)
       # pValueCorPlot.R
       tryCatch({
+
+# 		    plotScatterSmooth.observedP.vs.expectedP(input.data = processed.data,
+#                                           plot_cutoff_p = config$plot_specs$plot_cutoff_p,
+#                                           PVcor = study$PVcor,
+#                                           pvalCorSmPlotPath = study$pvalCorSmPlotPath,
+#                                           plot.subtitle = study$plot.title )
+
         if(study$PVcor > 0.95)
           plot.observedP.vs.expectedP(input.data = processed.data,
                                            plot_cutoff_p = config$plot_specs$plot_cutoff_p,
@@ -26,6 +33,7 @@ drawPlots <- function(processed.data) {
                                       PVcor = study$PVcor,
                                       pvalCorPlotPath = study$pvalCorPlotPath,
                                       plot.subtitle = study$plot.title )
+
           },
                error = function(err)
                  print.and.log(paste('error in pvalue plot.',err$message),'warning',display=.QC$config$debug$verbose)
@@ -35,12 +43,22 @@ drawPlots <- function(processed.data) {
 
     # mafPlotFUnction.R
     # only variants that are matched with standard reference are required
-    tryCatch(plot.DataMAF.vs.RefMAF(processed.data[SOURCE == 'Std_ref' & !is.na(AF)],
-                                    study$stdMafPlotPath,
+    # tryCatch(plot.DataMAF.vs.RefMAF(processed.data[SOURCE == 'Std_ref' & !is.na(AF)],
+    #                                 study$stdMafPlotPath,
+    #                                 study$AFcor.std_ref,
+    #                                 study$AFcor.palindromic.std_ref,
+    #                                 study$AFcor.std_ref.indel,
+    #                                 paste0(study$plot.title , ' (Standard Reference)' )),
+    #          error = function(err)
+    #            print.and.log(paste('error in AF plot.',err$message),'warning',display=.QC$config$debug$verbose)
+    # )
+
+	tryCatch(plotScatterSmooth.DataMAF.vs.RefMAF(processed.data[SOURCE == 'Std_ref' & !is.na(AF)],
+                                    study$stdMafSmPlotPath,
                                     study$AFcor.std_ref,
                                     study$AFcor.palindromic.std_ref,
                                     study$AFcor.std_ref.indel,
-                                    paste0(study$plot.title , ' (Standard Reference)' )),
+                                    study$plot.title ),
              error = function(err)
                print.and.log(paste('error in AF plot.',err$message),'warning',display=.QC$config$debug$verbose)
     )

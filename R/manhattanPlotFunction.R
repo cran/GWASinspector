@@ -8,7 +8,7 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
   ## p < 10^-300 => 10^-300
   study.sample <- correct.extreme.pvalues(study.sample)
 
-  study.sample <- study.sample[order(CHR,decreasing = FALSE)]
+  study.sample <- study.sample[order(CHR,POSITION,decreasing = FALSE)]
   ###
 
   ### calculations
@@ -120,7 +120,7 @@ plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
   ## p < 10^-300 => 10^-300
   study.sample <- correct.extreme.pvalues(study.sample)
 
-  study.sample <- study.sample[order(CHR,decreasing = FALSE)]
+  study.sample <- study.sample[order(CHR,POSITION,decreasing = FALSE)]
   ###
 
   ### calculations

@@ -71,7 +71,7 @@ checkRequiredColumnNames <- function(inputFile, study){
   #
   #   close(gzfile(inputFile))
 
-  }else if(file.extension %in% c('txt','dat','csv','gz'))
+  }else if(file.extension %in% c('txt','dat','csv','gz','bz2'))
   {
    # sep.strings <- ifelse(sep.strings == 'auto' , '' , sep.strings)
 
@@ -326,6 +326,8 @@ getFileHeaderKV<-function()
                             sep='',
                             header = FALSE,
                             stringsAsFactors = FALSE)
+  headerTable$V1 = toupper(headerTable$V1)
+  headerTable$V2 = toupper(headerTable$V2)
 # TODO delete
 #   ###checking header file
 #   if(ncol(headerTable) != 2L) {

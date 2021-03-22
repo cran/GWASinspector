@@ -30,7 +30,7 @@ compare.GWASs <- function(input.file.list, output.path)
 
   .QC$package.description <- 'Comprehensive, efficient and easy to use quality control of genome-wide association study results'
 
-  .QC$script.version <- '1.4.8.2'
+  .QC$script.version <- '1.5.2'
 
   .QC$verbose <- FALSE
   #

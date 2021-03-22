@@ -325,7 +325,7 @@ process.column.STDERR<- function(input.data){
   }
 
 
-  invalid.items <- which(input.data$STDERR < 0) ## -1 is covered as < 0
+  invalid.items <- which(input.data$STDERR < 0 | input.data$STDERR == Inf) ## -1 is covered as < 0
   .QC$thisStudy$column.INVALID.list$STDERR <- invalid.items
 
   if(length(invalid.items) > 0){
@@ -458,7 +458,8 @@ process.column.IMP_QUALITY<- function(input.data){
   ## Check for inavlid or wrong or missing items => set them to NA
   ## used for report
   invalid.items <- which(input.data$IMP_QUALITY <= config$filters$minimal_impQ_value |
-                           input.data$IMP_QUALITY >= config$filters$maximal_impQ_value)
+                           input.data$IMP_QUALITY >= config$filters$maximal_impQ_value  |
+                           input.data$IMP_QUALITY == Inf)
 
   .QC$thisStudy$column.INVALID.list$IMP_QUALITY <- invalid.items
 

@@ -344,12 +344,16 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   ## HQ plots
 
   # all
+
+  pointsHQ = input.data[HQ == TRUE, .N] * 0.005
+  pointsHQ = ifelse(pointsHQ > 1000 , pointsHQ , 1000)
+
   smoothScatter(x=input.data[HQ == TRUE]$EFF_ALL_FREQ,
                 y= input.data[HQ == TRUE]$AF,
                 pch='.',
                 xlab = "Reported allele frequency",
                 ylab = "Reference allele frequency",
-                nrpoints = 10000,
+                nrpoints = pointsHQ,
                 col='darkblue',
                 colramp = Lab.palette.HQ,
                 cex=2)
@@ -358,12 +362,16 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   title('All SNPs', adj = 0.5, line = 1)
 
   # palindromics
+
+  pointsHQP = input.data[HQ == TRUE & palindromic == TRUE, .N] * 0.005
+  pointsHQP = ifelse(pointsHQP > 1000 , pointsHQP , 1000)
+
   smoothScatter(x=input.data[HQ == TRUE & palindromic == TRUE]$EFF_ALL_FREQ,
                 y= input.data[HQ == TRUE & palindromic == TRUE]$AF,
                 pch='.',
                 xlab = "Reported allele frequency",
                 ylab = "Reference allele frequency",
-                nrpoints = 10000,
+                nrpoints = pointsHQP,
                 col='darkblue',
                 colramp = Lab.palette.HQ,
                 cex=2)
@@ -376,14 +384,19 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   if(hasIndel)
   {
 
-    if(input.data[HQ == TRUE & VT == 2,.N] > 0)
+    pointsHQindel = input.data[HQ == TRUE & VT == 2, .N] * 0.005
+
+    if(pointsHQindel > 0)
     {
+
+      pointsHQindel = ifelse(pointsHQindel > 1000 , pointsHQindel , 1000)
+
       smoothScatter(x=input.data[HQ == TRUE & VT == 2]$EFF_ALL_FREQ,
                     y= input.data[HQ == TRUE & VT == 2]$AF,
                     pch='.',
                     xlab = "Reported allele frequency",
                     ylab = "Reference allele frequency",
-                    nrpoints = 10000,
+                    nrpoints = pointsHQindel,
                     col='darkblue',
                     colramp = Lab.palette.HQ,
                     cex=2)
@@ -406,12 +419,16 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   if(hasLQ)
   {
     # all
+
+    pointsLQ = input.data[HQ == FALSE, .N] * 0.005
+    pointsLQ = ifelse(pointsLQ > 1000 , pointsLQ , 1000)
+
     smoothScatter(x=input.data[HQ == FALSE]$EFF_ALL_FREQ,
                   y= input.data[HQ == FALSE]$AF,
                   pch='.',
                   xlab = "Reported allele frequency",
                   ylab = "Reference allele frequency",
-                  nrpoints = 10000,
+                  nrpoints = pointsLQ,
                   col='darkred',
                   colramp = Lab.palette.LQ,
                   cex=2)
@@ -419,12 +436,16 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
     title("All SNPs", adj = 0.5, line = 1)
 
   # palindromics
+
+    pointsLQP = input.data[HQ == FALSE & palindromic == TRUE, .N] * 0.005
+    pointsLQP = ifelse(pointsLQP > 1000 , pointsLQP , 1000)
+
     smoothScatter(x=input.data[HQ == FALSE & palindromic == TRUE]$EFF_ALL_FREQ,
                   y= input.data[HQ == FALSE & palindromic == TRUE]$AF,
                   pch='.',
                   xlab = "Reported allele frequency",
                   ylab = "Reference allele frequency",
-                  nrpoints = 10000,
+                  nrpoints = pointsLQP,
                   col='darkred',
                   colramp = Lab.palette.LQ,
                   cex=2)
@@ -433,14 +454,18 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   # non-snps
     if(hasIndel)
     {
-      if(input.data[HQ == FALSE & VT == 2,.N]>0)
+      pointsLQindel = input.data[HQ == FALSE & VT == 2, .N] * 0.005
+
+      if(pointsLQindel > 0)
       {
+        pointsLQindel = ifelse(pointsLQindel > 1000 , pointsLQindel , 1000)
+
         smoothScatter(x=input.data[HQ == FALSE & VT == 2]$EFF_ALL_FREQ,
                       y= input.data[HQ == FALSE & VT == 2]$AF,
                       pch='.',
                       xlab = "Reported allele frequency",
                       ylab = "Reference allele frequency",
-                      nrpoints = 10000,
+                      nrpoints = pointsLQindel,
                       col='darkred',
                       colramp = Lab.palette.LQ,
                       cex=2)

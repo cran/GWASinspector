@@ -1,11 +1,11 @@
 cc8225b0c8528e6908a8cdd601ad5dcb *ChangeLog
-1be2d1bbea00b8764e4093e9bc16b48c *DESCRIPTION
+37d77391c1102f5622873cbbaa4ff33a *DESCRIPTION
 e479cfd9f65fae2e3e1c8a1654e9bb63 *NAMESPACE
 91eafc2d5f7f144470c73c65f2fdfabf *NEWS
 987e064731a50026bacf3d44bda1f266 *R/GWASinspector.R
 2b6f8ca5f5b8f311726b10604cf52867 *R/QQPlotFunction.R
 048d2a9a473a4123db830acb4ad47499 *R/Study.R
-80cb9c7b10556f557fe0114bd1f8a16d *R/aaa.R
+fc97057f59d2fe3d40e7fb4be558ad15 *R/aaa.R
 026c95c5966b8052c10bab7f961766b9 *R/alleleMatch.R
 db0ae4dffcae0c408a2274cd8d33777a *R/altReferenceRelatedFucntions.R
 49b986c84864f2c1b9ab58f20b7122d2 *R/applyHQfilter.R
@@ -13,7 +13,7 @@ d58d4513276c0d5db35ad9a7bd8ab59e *R/betaReferenceRelatedFunctions.R
 d8a569577fd29615b5e2e01f06daa4ce *R/calculationFunctions.R
 26796663c5bf925bbec8721fad740c74 *R/checkConfigFile.R
 d63486629029283de391d65d2472e319 *R/class_definition.R
-b73648cb173716660555f0c8ce635401 *R/compare_GWASs.R
+82b88de785ccb35f9748b387031e2eff *R/compare_GWASs.R
 61b3073f7124e6cb53f8159e4017d047 *R/demoConfig.R
 34abbfbf8818c0bddc33a359be9f0eb6 *R/demo_inspector.R
 e47efbe2a84896890bb489b3c3b82155 *R/drawPlots.R
@@ -26,7 +26,7 @@ e47efbe2a84896890bb489b3c3b82155 *R/drawPlots.R
 8e3d02c3b194e3126145090ead64fc50 *R/headerRelatedFunctions.R
 b753b6cb0f2b8b5990885cde70b81749 *R/histPlotFunction.R
 4326275558cae3b979560a1e5f6e3fdb *R/loggerFunctions.R
-87cb68e889bbfd85f9a991c9c27824de *R/mafPlotFunction.R
+f4b112cf940bf45a138316f2707099bf *R/mafPlotFunction.R
 0b13ee9cd3e3fe77af3e4ce22239cd7c *R/manh_plot.R
 205ac0361f0b165e0025530b6ba739f1 *R/manhattanPlotFunction.R
 9e87204606b5a68c3bfcee5f8c8652ab *R/multiStudyFunctions.R
@@ -34,9 +34,9 @@ a273f939b9985fab7287a999a63df5c0 *R/multiStudyPlots.R
 1d892fd040ba13a9f2264bb819240f06 *R/pValueCorPlot.R
 1f2cfdc3041c6c9ab7abe4f3ce91d04b *R/pValueFunctions.R
 6f0b000136469f3b8d89423b0c6c1bd1 *R/processColumnNames.R
-7dbf8882a5fce22de67a06ff50d94157 *R/processColumns.R
+b889bc0f8e8887d45522d95192018f4b *R/processColumns.R
 5b0653c9013745790d185e6e3d9fd6d9 *R/processInputFile.R
-6c6ec3fbd0a9bf7365aec3d9671efc8d *R/rSQLiteFunctions.R
+d8397ad4aaf0f689b44ec5cb22510660 *R/rSQLiteFunctions.R
 55ee88a01a4ca6c4d1c722f6e4a8f0b5 *R/referenceRelatedFunctions.R
 13487ebf8685b5bcdc7f9652d41a769c *R/reportRelatedFunctions.R
 cd8603ceb6967c12bc1fbf5839319024 *R/result_inspector.R
@@ -56,9 +56,9 @@ e0d88cb3e0d2baee08a4568aa6167ece *R/variantModifierFunctions.R
 0b91a93bb8ca6c5a258d9f32d0f1bc4d *R/zzz.R
 f77033fe429086096e8d7325ddb4420d *build/vignette.rds
 ae93d3a0f7ab50378aefa6654b285172 *inst/CITATION
-560277fed2bf84d1503f431fdeee4036 *inst/doc/GWASinspector.R
-2a024224dc30676ddd8e740e6b265f55 *inst/doc/GWASinspector.Rmd
-d87df0724e1a23afb89d1cf038643444 *inst/doc/GWASinspector.html
+a49d9955a84c2af8e445a20ee275fa9b *inst/doc/GWASinspector.R
+164cf77385974d2a94558ca019b671d9 *inst/doc/GWASinspector.Rmd
+4e01ee3aea96377b995ec9d26d998188 *inst/doc/GWASinspector.html
 34df5f5f1f76a4d2b886c7772218110c *inst/extdata/DNA.png
 0078e825648fdc7a0617a128ee7db8e2 *inst/extdata/HapMap_CEU_r28_b36_EDIT_v10c_sample.rds
 489516f3e4068c1006857e5ffa87c163 *inst/extdata/alt_headers.txt
@@ -86,4 +86,4 @@ ae23c5dca35bec9e641cd5ba13b6ac2b *man/result.inspector.Rd
 1785a9270bd6a4f13b0e688298cf48cf *man/run.inspector.Rd
 bf096b06618d17bb1fc21d5261f891f4 *man/setup.inspector.Rd
 7bbc45a5ce1aee41487844197244939f *man/system.check.Rd
-2a024224dc30676ddd8e740e6b265f55 *vignettes/GWASinspector.Rmd
+164cf77385974d2a94558ca019b671d9 *vignettes/GWASinspector.Rmd

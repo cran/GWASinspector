@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2021-02-08" />
+<meta name="date" content="2021-03-22" />
 
 <title>Introduction to GWASinspector</title>
 
@@ -302,7 +302,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Introduction to GWASinspector</h1>
 <h3 class="subtitle">Comprehensive, efficient and easy to use quality control of genome-wide association study results</h3>
-<h4 class="date">2021-02-08</h4>
+<h4 class="date">2021-03-22</h4>
 
 
 
@@ -366,7 +366,7 @@ text-align: justify}
 <div id="step-1-make-sure-the-package-is-installed-correctly" class="section level2">
 <h2>Step 1: make sure the package is installed correctly</h2>
 <p>After installation, try loading the package with the following command.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">require</span>(GWASinspector)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">library</span>(GWASinspector)</a></code></pre></div>
 </div>
 <div id="step-2-check-r-environment" class="section level2">
 <h2>Step 2: check R environment</h2>
@@ -392,7 +392,7 @@ text-align: justify}
 <h2>Step 5: get the configuration file</h2>
 <p>The configuration file is in plain text format and is used for setting the desired parameters for running the algorithm. A template file can be copied to local folder by running the following command.</p>
 <p>The default name of this file is <strong>config.ini</strong>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">get.config</span>(<span class="kw">getwd</span>()) <span class="co"># copy the file to selected folder</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">get.config</span>(<span class="st">&#39;/home/user&#39;</span>) <span class="co"># copy the file to selected folder</span></a></code></pre></div>
 </div>
 <div id="step-6-modify-the-parameters-in-the-configuration-file" class="section level2">
 <h2>Step 6: modify the parameters in the configuration file</h2>
@@ -405,7 +405,7 @@ text-align: justify}
 <p><strong>Example:</strong></p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"></a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="co">## load the package</span></a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw">require</span>(GWASinspector)</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">library</span>(GWASinspector)</a>
 <a class="sourceLine" id="cb7-4" title="4"></a>
 <a class="sourceLine" id="cb7-5" title="5"><span class="co">## import the QC-configuration file </span></a>
 <a class="sourceLine" id="cb7-6" title="6">job &lt;-<span class="st"> </span><span class="kw">setup.inspector</span>(<span class="st">&quot;/home/user/config.ini&quot;</span>)</a>
@@ -426,7 +426,7 @@ text-align: justify}
 <div id="test-run" class="section level1">
 <h1>Test run</h1>
 <p>You can run the algorithm on a sample GWAS file which is embedded in the package. Reports are generated and saved in the specified folder.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">require</span>(GWASinspector)</a>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">library</span>(GWASinspector)</a>
 <a class="sourceLine" id="cb8-2" title="2"><span class="kw">demo.inspector</span>(<span class="st">&#39;/sample_dir&#39;</span>)</a></code></pre></div>
 <hr />
 </div>

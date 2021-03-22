@@ -20,7 +20,7 @@
 #  
 
 ## ------------------------------------------------------------------------
-#  require(GWASinspector)
+#  library(GWASinspector)
 #  
 
 ## ------------------------------------------------------------------------
@@ -32,13 +32,13 @@
 #  
 
 ## ------------------------------------------------------------------------
-#  get.config(getwd()) # copy the file to selected folder
+#  get.config('/home/user') # copy the file to selected folder
 #  
 
 ## ------------------------------------------------------------------------
 #  
 #  ## load the package
-#  require(GWASinspector)
+#  library(GWASinspector)
 #  
 #  ## import the QC-configuration file
 #  job <- setup.inspector("/home/user/config.ini")
@@ -56,6 +56,6 @@
 #  
 
 ## ------------------------------------------------------------------------
-#  require(GWASinspector)
+#  library(GWASinspector)
 #  demo.inspector('/sample_dir')
 

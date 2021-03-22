@@ -100,7 +100,7 @@ After installation, try loading the package with the following command.
 
 	  
 ```{r}
-require(GWASinspector)
+library(GWASinspector)
 
 ```
    
@@ -153,7 +153,7 @@ The default name of this file is **config.ini**.
 
 
 ```{r}
-get.config(getwd()) # copy the file to selected folder
+get.config('/home/user') # copy the file to selected folder
 
 ```
 
@@ -176,7 +176,7 @@ The QC is configured by the configuration (ini) file, which is imported into R t
 ```{r}
 
 ## load the package
-require(GWASinspector)
+library(GWASinspector)
 
 ## import the QC-configuration file 
 job <- setup.inspector("/home/user/config.ini")
@@ -202,7 +202,7 @@ result.inspector(job)
 You can run the algorithm on a sample GWAS file which is embedded in the package. Reports are generated and saved in the specified folder.
 
 ```{r}
-require(GWASinspector)
+library(GWASinspector)
 demo.inspector('/sample_dir')
 ```
 

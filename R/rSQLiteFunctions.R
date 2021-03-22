@@ -255,21 +255,21 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
 
   # some information
   # show how many variant information is in memory
-  print.and.log(paste0('Variant info from previous search: ',nrow(.QC$stored.reference.data)),
-                'info',
-                display=.QC$config$debug$verbose)
-
-  print.and.log(paste0('Variants searched before: ',length(.QC$searched.hIDs)),
-                'info',
-                display=.QC$config$debug$verbose)
-
-  print.and.log(paste0('Variant not seen before: ',length(new.hIDs)),
-                'info',
-                display=.QC$config$debug$verbose)
-
-  print.and.log(paste0('New found variants: ',nrow(rs)),
-                'info',
-                display=.QC$config$debug$verbose)
+#  print.and.log(paste0('Variant info from previous search: ',nrow(.QC$stored.reference.data)),
+#                'info',
+#                display=.QC$config$debug$verbose)
+#
+#  print.and.log(paste0('Variants searched before: ',length(.QC$searched.hIDs)),
+#                'info',
+#                display=.QC$config$debug$verbose)
+#
+#  print.and.log(paste0('Variant not seen before: ',length(new.hIDs)),
+#                'info',
+#                display=.QC$config$debug$verbose)
+#
+#  print.and.log(paste0('New found variants: ',nrow(rs)),
+#                'info',
+#                display=.QC$config$debug$verbose)
   ## ==========
 
   # add new hIDs to the previously searched hID list

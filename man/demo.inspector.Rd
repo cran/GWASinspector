@@ -15,8 +15,3 @@ QC reports from running the algorithm on a sample GWAS file are generated and sa
 \description{
 This function runs the QC algorithm on a fabricated GWAS result file.
 }
-\examples{
-\donttest{
-demo.inspector(tempdir())
-}
-}

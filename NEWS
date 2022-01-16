@@ -20,27 +20,32 @@ Changes in version 1.4 (Jan 2020)
 	- Minor bug fixes.
 	- sample.inspector function is renamed to demo.inspector.
 
-	Changes in version 1.4.7 (Apr 2020)
+Changes in version 1.4.7 (Apr 2020)
 ====================================
 	- data.table package (1.12.8) is now capable of directly writing gz files. This will be used for saving output zipped files.
 	- R.utils package is now added to dependecy list. This will be used to read gz files with data.table::fread() function.
 
-	Changes in version 1.4.7.1 (May 2020)
+Changes in version 1.4.7.1 (May 2020)
 ====================================
 	- Summary statistics are generated seprately for HQ variants.
 
-	Changes in version 1.4.8 (Jul 2020)
+Changes in version 1.4.8 (Jul 2020)
 ====================================
 	- Messages to the terminal can be supressed using `verbose` parameter.
 	- New columns can be added to the output files indicating multi-allelic or HQ variants.
 	- Allele-frequency and RSID from the reference file can be added to the result files.
 
-	Changes in version 1.4.8.3 (Dec 2020)
+Changes in version 1.4.8.3 (Dec 2020)
 ====================================
 	- A new column containing CHR:POS:EFF_ALL_OTHER_ALL can be added to the output files.
 
-	Changes in version 1.4.8.4 (Jan 2021)
+Changes in version 1.4.8.4 (Jan 2021)
 ====================================
 	- File order can be set with a string parameter.
 	- Allele frequency scatter plot is replaced with Smooth Scatter.
 	- Search of variants in the reference dataset is improved.
+
+Changes in version 1.5.7 (Jan 2022)
+====================================
+	- Some minor debugging was done.
+

@@ -5,8 +5,6 @@
 #' will allow for Excel and HTML formatted log files, which are easier to read and interpret.
 #'
 #' @return System information and required functionalities for the QC algorithm are checked and reported as a data frame.
-#' @examples
-#' system.check()
 #'
 system.check <- function()
 {

@@ -65,7 +65,7 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
 
   }else{
 
-    # this workd gor ggplot2 v 2.2
+    # this works ggplot2 v 2.2
     xlab <- as.numeric(ggplot_build(qq.af.plot)$layout$panel_ranges[[1]]$x.labels)
     ylab <- as.numeric(ggplot_build(qq.af.plot)$layout$panel_ranges[[1]]$y.labels)
 

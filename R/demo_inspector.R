@@ -4,10 +4,7 @@
 #'
 #' @param result.dir character. Path to the output folder for saving QC result files
 #' @return QC reports from running the algorithm on a sample GWAS file are generated and saved in the specified folder.
-#' @examples
-#' \donttest{
-#' demo.inspector(tempdir())
-#' }
+#'
 demo.inspector <- function(result.dir)
 {
 

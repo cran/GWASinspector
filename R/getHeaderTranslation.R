@@ -7,8 +7,6 @@
 #'
 #' @param dir.path Path to the folder for saving a header-translation table file.
 #' @return Copies a sample header-translation table in the specified folder.
-#' @examples
-#' get.headerTranslation(tempdir())
 #'
 get.headerTranslation <- function(dir.path)
 {

@@ -15,15 +15,6 @@
 #' @param std.error (optional) Name of the standard error column
 #' @param check.columns Whether to check input columns for invalid values
 #' @return Generates and saves a Manhattan plot for the provided data.
-#' @examples
-#' input.data = read.table(gzfile(system.file("extdata", "demo.txt.gz", package = "GWASinspector")),
-#'                         header = TRUE,
-#'                         stringsAsFactors = FALSE,
-#'                         fill = TRUE)
-#' tmpPlotFile = paste(tempfile(),'png',sep = '.')
-#' manhattan.plot(dataset = input.data, chr = 'CHR', pvalue = 'PVALUE', position = 'POSITION',
-#'          plot.title = 'Manhattan plot', plot.subtitle = 'This data is fabricated!',
-#'          fileName = tmpPlotFile , p.threshold = '0.5')
 #'
 manhattan.plot <- function(dataset,
                      chr,

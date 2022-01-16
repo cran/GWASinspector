@@ -305,10 +305,14 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   p.c <- 3
   p.title.margin <- -31
   hasIndel <- .QC$thisStudy$hasINDEL
+  hasHQ <- FALSE
   hasLQ <- FALSE
 
   if(.QC$thisStudy$LQ.count > 0)
     hasLQ <- TRUE
+
+  if(.QC$thisStudy$HQ.count > 0)
+    hasHQ <- TRUE
 
 
   if(!hasIndel)
@@ -318,7 +322,7 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
     p.title.margin <- -25
   }
 
-  if(!hasLQ)
+  if(!hasLQ | !hasHQ)
   {
     p.height <- 2000
     p.r <- 1
@@ -344,76 +348,78 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   ## HQ plots
 
   # all
-
-  pointsHQ = input.data[HQ == TRUE, .N] * 0.005
-  pointsHQ = ifelse(pointsHQ > 1000 , pointsHQ , 1000)
-
-  smoothScatter(x=input.data[HQ == TRUE]$EFF_ALL_FREQ,
-                y= input.data[HQ == TRUE]$AF,
-                pch='.',
-                xlab = "Reported allele frequency",
-                ylab = "Reference allele frequency",
-                nrpoints = pointsHQ,
-                col='darkblue',
-                colramp = Lab.palette.HQ,
-                cex=2)
-
-  # title(sprintf('All SNPs (r = %.3f)',AFcor), adj = 0.5, line = 1)
-  title('All SNPs', adj = 0.5, line = 1)
-
-  # palindromics
-
-  pointsHQP = input.data[HQ == TRUE & palindromic == TRUE, .N] * 0.005
-  pointsHQP = ifelse(pointsHQP > 1000 , pointsHQP , 1000)
-
-  smoothScatter(x=input.data[HQ == TRUE & palindromic == TRUE]$EFF_ALL_FREQ,
-                y= input.data[HQ == TRUE & palindromic == TRUE]$AF,
-                pch='.',
-                xlab = "Reported allele frequency",
-                ylab = "Reference allele frequency",
-                nrpoints = pointsHQP,
-                col='darkblue',
-                colramp = Lab.palette.HQ,
-                cex=2)
-
-
-  # title(sprintf('Palindromic SNPs (r = %.3f)',AFcor.palindromic), adj = 0.5, line = 1)
-  title('Palindromic SNPs', adj = 0.5, line = 1)
-
-  #non-SNPs
-  if(hasIndel)
+  if(hasHQ)
   {
+    pointsHQ = input.data[HQ == TRUE, .N] * 0.005
+    pointsHQ = ifelse(pointsHQ > 1000 , pointsHQ , 1000)
 
-    pointsHQindel = input.data[HQ == TRUE & VT == 2, .N] * 0.005
+    smoothScatter(x=input.data[HQ == TRUE]$EFF_ALL_FREQ,
+                  y= input.data[HQ == TRUE]$AF,
+                  pch='.',
+                  xlab = "Reported allele frequency",
+                  ylab = "Reference allele frequency",
+                  nrpoints = pointsHQ,
+                  col='darkblue',
+                  colramp = Lab.palette.HQ,
+                  cex=2)
 
-    if(pointsHQindel > 0)
+    # title(sprintf('All SNPs (r = %.3f)',AFcor), adj = 0.5, line = 1)
+    title('All SNPs', adj = 0.5, line = 1)
+
+    # palindromics
+
+    pointsHQP = input.data[HQ == TRUE & palindromic == TRUE, .N] * 0.005
+    pointsHQP = ifelse(pointsHQP > 1000 , pointsHQP , 1000)
+
+    smoothScatter(x=input.data[HQ == TRUE & palindromic == TRUE]$EFF_ALL_FREQ,
+                  y= input.data[HQ == TRUE & palindromic == TRUE]$AF,
+                  pch='.',
+                  xlab = "Reported allele frequency",
+                  ylab = "Reference allele frequency",
+                  nrpoints = pointsHQP,
+                  col='darkblue',
+                  colramp = Lab.palette.HQ,
+                  cex=2)
+
+
+    # title(sprintf('Palindromic SNPs (r = %.3f)',AFcor.palindromic), adj = 0.5, line = 1)
+    title('Palindromic SNPs', adj = 0.5, line = 1)
+
+    #non-SNPs
+    if(hasIndel)
     {
 
-      pointsHQindel = ifelse(pointsHQindel > 1000 , pointsHQindel , 1000)
+      pointsHQindel = input.data[HQ == TRUE & VT == 2, .N] * 0.005
 
-      smoothScatter(x=input.data[HQ == TRUE & VT == 2]$EFF_ALL_FREQ,
-                    y= input.data[HQ == TRUE & VT == 2]$AF,
-                    pch='.',
-                    xlab = "Reported allele frequency",
-                    ylab = "Reference allele frequency",
-                    nrpoints = pointsHQindel,
-                    col='darkblue',
-                    colramp = Lab.palette.HQ,
-                    cex=2)
+      if(pointsHQindel > 0)
+      {
+
+        pointsHQindel = ifelse(pointsHQindel > 1000 , pointsHQindel , 1000)
+
+        smoothScatter(x=input.data[HQ == TRUE & VT == 2]$EFF_ALL_FREQ,
+                      y= input.data[HQ == TRUE & VT == 2]$AF,
+                      pch='.',
+                      xlab = "Reported allele frequency",
+                      ylab = "Reference allele frequency",
+                      nrpoints = pointsHQindel,
+                      col='darkblue',
+                      colramp = Lab.palette.HQ,
+                      cex=2)
 
 
-      # title(sprintf('All non-SNPs (r = %.3f)',AFcor.INDEL), adj = 0.5, line = 1)
-      title('All non-SNPs', adj = 0.5, line = 1)
+        # title(sprintf('All non-SNPs (r = %.3f)',AFcor.INDEL), adj = 0.5, line = 1)
+        title('All non-SNPs', adj = 0.5, line = 1)
+      }
+      else
+        plot.new()
     }
-    else
-      plot.new()
+
+
+
+    title(plot.title.text,line=-2, outer = TRUE, cex.main=2)
+    title("Standard Reference (HQ variants)", line=-3.7, outer = TRUE,cex.main=1.6)
+
   }
-
-
-  title(plot.title.text,line=-2, outer = TRUE, cex.main=2)
-  title("Standard Reference (HQ variants)", line=-3.7, outer = TRUE,cex.main=1.6)
-
-
 
   ## LQ plots
   if(hasLQ)
@@ -474,7 +480,14 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
         plot.new()
     }
 
-    title("Standard Reference (LQ variants)",line= p.title.margin, outer = TRUE,cex.main=1.6)
+    if(!hasHQ)
+    {
+      title(plot.title.text,line=-2, outer = TRUE, cex.main=2)
+      title("Standard Reference (LQ variants)",line= -3.7, outer = TRUE,cex.main=1.6)
+    }
+    else
+      title("Standard Reference (LQ variants)",line= p.title.margin, outer = TRUE,cex.main=1.6)
+
   }
 
 

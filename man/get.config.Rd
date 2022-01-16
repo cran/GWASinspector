@@ -16,7 +16,3 @@ Copies a sample configuration file (config.ini) in the specified folder.
 This templates should be edited and then used for setting up and running the QC pipeline.
 Default filename is \strong{config.ini}.
 }
-\examples{
-get.config(tempdir())
-
-}

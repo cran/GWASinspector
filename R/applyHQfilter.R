@@ -28,15 +28,16 @@ applyHQfilter <- function(input.data) {
                   EFF_ALL_FREQ > 1 - HQfilter_FRQ ,
                 HQ := FALSE]
 
-  if('IMP_QUALITY' %in% col.names)
+  # .QC$unwantedColumnsList containt the columns that are all set to NA and thus should not be checked for HQ
+  if('IMP_QUALITY' %in% col.names & 'IMP_QUALITY' %notin% .QC$unwantedColumnsList)
     input.data[ HQ == TRUE   & (is.na(IMP_QUALITY) | IMP_QUALITY < HQfilter_imp) ,
                 HQ := FALSE]
 
-  if('HWE_PVAL' %in% col.names)
+  if('HWE_PVAL' %in% col.names & 'HWE_PVAL' %notin% .QC$unwantedColumnsList)
     input.data[HQ == TRUE & !is.na(HWE_PVAL) & HWE_PVAL < HQfilter_HWE, # set as LQ if below threshold
                HQ := FALSE]
 
-  if('CALLRATE' %in% col.names)
+  if('CALLRATE' %in% col.names & 'CALLRATE' %notin% .QC$unwantedColumnsList)
     input.data[HQ == TRUE & !is.na(CALLRATE) & CALLRATE < HQfilter_cal,# set as LQ if below threshold
                HQ := FALSE]
 

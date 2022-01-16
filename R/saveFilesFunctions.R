@@ -225,7 +225,8 @@ save.NA.Dataset <- function(input.data,input.data.backup) {
   wantedColumnsList <- sapply(nonCrucialColumns, function(x)
   {
     if(x %in% current.col.names){
-      if(input.data[is.na(eval(parse(text = x))), .N] == row.count)
+      #if(input.data[is.na(eval(parse(text = x))), .N] == row.count)
+      if(all(is.na(input.data[,eval(parse(text = x))])))
       {
         print.and.log(sprintf('Column \'%s\' removed from improbable_variant file because all where NA!',x)
                       ,'warning',display=.QC$config$debug$verbose)
@@ -242,7 +243,7 @@ save.NA.Dataset <- function(input.data,input.data.backup) {
   })
 
   # get the list of required columns
-  unwantedColumnsList <- names(wantedColumnsList[which(wantedColumnsList == FALSE)])
+  .QC$unwantedColumnsList <- names(wantedColumnsList[which(wantedColumnsList == FALSE)])
   wantedColumnsList <- names(wantedColumnsList[which(wantedColumnsList == TRUE)])
 
 

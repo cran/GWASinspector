@@ -130,9 +130,12 @@ calculateVischerStats <- function(input.data){
 
 
   input.data <- input.data[!is.na(EFF_ALL_FREQ)]
-
-  Visschers.stat <- signif(input.data[,median( 1 / (2 * input.data$EFF_ALL_FREQ * (1-input.data$EFF_ALL_FREQ)
-                                                    * (input.data$STDERR)^2 )) / max(input.data$N_TOTAL ,na.rm = TRUE)],3)
+  nMax = max(input.data$N_TOTAL ,na.rm = TRUE)
+  Visschers.stat <- signif(input.data[,median(2 *
+                                                input.data$EFF_ALL_FREQ *
+                                                (1-input.data$EFF_ALL_FREQ) *
+                                                nMax *
+                                                (input.data$STDERR^2))], 3)
 
 
   .QC$thisStudy$Visschers.stat <- Visschers.stat
@@ -146,9 +149,13 @@ calculateVischerStats.HQ <- function(input.data){
 
   input.data <- input.data[!is.na(EFF_ALL_FREQ)]
 
-  Visschers.stat <- signif(input.data[HQ == TRUE,
-                                      median( 1 / (2 * input.data$EFF_ALL_FREQ * (1-input.data$EFF_ALL_FREQ)
-                                                   * (input.data$STDERR)^2 )) / max(input.data$N_TOTAL ,na.rm = TRUE)],3)
+  nMax = max(input.data$N_TOTAL ,na.rm = TRUE)
+
+  Visschers.stat <- signif(input.data[HQ == TRUE, median(2 *
+                                                input.data$EFF_ALL_FREQ *
+                                                (1-input.data$EFF_ALL_FREQ) *
+                                                nMax *
+                                                (input.data$STDERR^2))], 3)
 
   .QC$thisStudy$Visschers.stat.HQ <- Visschers.stat
 

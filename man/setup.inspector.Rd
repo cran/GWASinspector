@@ -19,9 +19,3 @@ To run a QC in GWASinspector, copy a template configuration file to your machine
 Next, use the \code{\link{setup.inspector}} function to check the configuration file and import it into R.
 This will create an object of the inspector class, which can then be processed using \code{\link{run.inspector}}.
 }
-\examples{
-config.file <- get.config(tempdir())
-job <- setup.inspector(config.file , validate = FALSE)
-job
-
-}

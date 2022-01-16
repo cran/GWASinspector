@@ -965,14 +965,16 @@ get.study.name <- function(study) {
 
 get.skewness.kurtosis <- function(study) {
   vec <- data.table('kurtosis' = study$kurtosis.HQ,
-                    'skewness' = study$skewness.HQ)
+                    'skewness' = study$skewness.HQ,
+                    'order' = study$number)
 
   return(vec)
 }
 
 get.precision.plot.values <- function(study) {
   vec <- data.table('SE.mean.HQ' = 1 / study$STDERR.mean.HQ,
-                    'sqrt.n' = sqrt(study$MAX_N_TOTAL))
+                    'sqrt.n' = sqrt(study$MAX_N_TOTAL),
+                    'order' = study$number)
 
   return(vec)
 }

@@ -14,7 +14,3 @@ Checks if required and optional packages are installed on the system.
 Although the optional packages do not contribute to the QC itself, having them available
 will allow for Excel and HTML formatted log files, which are easier to read and interpret.
 }
-\examples{
-system.check()
-
-}

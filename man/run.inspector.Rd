@@ -22,23 +22,3 @@ This is the main function of the package for running the QC algorithm on a set o
 It requires an object of class \linkS4class{Inspector} which should be created by \code{\link{setup.inspector}}.
 Check the package vignette and tutorial for more details on this topic.
 }
-\examples{
-\dontrun{
-# save a sample configuration file and edit it as required.
-config.file <- get.config(tempdir())
-
-# import the QC-configuration file into R.
-job <- setup.inspector(config.file)
-
-# check the generated object.
-job
-
-# run the generated object.
-# This may take up to a couple of hours, depending on your PC and the size/number of files.
-job <- run.inspector(job)
-
-# view a brief summary about the result. report files and plots are already saved.
-result.inspector(job)
-}
-
-}

@@ -50,14 +50,3 @@ Generates and saves a Manhattan plot for the provided data.
 \description{
 A function to generate Manhattan plots.
 }
-\examples{
-input.data = read.table(gzfile(system.file("extdata", "demo.txt.gz", package = "GWASinspector")),
-                        header = TRUE,
-                        stringsAsFactors = FALSE,
-                        fill = TRUE)
-tmpPlotFile = paste(tempfile(),'png',sep = '.')
-manhattan.plot(dataset = input.data, chr = 'CHR', pvalue = 'PVALUE', position = 'POSITION',
-         plot.title = 'Manhattan plot', plot.subtitle = 'This data is fabricated!',
-         fileName = tmpPlotFile , p.threshold = '0.5')
-
-}

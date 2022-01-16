@@ -23,14 +23,14 @@ multi.study.precision.plot <- function(study.list, graphic.device , figure.path)
     precision.table <- precision.table[is.na(missing)] ## if 'missing' column is not set to TRUE it is null and not missing
   }
 
-  if(nrow(precision.table) > 1)
+  if(nrow(precision.table) >= 1)
   {
     #add number to display in plot beside each point
-    # precision.table$order <- 1:nrow(precision.table)
-    if(!is.null(study.list)) # if function is called independently
-      precision.table$order <- sapply(study.list, function(x) return(x$number))
-    else if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
-      precision.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
+    #precision.table$order <- 1:nrow(precision.table)
+    # if(!is.null(study.list)) # if function is called independently
+    #   precision.table$order <- sapply(study.list, function(x) return(x$number))
+    # else if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
+    #   precision.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
 
 
     precision.table[,ordered.names := sprintf('%s- %s',order,study.names)]
@@ -122,17 +122,15 @@ multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path)
   }
 
 
-  if(nrow(skew.kurt.table) > 1)
+  if(nrow(skew.kurt.table) >= 1)
   {
     ## add order values to table from 1 to row count
-    skew.kurt.table$order <- 1:nrow(skew.kurt.table)
+    #skew.kurt.table$order <- 1:nrow(skew.kurt.table)
 
-
-
-    if(!is.null(study.list)) # if function is called independently
-      skew.kurt.table$order <- sapply(study.list, function(x) return(x$number))
-    else if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
-      skew.kurt.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
+    # if(!is.null(study.list)) # if function is called independently
+    #   skew.kurt.table$order <- sapply(study.list, function(x) return(x$number))
+    # else if(!is.null(.QC$qc.study.list))  # if function is called from inspect()
+    #   skew.kurt.table$order <- sapply(.QC$qc.study.list, function(x) return(x$number))
 
 
 
@@ -221,19 +219,27 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
   ##effect.plot.list <- lapply(study.list, function(x) return(x$effect.plot))
   effect.plot.list <- lapply(study.list, function(x) return(generateEffectSizePlot(x)))
 
-  if(any(sapply(effect.plot.list,is.null)))
+  # remove null studies, with no HQ variants
+  effect.plot.list2 <- effect.plot.list[!sapply(effect.plot.list,is.null)]
+
+  #if(any(sapply(effect.plot.list,is.null)))
+  if(length(effect.plot.list2) != length(effect.plot.list))
   {
-    print.and.log("Effect-size box plot NOT saved!",'warning')
+    #print.and.log("Effect-size box plot NOT saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
+    print.and.log(sprintf("%s studies are removed from effect-size box plot!",length(effect.plot.list) - length(effect.plot.list2)),
+                  'warning',
+                  display=.QC$config$debug$verbose)
   }
-  else
+
+  if(length(effect.plot.list2) >= 1)
   {
-    ggsave(plot = arrangeGrob(grobs = effect.plot.list,
-                              ncol = length(effect.plot.list)),
+    ggsave(plot = arrangeGrob(grobs = effect.plot.list2,
+                              ncol = length(effect.plot.list2)),
            filename = figure.path ,
            device = graphic.device ,
            units = c('mm'),
            # width = length(effect.plot.list) * 120,
-           width = length(effect.plot.list) * 40,
+           width = length(effect.plot.list2) * 40,
            height =50,
            dpi=150,
            limitsize = FALSE )
@@ -243,6 +249,9 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
 
 
     print.and.log("Effect-size box plot is saved!",'info')
+  }else
+  {
+    print.and.log("Effect-size box plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
   }
 }
 
@@ -250,7 +259,7 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
 generateEffectSizePlot <- function(study)
 {
 
-  if(is.null(study$effect.plot.df))
+  if(is.null(study$effect.plot.df) | any(sapply(study$effect.plot.df,is.na)))
   {
     return(NULL)
   }else

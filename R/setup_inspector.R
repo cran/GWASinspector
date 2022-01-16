@@ -7,10 +7,6 @@
 #' @param config.file character. Path to a configuration (.ini) file. For a sample configuration file, see \code{\link{get.config}}.
 #' @param validate logical. Whether to validate the object.
 #' @return returns a new instance of \linkS4class{Inspector} class.
-#' @examples
-#' config.file <- get.config(tempdir())
-#' job <- setup.inspector(config.file , validate = FALSE)
-#' job
 #'
 setup.inspector <- function(config.file , validate = TRUE)
 {

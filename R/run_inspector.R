@@ -9,24 +9,6 @@
 #' @param test.run logical. If TRUE, only the first 1000 lines of each data file are loaded and analyzed;
 #' plots and saving the cleaned output dataset are skipped. Default value is FALSE.
 #' @return Reports from running the algorithm on a single or a series of GWAS result files are generated and saved.
-#' @examples
-#' \dontrun{
-#' # save a sample configuration file and edit it as required.
-#' config.file <- get.config(tempdir())
-#'
-#' # import the QC-configuration file into R.
-#' job <- setup.inspector(config.file)
-#'
-#' # check the generated object.
-#' job
-#'
-#' # run the generated object.
-#' # This may take up to a couple of hours, depending on your PC and the size/number of files.
-#' job <- run.inspector(job)
-#'
-#' # view a brief summary about the result. report files and plots are already saved.
-#' result.inspector(job)
-#' }
 #'
 run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 {

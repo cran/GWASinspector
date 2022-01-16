@@ -5,8 +5,6 @@
 #'
 #' @param dir.path Path to the folder for saving a sample configuration file.
 #' @return Copies a sample configuration file (config.ini) in the specified folder.
-#' @examples
-#' get.config(tempdir())
 #'
 get.config <- function(dir.path)
 {

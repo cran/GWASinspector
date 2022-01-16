@@ -18,7 +18,3 @@ The file contains a two-column table, with the left column containing the standa
 Both the standard and alternative columns must be fully capitalized. This is a text file which includes most common variable/header names and can be edited according to user specifications.
 The default filename is \strong{alt_headers.txt}.
 }
-\examples{
-get.headerTranslation(tempdir())
-
-}

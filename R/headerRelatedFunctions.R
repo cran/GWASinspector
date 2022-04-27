@@ -97,6 +97,13 @@ checkRequiredColumnNames <- function(inputFile, study){
   if(!is.data.table(data))
     data <- as.data.table(data)
 
+  if(is.null(nrow(data)) | nrow(data) == 0)
+  {
+    print.and.log("File will be ignored. No data found.",'warning')
+    addEmptyStudy_pathOnly(inputFile)
+    return(NULL)
+
+  }
 
   wanted.columns<-getRequiredColumnNames()
   original.File.Columns.upper<-toupper(colnames(data)) ## upper is required for translating column names

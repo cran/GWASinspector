@@ -1,5 +1,5 @@
 9800eea5ddaa6177790a76ae67b9f21e *ChangeLog
-38c8c56cf4b3e09ddbd503aa94a3116c *DESCRIPTION
+319d0f81a266a59fdc5509e0f2ffb32c *DESCRIPTION
 e479cfd9f65fae2e3e1c8a1654e9bb63 *NAMESPACE
 6d59ea3d16d2ffe65ce2fc6a9c6232fe *NEWS
 987e064731a50026bacf3d44bda1f266 *R/GWASinspector.R
@@ -23,7 +23,7 @@ e47efbe2a84896890bb489b3c3b82155 *R/drawPlots.R
 9e801eea5ae7a97fbed237ec9e67a2b3 *R/fileFunctions.R
 0039c45be30876937cd63456b7bc6bc1 *R/getConfig.R
 84d488bede86f4675e94e396c99e2e50 *R/getHeaderTranslation.R
-8e3d02c3b194e3126145090ead64fc50 *R/headerRelatedFunctions.R
+e46238b58b4d9e389870cb07db9b577b *R/headerRelatedFunctions.R
 b753b6cb0f2b8b5990885cde70b81749 *R/histPlotFunction.R
 4326275558cae3b979560a1e5f6e3fdb *R/loggerFunctions.R
 afe7fbb4919b54c06248a4d529e38279 *R/mafPlotFunction.R
@@ -58,7 +58,7 @@ e0d88cb3e0d2baee08a4568aa6167ece *R/variantModifierFunctions.R
 ae93d3a0f7ab50378aefa6654b285172 *inst/CITATION
 d346512bbbdd54f09143491865111e7b *inst/doc/GWASinspector.R
 164cf77385974d2a94558ca019b671d9 *inst/doc/GWASinspector.Rmd
-98fd3a8722b37f5689c08f720264b65e *inst/doc/GWASinspector.html
+6cbd85d91d86df65182a359cfd94da07 *inst/doc/GWASinspector.html
 34df5f5f1f76a4d2b886c7772218110c *inst/extdata/DNA.png
 0078e825648fdc7a0617a128ee7db8e2 *inst/extdata/HapMap_CEU_r28_b36_EDIT_v10c_sample.rds
 489516f3e4068c1006857e5ffa87c163 *inst/extdata/alt_headers.txt

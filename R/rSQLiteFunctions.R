@@ -405,68 +405,6 @@ search.database <- function(variantIDs)
 
 }
 
-# deprecated
-# search a variant in database outside pipeline
-find.variants <- function(db.path, input.vector, column.name = 'hID',reorder = FALSE, output.path = NULL){
-
-
-  if(tools::file_ext(db.path) != 'sqlite')
-    stop('File is not sqlite type database!')
-
-  if (!file.exists(db.path))
-    stop('File not found!')
-
-  if(!is.data.table(input.vector))
-    input.vector <- as.data.table(input.vector)
-
-  colnames(input.vector) <- column.name
-
-  if(column.name == 'hID')
-  {
-    input.vector <- input.vector[grepl('_|:', hID) , ]
-    input.vector[,hID := gsub('_.+',':2',hID)]
-  }
-  input.vector.unlist <- unlist(input.vector)
-
-
-  DB<-dbConnect(RSQLite::SQLite(),db.path)
-
-  rs <- as.data.table(RSQLite::dbGetQuery(DB,
-                                          sprintf('SELECT * FROM variants WHERE %s = :x',column.name) ,
-                                          param = list(x = input.vector.unlist)))
-
-  dbDisconnect(DB)
-
-  ###
-  if(nrow(rs) == 0)
-  {
-    message('Variant not found in database!\nselect ID for "rsID" & hID for "chr:pos:vt"')
-  }
-
-  ###
-  res <- as.data.table(merge(x = input.vector,y = rs, by= column.name, all.x = TRUE ))
-
-  if(reorder)
-    res <- res[match(input.vector[[column.name]], res[[column.name]]),]
-  else
-    res[,sort(hID)]
-
-  if(is.null(output.path))
-  {
-    return(res)
-  }
-  else{
-
-    tryCatch(
-      {
-        xlsx::write.xlsx2(res, file = output.path , sheetName = paste('match result',sample(1:1000000,1),sep = '_') ,append = TRUE )
-      },
-      error = function(err) {
-        message(paste("error in saving xlsx file:" , err$message))
-      }
-    )
-  }
-}
 
 
 

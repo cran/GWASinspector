@@ -1,21 +1,5 @@
-xlsx.addTitle<-function(sheet, rowIndex, title, titleStyle){
-  rows <-xlsx::createRow(sheet,rowIndex=rowIndex)
-  sheetTitle <-xlsx::createCell(rows, colIndex=1)
-  xlsx::setCellValue(sheetTitle[[1,1]], title)
-  xlsx::setCellStyle(sheetTitle[[1,1]], titleStyle)
-}
-
-
 writeExcelReportFile <- function()
 {
-
-  # check if xlsx function is installed.
-  # this package is removed from dependencies, because iot requires JAVA to be installed priorly
-  # which is not always available
-  if (!.QC$xlsx.package.exists) {
-    print.and.log("Package \"xlsx\" is needed for creating excel reports. Please install it.",'warning',display=.QC$config$debug$verbose)
-    return(NULL)
-  }
 
 
   report.success <- tryCatch(create.xlsx.report(.QC$config,.QC$qc.study.list),
@@ -33,58 +17,97 @@ writeExcelReportFile <- function()
 create.xlsx.report <- function(config,study.list){
 
 
-  # if(file.exists(config$paths$xlsx.report))
-  #   file.remove(config$paths$xlsx.report)
+  ##### styles ####
+  style1 <- openxlsx::createStyle(
+    fontSize = 16,
+    textDecoration = "bold",
+    halign = "left",
+    fontColour = "darkblue"
+  )
+
+  style2 <- openxlsx::createStyle(
+    textDecoration = "bold",
+    halign = "center"
+  )
+
+  style2_left <- openxlsx::createStyle(
+    textDecoration = "bold",
+    halign = "left"
+  )
+
+  style3 <- openxlsx::createStyle(
+    textDecoration = "bold",
+    fontColour="darkgreen"
+  )
+
+  style4 <- openxlsx::createStyle(
+    fontSize = 14,
+    textDecoration = c("bold", "italic"),
+    fontColour="darkred"
+  )
+
+  style5 <- openxlsx::createStyle(
+    textDecoration = c("bold"),
+    border = c('top','bottom'),
+    borderStyle = c('thin','medium'),
+    halign = "center"
+  )
 
 
+  styleList <- list(
+    'style1'=style1,
+    'style2'=style2,
+    'style2_left'=style2_left,
+    'style3'=style3,
+    'style4'=style4,
+    'style5'=style5
+  )
+  #######
 
-  wb<-xlsx::createWorkbook(type="xlsx")
-
-
-  # STYLES
-  #=====================================
-  # TITLE_STYLE <- CellStyle(wb)+ Font(wb,  heightInPoints=16,color="darkblue", isBold=TRUE, underline=1)
-  TITLE_STYLE <- xlsx::CellStyle(wb)+ xlsx::Font(wb,  heightInPoints=16,
-                                                 color="darkblue", isBold=TRUE)
-
-  SUB_TITLE_STYLE <- xlsx::CellStyle(wb) +
-    xlsx::Font(wb,  heightInPoints=14, color="darkred",
-               isItalic=TRUE, isBold=FALSE)
-
-  NOTE_TITLE_STYLE <- xlsx::CellStyle(wb) + xlsx::Font(wb,isBold=TRUE)
-
-  NOTE_TITLE_STYLE2 <- xlsx::CellStyle(wb) + xlsx::Font(wb,isBold=TRUE,color="darkgreen")
-
+  ## initialize excel file
+  wb <- openxlsx::createWorkbook(
+    creator = 'GWASinspector_package',
+    title = 'QC output',
+    subject = 'Quality Check'
+  )
 
 
-  # Styles for the data table row/column names
-  TABLE_ROWNAMES_STYLE <- xlsx::CellStyle(wb,alignment = xlsx::Alignment(horizontal = "ALIGN_CENTER")) +
-    xlsx::Font(wb, isBold=TRUE)
-  TABLE_ROWNAMES_STYLE_Left <- xlsx::CellStyle(wb,alignment = xlsx::Alignment(horizontal = "ALIGN_LEFT")) +
-    xlsx::Font(wb, isBold=TRUE)
+  ## first sheet
+  first.excel.sheet(wb,styleList,config,study.list)
 
-  TABLE_COLNAMES_STYLE <- xlsx::CellStyle(wb) + xlsx::Font(wb, isBold=TRUE) +
-    xlsx::Alignment(wrapText=TRUE, horizontal="ALIGN_CENTER") +
-    xlsx::Border(color="black", position=c("TOP", "BOTTOM"),
-                 pen=c("BORDER_THIN", "BORDER_THICK"))
+  ## second sheet
+  second.excel.sheet(wb,styleList,config,study.list)
 
+  ## third sheet
+  third.excel.sheet(wb,styleList,config,study.list)
 
-  xlsx::CellStyle(wb, dataFormat=NULL, alignment=NULL,
-                  border=NULL, fill=NULL, font=NULL)
+  ## sheet per file
+  for(i in 1:length(study.list))
+  {
+    file.excel.sheet(wb,styleList,i,config,study.list)
+  }
 
-  #===========================================
+  ## save output file
+  openxlsx::saveWorkbook(
+    wb = wb,
+    file = config$paths$xlsx.report,
+    overwrite = TRUE
+  )
 
+  return(TRUE)
 
-  # SHEET 1
-  # =====================
-  sheet <- xlsx::createSheet(wb, sheetName = "Report variables")
+}
 
-  xlsx.addTitle(sheet, rowIndex=1, title=paste0(.QC$package.name ," Report v.", .QC$script.version),
-                titleStyle = TITLE_STYLE)
-  # xlsx.addTitle(sheet, rowIndex=8,
-  #               title=sprintf('Alternate Allele frequency Reference set: %s', basename(config$supplementaryFiles$allele_ref_alt)),
-  #               titleStyle = SUB_TITLE_STYLE)
+first.excel.sheet <- function(wb,styleList,config,study.list) {
 
+  sheet <- openxlsx::addWorksheet(wb, sheetName = "Report variables")
+
+  #### title
+  openxlsx::writeData(wb ,sheet ,x = paste0(.QC$package.name ," Report v.", .QC$script.version),startRow = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style1']],rows = 1,cols = 1)
+  openxlsx::setColWidths(wb,sheet,cols = c(1,2),c(50,100))
+
+  #### intro table
   tbl <- t(data.table(
     format(config$new_items$starttime, "%b %d %Y - %X"),
     format(config$new_items$endtime, "%b %d %Y - %X"),
@@ -106,7 +129,6 @@ create.xlsx.report <- function(config,study.list){
                 'Allele frequency Reference dataset' ,
                 'Alternate header file'), tbl)
 
-
   if(!is.na(config$supplementaryFiles$allele_ref_alt)){
     tbl <- rbind(tbl ,c( 'Alternate Allele frequency Reference dataset ',
                          data.table(basename(config$supplementaryFiles$allele_ref_alt))))
@@ -117,73 +139,51 @@ create.xlsx.report <- function(config,study.list){
                          data.table(basename(config$supplementaryFiles$beta_ref_std))))
   }
 
+  openxlsx::writeData(wb ,sheet ,x = tbl,startRow = 3,colNames = FALSE)
 
-  xlsx::addDataFrame(tbl, sheet, startRow=3, startColumn=1,
-                     colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
-                     rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE)
+}
 
-  #
-
-########removed to each file sheet
-#
-#   tbl <- t(data.table(
-#     format(config$filters$HQfilter_FRQ,
-#            scientific = FALSE),
-#     format(config$filters$HQfilter_HWE,
-#            scientific = FALSE),
-#     format(config$filters$HQfilter_cal,
-#            scientific = FALSE),
-#     format(config$filters$HQfilter_imp,
-#            scientific = FALSE)
-#   ))
-#
-#
-#   tbl <- cbind(c(
-#     'Allele frequency',
-#     'HWE p-value',
-#     'Call-rate',
-#     'Imputation quality'),tbl)
-#
-#   xlsx.addTitle(sheet, rowIndex=18, title="High Quality variant filter parameters",
-#                 titleStyle = SUB_TITLE_STYLE)
-#
-#   xlsx::addDataFrame(tbl, sheet, startRow=19, startColumn=1,
-#                      colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
-#                      rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE)
+second.excel.sheet <- function(wb,styleList,config,study.list) {
 
 
+  sheet <- openxlsx::addWorksheet(wb, sheetName = "File Names")
 
-  xlsx::setColumnWidth(sheet, colIndex=1, colWidth=50)
-  xlsx::setColumnWidth(sheet, colIndex=2, colWidth=100)
-  #==================
+  ## title
+  openxlsx::writeData(wb ,sheet ,x = "Input File Names",startRow = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style1']],rows = 1,cols = 1)
 
-  #========sheet 2 (file names)==========
-
-  sheet2 <- xlsx::createSheet(wb, sheetName = "File Names")
-
-
-  report.table <- data.table(sapply(study.list, function(x) return(basename(x$file.path))))
-  colnames(report.table) <- c('Input File Name')
-  # row.names(report.table) <- seq(1:nrow(report.table))
-  row.names(report.table) <-sapply(study.list, function(x) return(x$number))
+  ## table
+  report.table <- data.table('file_number'=sapply(study.list, function(x) return(x$number)))
+  report.table$file_name <-data.table(sapply(study.list, function(x) return(basename(x$file.path))))
+  colnames(report.table) <- c('File number','File Name')
 
 
-  xlsx.addTitle(sheet2, rowIndex=1, title="Input File Names",
-                titleStyle = TITLE_STYLE)
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = report.table,
+    startRow = 3,
+    rowNames = FALSE,
+    colNames = FALSE
+  )
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2']],rows = seq(3,3+nrow(report.table)),cols = 1)
 
-  xlsx::addDataFrame(report.table, sheet2, startRow=3, startColumn=1,
-                     colnamesStyle = TABLE_COLNAMES_STYLE,
-                     rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE,row.names = TRUE)
+  # col width
+  openxlsx::setColWidths(wb,sheet,cols = c(1,2),c(30,60))
+
+}
+
+third.excel.sheet <- function(wb,styleList,config,study.list) {
 
 
+  sheet <- openxlsx::addWorksheet(wb, sheetName = "Multi File Report")
 
-  xlsx::setColumnWidth(sheet2, colIndex=c(1), colWidth=30)
-  xlsx::setColumnWidth(sheet2, colIndex=c(2), colWidth=100)
-
-  #========sheet 3 (multi file report)==========
-  sheet3 <- xlsx::createSheet(wb, sheetName = "Multi File Report")
+  ## header
+  openxlsx::writeData(wb ,sheet ,x = "Comparing input files",xy = c(1,1))
+  openxlsx::addStyle(wb,sheet,style = styleList[['style1']],rows = 1,cols = 1)
 
 
+  ## table
   report.table <- t(data.table(
     sapply(study.list, function(x) return(x$MAX_N_TOTAL)),
     sapply(study.list, function(x) return(paste(x$missing.Columns, collapse = ' | '))),
@@ -231,183 +231,219 @@ create.xlsx.report <- function(config,study.list){
     sapply(study.list, function(x) return(x$tables$variable.summary['Max.', .QC$config$input_parameters$effect_type_string])),
     sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
                                                  x$tables$variable.summary.HQ['Min.', .QC$config$input_parameters$effect_type_string],
-                                          NA))),
+                                                 NA))),
     sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
                                                  x$tables$variable.summary.HQ['Max.', .QC$config$input_parameters$effect_type_string],
-                                          NA))),
+                                                 NA))),
     sapply(study.list, function(x) return(x$tables$variable.summary['Median','STDERR'])),
     sapply(study.list, function(x) return(ifelse(nrow(x$tables$variable.summary.HQ) > 0,
                                                  x$tables$variable.summary.HQ['Median','STDERR'],
-                                          NA)))
+                                                 NA)))
 
-    ))
-
-
-
-  report.table <- rbind(seq(1:length(study.list)),report.table)
-
-  row.names(report.table) <- c("File number",
-                    "Sample Size (Max)",
-                    "Missing Columns",
-                    "SNPs in input file",
-                    "Variant count after step 1 *",
-                    "Variant count after step 2 **",
-                    "Variant count after step 3 ***",
-                    "SNP variants",
-                    "Non-SNP variants",
-                    "Monomorphic",
-                    #/	"Duplicates",
-                    "Palindromics",
-                    "Genotyped variants",
-                    "Imputed variants",
-                    "Negative-strand SNPs",
-                    "Allele Frequency Correlation (Standard Ref)",
-                    "Palindromic Allele Frequency correlation (Standard Ref)",
-                    "Allele Frequency Correlation (Alternative Ref)",
-                    "Palindromic Allele Frequency correlation (Alternative Ref)",
-                    "Lambda - Total",
-                    "Lambda - Genotyped",
-                    "Lambda - Imputed",
-                    "P-value Correlation",
-                    "Visscher's Statistic (HQ variants)",
-                    "Fixed HWE P-value",
-                    "Fixed Imputation Quality",
-                    "Fixed Sample Size",
-                    "Fixed Call Rate",
-                    .QC$config$input_parameters$effect_type_string,
-                    "-      Min.",
-                    "-      1st Qu.",
-                    "-      Median",
-                    "-      Mean",
-                    "-      3rd Qu.",
-                    "-      Max.",
-                    "-      Min. (HQ variants)",
-                    "-      Max. (HQ variants)",
-                    "Standard Error (median)",
-                    "Standard Error (median) (HQ variants)")
+  ))
 
 
 
-  # colnames(report.table) <- c(seq(1:length(study.list)))
+  #report.table <- rbind(sapply(.QC$qc.study.list, function(x) return(x$number)),report.table)
+
+  row.names(report.table) <- c(#"File number",
+    "Sample Size (Max)",
+    "Missing Columns",
+    "SNPs in input file",
+    "Variant count after step 1 *",
+    "Variant count after step 2 **",
+    "Variant count after step 3 ***",
+    "SNP variants",
+    "Non-SNP variants",
+    "Monomorphic",
+    #/	"Duplicates",
+    "Palindromics",
+    "Genotyped variants",
+    "Imputed variants",
+    "Negative-strand SNPs",
+    "Allele Frequency Correlation (Standard Ref)",
+    "Palindromic Allele Frequency correlation (Standard Ref)",
+    "Allele Frequency Correlation (Alternative Ref)",
+    "Palindromic Allele Frequency correlation (Alternative Ref)",
+    "Lambda - Total",
+    "Lambda - Genotyped",
+    "Lambda - Imputed",
+    "P-value Correlation",
+    "Visscher's Statistic (HQ variants)",
+    "Fixed HWE P-value",
+    "Fixed Imputation Quality",
+    "Fixed Sample Size",
+    "Fixed Call Rate",
+    .QC$config$input_parameters$effect_type_string,
+    "-      Min.",
+    "-      1st Qu.",
+    "-      Median",
+    "-      Mean",
+    "-      3rd Qu.",
+    "-      Max.",
+    "-      Min. (HQ variants)",
+    "-      Max. (HQ variants)",
+    "Standard Error (median)",
+    "Standard Error (median) (HQ variants)")
+
+
+
   colnames(report.table) <- sapply(.QC$qc.study.list, function(x) return(x$number))
 
 
-  xlsx.addTitle(sheet3, rowIndex=1, title="Comparing input files",
-                titleStyle = TITLE_STYLE)
+  ## write table
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = report.table,
+    startRow = 3,
+    rowNames = TRUE,
+    colNames = TRUE
+  )
 
-  xlsx::addDataFrame(report.table, sheet3, startRow=3, startColumn=1,
-                     col.names = FALSE,row.names = TRUE,
-                     colnamesStyle = TABLE_COLNAMES_STYLE,
-                     rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-  xlsx.addTitle(sheet3, rowIndex= 42, title="step1: removing variants with missing crucial values and duplicated lines.",
-                titleStyle = NOTE_TITLE_STYLE2)
-
-  xlsx.addTitle(sheet3, rowIndex= 43, title="step2: removing monomorphic variants and specified chromosomes.",
-                titleStyle = NOTE_TITLE_STYLE2)
-
-  xlsx.addTitle(sheet3, rowIndex= 44, title="step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.",
-                titleStyle = NOTE_TITLE_STYLE2)
-
-  xlsx::setColumnWidth(sheet3, colIndex= 1, colWidth = 70)
-  xlsx::setColumnWidth(sheet3, colIndex = c(2:(length(study.list) + 1)), colWidth=30)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = seq(3,3+nrow(report.table)),cols = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2']],rows = 3,cols = seq(2,2+nrow(report.table)))
 
 
-  #========sheets per input file ==========
-
-  for(i in 1:length(study.list))
-  {
-    fileSheet <- xlsx::createSheet(wb, sheetName = sprintf('File %s',i))
-
-    study <- study.list[[i]]
-    row.index <- 1
-
-    xlsx.addTitle(fileSheet, rowIndex = row.index, title=basename(study$file.path),
-                  titleStyle = TITLE_STYLE)
+  ###
 
 
-    # introduction
-    tbl <- t(data.table(
-      format(study$starttime, "%b %d %Y - %X"),
-      format(study$endtime, "%b %d %Y - %X"),
-      basename(study$file.path),
-      study$file.line.count,
-      study$file.endsWithNewLine))
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = "step1: removing variants with missing crucial values and duplicated lines.",
+    startRow = 42
+  )
 
-    tbl<- cbind(c('Start time',
-                  'End time',
-                  'Input File Name',
-                  'Input File Line Count (including header)',
-                  'Input File ends with a new line'), tbl)
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = "step2: removing monomorphic variants and specified chromosomes.",
+    startRow = 43
+  )
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = "step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.",
+    startRow = 44
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']], cols = 1,rows = 42:44)
+
+  # col width
+  openxlsx::setColWidths(wb,sheet,cols = seq(1,(length(study.list) + 1)),c(70,rep(30,times=length(study.list))))
+
+}
+
+file.excel.sheet <- function(wb,styleList,i,config,study.list) {
+
+  sheet <- openxlsx::addWorksheet(wb, sheetName = paste0('File ',i))
+  study <- study.list[[i]]
+  row.index <- 3
+
+  ## title
+  openxlsx::writeData(wb ,sheet ,x = basename(study$file.path),startRow = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style1']],rows = 1,cols = 1)
+
+  ## table
+
+  # 1 introduction
+  tbl <- t(data.table(
+    format(study$starttime, "%b %d %Y - %X"),
+    format(study$endtime, "%b %d %Y - %X"),
+    basename(study$file.path),
+    study$file.line.count,
+    study$file.endsWithNewLine))
+
+  tbl<- cbind(c('Start time',
+                'End time',
+                'Input File Name',
+                'Input File Line Count (including header)',
+                'Input File ends with a new line'), tbl)
 
 
-    row.index <- row.index + 2 # 3
-    xlsx::addDataFrame(tbl, fileSheet, startRow = row.index , startColumn=1,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = FALSE)
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = FALSE
+  )
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(3:8),cols = 1)
 
+  # col width
+  openxlsx::setColWidths(wb,sheet,cols = 1:8,widths = c(40,rep(25,times=7)))
 
-    #
-    filter.table <- data.table(
-      "Allele frequency" =  format(.QC$config$filters$HQfilter_FRQ,scientific = FALSE))
+  # 2- filters
+  filter.table <- data.table(
+    "Allele frequency" =  format(.QC$config$filters$HQfilter_FRQ,scientific = FALSE))
 
-    if("HWE_PVAL" %in% study$renamed.File.Columns.sorted)
-      filter.table <- cbind(filter.table, "HWE p-value" = format(.QC$config$filters$HQfilter_HWE,scientific = FALSE))
-    else
+  if("HWE_PVAL" %in% study$renamed.File.Columns.sorted)
+    filter.table <- cbind(filter.table, "HWE p-value" = format(.QC$config$filters$HQfilter_HWE,scientific = FALSE)) else
       filter.table <- cbind(filter.table, "HWE p-value" = "Not included")
 
-
-    if("CALLRATE" %in% study$renamed.File.Columns.sorted)
-      filter.table <- cbind(filter.table, "Call-rate" = format(.QC$config$filters$HQfilter_cal,scientific = FALSE))
-    else
+  if("CALLRATE" %in% study$renamed.File.Columns.sorted)
+    filter.table <- cbind(filter.table, "Call-rate" = format(.QC$config$filters$HQfilter_cal,scientific = FALSE)) else
       filter.table <- cbind(filter.table, "Call-rate" = "Not included")
 
 
-    if("IMP_QUALITY" %in% study$renamed.File.Columns.sorted)
-      filter.table <- cbind(filter.table, "Imputation quality" = format(.QC$config$filters$HQfilter_imp,scientific = FALSE))
-    else
+  if("IMP_QUALITY" %in% study$renamed.File.Columns.sorted)
+    filter.table <- cbind(filter.table, "Imputation quality" = format(.QC$config$filters$HQfilter_imp,scientific = FALSE)) else
       filter.table <- cbind(filter.table, "Imputation quality" = "Not included")
 
-    filter.table <- t(filter.table)
+  filter.table <- t(filter.table)
 
-    colnames(filter.table) <- 'Value'
-
-    row.index <- row.index + 6 #
-
-    xlsx.addTitle(fileSheet, rowIndex=row.index, title="Filter values for selecting High-Quality (HQ) variants",
-                  titleStyle = SUB_TITLE_STYLE)
-
-    row.index <- row.index + 1 #
-    xlsx::addDataFrame(filter.table, fileSheet, startRow=row.index, startColumn=1,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,row.names = TRUE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left,col.names = FALSE)
+  colnames(filter.table) <- 'Value'
 
 
-    #
+  row.index <- row.index + 6 #
+  openxlsx::writeData(wb ,sheet ,x = "Filter values for selecting High-Quality (HQ) variants" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
 
-    row.index <- row.index + 6 #
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title='Column names and translation',
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-    column.tbl <- rbind(.QC$thisStudy$original.File.Columns.sorted,
-                        .QC$thisStudy$renamed.File.Columns.sorted)
-    rownames(column.tbl) <- c('Original', 'Renamed')
-
-    row.index <- row.index + 2 # 3
-    xlsx::addDataFrame(t(column.tbl), fileSheet, startRow = row.index , startColumn=1,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,row.names = FALSE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE,col.names = TRUE)
-
+  row.index <- row.index + 1 #
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = filter.table,
+    startRow = row.index,
+    rowNames = TRUE,
+    colNames = FALSE
+  )
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(filter.table))),cols = 1)
 
 
-   #
-    row.index <- row.index + ncol(column.tbl) + 2
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title='Column report',
-                  titleStyle = SUB_TITLE_STYLE)
+  ## 3 column names
 
-    b <- t(data.frame('CHR' = c(abs(study$column.NA.list$CHR - study$column.INVALID.list$CHR) ,
+  row.index <- row.index + 6 #
+  openxlsx::writeData(wb ,sheet ,x = "Column names and translation" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+
+  column.tbl <- rbind(study$original.File.Columns.sorted,
+                      study$renamed.File.Columns.sorted)
+  rownames(column.tbl) <- c('Original', 'Renamed')
+  column.tbl <- t(column.tbl)
+  row.index <- row.index + 1 #
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = column.tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = TRUE
+  )
+  openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:2)
+
+
+  ## column report
+  row.index <- row.index + nrow(column.tbl) + 2
+  openxlsx::writeData(wb ,sheet ,x = "Column report" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+  tbl <- t(data.frame('CHR' = c(abs(study$column.NA.list$CHR - study$column.INVALID.list$CHR) ,
                                 study$column.INVALID.list$CHR,
                                 ' '),
 
@@ -424,7 +460,7 @@ create.xlsx.report <- function(config,study.list){
                                       ' '),
 
                       'EFFECT' = c(abs(study$column.NA.list$EFFECT - study$column.INVALID.list$EFFECT) ,
-                                  # study$column.INVALID.list$EFFECT,
+                                   # study$column.INVALID.list$EFFECT,
                                    ' ',
                                    ' '),
 
@@ -453,7 +489,7 @@ create.xlsx.report <- function(config,study.list){
                                         ' '),
 
                       'MARKER' = c(abs(study$column.NA.list$MARKER - study$column.INVALID.list$MARKER) ,
-                                  # study$column.INVALID.list$MARKER,
+                                   # study$column.INVALID.list$MARKER,
                                    ' ',
                                    ' '),
 
@@ -470,172 +506,190 @@ create.xlsx.report <- function(config,study.list){
                                      study$column.INVALID.list$minusone.CALLRATE)
 
 
-    ))
+  ))
 
 
 
-    colnames(b) <- c('NA values','Invalid values','Uncertain values')
+  colnames(tbl) <- c('NA values','Invalid values','Uncertain values')
 
-    row.index <- row.index + 1 #
-    xlsx::addDataFrame(b , fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = TRUE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+  row.index <- row.index + 1 #
 
-    row.index <- row.index + 19 # 8
-
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant processing",
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-    row.index <- row.index + 1 # 9
-    xlsx.addTitle(fileSheet, rowIndex=row.index, title="step1: removing variants with missing crucial values and duplicated lines.",
-                  titleStyle = NOTE_TITLE_STYLE2)
-
-    row.index <- row.index + 1 # 10
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="step2: removing monomorphic variants and specified chromosomes.",
-                  titleStyle = NOTE_TITLE_STYLE2)
-
-    row.index <- row.index + 1 # 11
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.",
-                  titleStyle = NOTE_TITLE_STYLE2)
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = TRUE,
+    colNames = TRUE
+  )
+  openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 2:4)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
 
 
-    tbl <- t(data.table(
-      format(study$input.data.rowcount, big.mark="," , scientific = FALSE),
-      calculatePercent(study$duplicate.count,
-                       study$input.data.rowcount,
-                       pretty = TRUE),
-      calculatePercent(study$missing.crucial.rowcount,
-                       study$input.data.rowcount,
-                       pretty = TRUE),
-      calculatePercent(study$rowcount.step1,
-                       study$input.data.rowcount,
-                       decimal.place=3,
-                       pretty = TRUE),
-      calculatePercent(study$monomorphic.count,
-                       study$input.data.rowcount,
-                       pretty = TRUE),
-      calculatePercent(study$rowcount.step2,
-                       study$input.data.rowcount,
-                       decimal.place=3,
-                       pretty = TRUE),
-      calculatePercent(study$rowcount.step3,
-                       study$input.data.rowcount,
-                       decimal.place=3,
-                       pretty = TRUE)
-    ))
+  ## 4 variant processing
+  row.index <- row.index + 19 #
+  openxlsx::writeData(wb ,sheet ,x = "Variant processing" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
 
+  row.index <- row.index + 1 #
+  openxlsx::writeData(wb ,sheet ,x = "step1: removing variants with missing crucial values and duplicated lines." ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
 
-    tbl<- cbind(c(   "input variant count",
-                     'Duplicated variants',
-                     'Missing crucial variable',
-                     "variant count after step 1 *",
-                     'Monomorphic variants',
-                     "variant count after step 2 **",
-                     "variant count after step 3 ***"),tbl)
+  row.index <- row.index + 1 #
+  openxlsx::writeData(wb ,sheet ,x = "step2: removing monomorphic variants and specified chromosomes." ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
 
-    row.index <- row.index + 2 # 13
-    xlsx::addDataFrame(tbl, fileSheet, startRow=row.index, startColumn=1,
-                       col.names = FALSE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+  row.index <- row.index + 1 #
+  openxlsx::writeData(wb ,sheet ,x = "step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified." ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
 
 
 
-
-    #
-
-
-
-    row.index <- row.index + 10 # 8
-
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Description of variants",
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-    tbl <- t(data.table(
-      calculatePercent(study$HQ.count,
-                       study$rowcount.step3,
-                       pretty = TRUE),
-      calculatePercent(study$LQ.count,
-                       study$rowcount.step3,
-                       pretty = TRUE),
-      calculatePercent(study$palindromic.rows,
-                       study$rowcount.step3,
-                       pretty = TRUE),
-      calculatePercent(study$non.palindromic.rows,
-                       study$rowcount.step3,
-                       pretty = TRUE),
-      calculatePercent(study$palindormicHighDiffEAF,
-                       study$palindromic.rows,
-                       pretty = TRUE),
-      calculatePercent(study$nonpalindormicHighDiffEAF ,
-                       study$non.palindromic.rows,
-                       pretty = TRUE),
-      calculatePercent(study$palindormicExtremeDiffEAF ,
-                       study$palindromic.rows,
-                       pretty = TRUE)
-    ))
+  tbl <- t(data.table(
+    format(study$input.data.rowcount, big.mark="," , scientific = FALSE),
+    calculatePercent(study$duplicate.count,
+                     study$input.data.rowcount,
+                     pretty = TRUE),
+    calculatePercent(study$missing.crucial.rowcount,
+                     study$input.data.rowcount,
+                     pretty = TRUE),
+    calculatePercent(study$rowcount.step1,
+                     study$input.data.rowcount,
+                     decimal.place=3,
+                     pretty = TRUE),
+    calculatePercent(study$monomorphic.count,
+                     study$input.data.rowcount,
+                     pretty = TRUE),
+    calculatePercent(study$rowcount.step2,
+                     study$input.data.rowcount,
+                     decimal.place=3,
+                     pretty = TRUE),
+    calculatePercent(study$rowcount.step3,
+                     study$input.data.rowcount,
+                     decimal.place=3,
+                     pretty = TRUE)
+  ))
 
 
-    tbl<- cbind(c( 'High Quality variants',
-                   'Low Quality variants',
-                   'Palindromic variants',
-                   'Non-Palindromic variants',
-                   'variants +',
-                   'variants ++',
-                   'variants +++'),tbl)
+  tbl<- cbind(c(   "input variant count",
+                   'Duplicated variants',
+                   'Missing crucial variable',
+                   "variant count after step 1 *",
+                   'Monomorphic variants',
+                   "variant count after step 2 **",
+                   "variant count after step 3 ***"),tbl)
 
-    row.index <- row.index + 1 # 23
-    xlsx::addDataFrame(tbl, fileSheet, startRow= row.index, startColumn=1,
-                       col.names = FALSE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+  row.index <- row.index + 2 # 13
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = FALSE
+  )
 
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
 
-    row.index <- row.index + 8 # 31
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title=sprintf('+ palindromic variants with high allele frequency difference (> %s)',
-                                                                config$filters$threshold_diffEAF),
-                  titleStyle = NOTE_TITLE_STYLE)
+  ## description of variant
+  row.index <- row.index + 10 # 8
 
-    row.index <- row.index + 1 # 32
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title=sprintf('++ Non-palindromic variants with high allele frequency difference (> %s)',
-                                                                config$filters$threshold_diffEAF),
-                  titleStyle = NOTE_TITLE_STYLE)
-
-	row.index <- row.index + 1 # 33
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title='+++ palindromic variants with opposite allele frequency "compared to the reference" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)',
-                  titleStyle = NOTE_TITLE_STYLE)
+  openxlsx::writeData(wb ,sheet ,x = "Description of variants" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
 
 
+  tbl <- t(data.table(
+    calculatePercent(study$HQ.count,
+                     study$rowcount.step3,
+                     pretty = TRUE),
+    calculatePercent(study$LQ.count,
+                     study$rowcount.step3,
+                     pretty = TRUE),
+    calculatePercent(study$palindromic.rows,
+                     study$rowcount.step3,
+                     pretty = TRUE),
+    calculatePercent(study$non.palindromic.rows,
+                     study$rowcount.step3,
+                     pretty = TRUE),
+    calculatePercent(study$palindormicHighDiffEAF,
+                     study$palindromic.rows,
+                     pretty = TRUE),
+    calculatePercent(study$nonpalindormicHighDiffEAF ,
+                     study$non.palindromic.rows,
+                     pretty = TRUE),
+    calculatePercent(study$palindormicExtremeDiffEAF ,
+                     study$palindromic.rows,
+                     pretty = TRUE)
+  ))
 
-    ### indel-snp type
-    if(nrow(study$tables$multi_allele_count_preProcess) > 1)
-    {
-      row.index <- row.index + 3 # 36
-      xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant types",
-                    titleStyle = SUB_TITLE_STYLE)
 
-      # row.index <- row.index + 1 # 37
-      # xlsx::addDataFrame(study$tables$VT.tbl, fileSheet, startRow= row.index, startColumn=1,
-      #                    col.names = FALSE ,row.names = FALSE,
-      #                    colnamesStyle = TABLE_COLNAMES_STYLE,
-      #                    rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+  tbl<- cbind(c( 'High Quality variants',
+                 'Low Quality variants',
+                 'Palindromic variants',
+                 'Non-Palindromic variants',
+                 'variants +',
+                 'variants ++',
+                 'variants +++'),tbl)
 
-      row.index <- row.index + 1 # 37
+  row.index <- row.index + 1 # 23
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = FALSE
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
 
 
-      xlsx::addDataFrame(study$tables$multi_allele_count_preProcess, fileSheet, startRow= row.index, startColumn=1,
-                         col.names = TRUE ,row.names = TRUE,
-                         colnamesStyle = TABLE_COLNAMES_STYLE,
-                         rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
 
-    }
-    #
+  row.index <- row.index + 8 # 31
+  openxlsx::writeData(wb ,sheet ,x = sprintf('+ palindromic variants with high allele frequency difference (> %s)',
+                                             config$filters$threshold_diffEAF) ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+
+  row.index <- row.index + 1 # 32
+  openxlsx::writeData(wb ,sheet ,x = sprintf('++ Non-palindromic variants with high allele frequency difference (> %s)',
+                                             config$filters$threshold_diffEAF) ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+
+  row.index <- row.index + 1 # 33
+  openxlsx::writeData(wb ,sheet ,x = '+++ palindromic variants with opposite allele frequency "compared to the reference" (> 0.65 for the input file and < 0.35 for the reference, or vice versa)' ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+  ## indels
+  if(nrow(study$tables$multi_allele_count_preProcess) > 1)
+  {
+    row.index <- row.index + 3 # 36
+    openxlsx::writeData(wb ,sheet ,x = "Variant types" ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+
+    row.index <- row.index + 1 # 37
+
+    openxlsx::writeData(
+      wb,
+      sheet,
+      x = study$tables$multi_allele_count_preProcess,
+      startRow = row.index,
+      rowNames = TRUE,
+      colNames = TRUE
+    )
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+
+    ## matching with reference panels
+
     row.index <- row.index + 8 # 36
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Result from matching with standard reference file",
-                  titleStyle = SUB_TITLE_STYLE)
+
+    openxlsx::writeData(wb ,sheet ,x = "Result from matching with standard reference file" ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
 
     tbl <- t(data.table(
       calculatePercent(study$found.rows.std,
@@ -685,18 +739,25 @@ create.xlsx.report <- function(config,study.list){
 
 
     row.index <- row.index + 1 # 37
-    xlsx::addDataFrame(tbl, fileSheet, startRow= row.index, startColumn=1,
-                       col.names = FALSE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+    openxlsx::writeData(
+      wb,
+      sheet,
+      x = tbl,
+      startRow = row.index,
+      rowNames = FALSE,
+      colNames = FALSE
+    )
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
 
     #
 
     if(!is.na(config$supplementaryFiles$allele_ref_alt))
     {
       row.index <- row.index + 10 # 47
-      xlsx.addTitle(fileSheet, rowIndex= row.index, title="Result from matching with alternative reference file",
-                    titleStyle = SUB_TITLE_STYLE)
+      openxlsx::writeData(wb ,sheet ,x = "Result from matching with alternative reference file" ,startRow = row.index)
+      openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
 
       tbl <- t(data.table(
         calculatePercent(study$found.rows.alt,
@@ -735,274 +796,339 @@ create.xlsx.report <- function(config,study.list){
 
 
       row.index <- row.index + 1 # 48
-      xlsx::addDataFrame(tbl, fileSheet, startRow= row.index, startColumn=1,
-                         col.names = FALSE ,row.names = FALSE,
-                         colnamesStyle = TABLE_COLNAMES_STYLE,
-                         rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
+      openxlsx::writeData(
+        wb,
+        sheet,
+        x = tbl,
+        startRow = row.index,
+        rowNames = FALSE,
+        colNames = FALSE
+      )
+
+      openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+
     }
     #
-
-      row.index <- row.index + 11 # 58
-
-    if( study$AFcor.std_ref.CHR != "NA" && nrow(study$AFcor.std_ref.CHR) > 0)
-    {
-
-        xlsx.addTitle(fileSheet, rowIndex = row.index, title="AF correlation for each chromosome",
-                      titleStyle = SUB_TITLE_STYLE)
-
-        row.index <- row.index + 1 # 48
-
-        xlsx::addDataFrame(study$AFcor.std_ref.CHR , fileSheet, startRow= row.index, startColumn=1,
-                           col.names = TRUE ,row.names = FALSE,
-                           colnamesStyle = TABLE_COLNAMES_STYLE,
-                           rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-        row.index <- row.index + nrow(study$AFcor.std_ref.CHR) + 2
-    }
-
-    #
-
-    xlsx.addTitle(fileSheet, rowIndex = row.index, title="QC summary statistics",
-                  titleStyle = SUB_TITLE_STYLE)
-
-    tbl <- t(data.table(
-      calculatePercent(study$rownum.PVcor,
-                       study$rowcount.step3,
-                       pretty = TRUE),
-      study$PVcor,
-      study$skewness,
-      study$skewness.HQ,
-      study$kurtosis,
-      study$kurtosis.HQ,
-      study$Visschers.stat,
-      study$Visschers.stat.HQ,
-      study$lambda,
-      study$lambda.gen,
-      study$lambda.imp,
-      study$MAX_N_TOTAL,
-      study$fixed.hwep,
-      study$fixed.impq,
-      study$fixed.callrate,
-      study$fixed.n_total
-    ))
-
-    tbl <- cbind(c('Number of variants for P-value correlation',
-                   'P-value correlation (all)',
-                   'Skewness',
-                   'Skewness (HQ)',
-                   'Kurtosis',
-                   'Kurtosis (HQ)',
-                   "Visscher's stat",
-                   "Visscher's stat (HQ)",
-                   "Lambda - total",
-                   'Lambda - genotyped',
-                   'Lambda - imputed',
-                   'Sample Size (Max)',
-                   "Fixed HWE P-value",
-                   "Fixed Imputation Quality",
-                   "Fixed Call Rate",
-                   "Fixed Sample Size"),tbl)
-
-
-    row.index <- row.index + 1 # 59
-    xlsx::addDataFrame(tbl, fileSheet, startRow= row.index, startColumn=1,
-                       col.names = FALSE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-
-    # variable summary statistics
-
-    row.index <- row.index + 19 # 78
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Distribution statistics",
-                  titleStyle = SUB_TITLE_STYLE)
-
-    row.index <- row.index + 2 # 80
-
-    xlsx.addTitle(fileSheet, rowIndex=row.index, title="All variants",
-                  titleStyle = NOTE_TITLE_STYLE2)
-    row.index <- row.index + 1
-
-    row.names(study$tables$variable.summary) <- c("min.","first_quartile","median","mean","third_quartile","max." )
-    xlsx::addDataFrame(t(study$tables$variable.summary), fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = TRUE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-    if(nrow(study$tables$variable.summary.HQ ) > 0 & study$HQ.count != study$rowcount.step3)
-    {
-      row.index <- row.index + 10
-      xlsx.addTitle(fileSheet, rowIndex=row.index, title="HQ variants only",
-                    titleStyle = NOTE_TITLE_STYLE2)
-
-      row.index <- row.index + 1
-      row.names(study$tables$variable.summary.HQ) <- c("min.","first_quartile","median","mean","third_quartile","max." )
-      xlsx::addDataFrame(t(study$tables$variable.summary.HQ), fileSheet, startRow= row.index, startColumn=1,
-                         col.names = TRUE ,row.names = TRUE,
-                         colnamesStyle = TABLE_COLNAMES_STYLE,
-                         rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-    }
-
-    # column summary statistics
-
-    row.index <- row.index + 10
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Variant count for each chromosome",
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-    ####
-    row.index <- row.index + 1 # 89
-    chr.tbl.length <- 0
-    if(!is.na(study$tables$CHR.tbl))
-    {
-      chr.tbl <-  study$tables$CHR.tbl
-      colnames(chr.tbl) <- c('Chromosome Number','Variant Count')
-      chr.tbl.length <- nrow(chr.tbl)
-
-      xlsx::addDataFrame(chr.tbl, fileSheet, startRow= row.index, startColumn=1,
-                         col.names = TRUE ,row.names = FALSE,
-                         colnamesStyle = TABLE_COLNAMES_STYLE,
-                         rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-    }
-
-    if(length(.QC$thisStudy$missing_chromosomes) >0 )
-    {
-
-      row.index <- row.index + nrow(chr.tbl) + 2
-      xlsx.addTitle(fileSheet, rowIndex= row.index,
-                    title=sprintf("%s %s","Missing chromosome(s) number",paste(.QC$thisStudy$missing_chromosomes,collapse = ", ")),
-                    titleStyle = SUB_TITLE_STYLE)
-
-      row.index <- row.index + 2
-    }
-    else
-    {
-      row.index <- row.index + nrow(chr.tbl) + 2 #
-    }
-
-    ###############
-    ###
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Effect allele distribution in SNP variants",
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-
-    row.index <- row.index + 1 #
-
-    tbl = merge(study$tables$EFFECT_ALL.tbl,
-                study$tables$EFFECT_ALL.post.matching.tbl,
-                by="EFFECT_ALL",
-                all = TRUE)
-
-    colnames(tbl) <- c('Allele','Count (input file)','Count (post-matching)')
-
-    xlsx::addDataFrame(tbl , fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-    ###
-    row.index <- row.index + 6 #
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title="Other allele distribution in SNP variants",
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-
-    row.index <- row.index + 1 #
-
-    tbl = merge(study$tables$OTHER_ALL.tbl,
-                study$tables$OTHER_ALL.post.matching.tbl,
-                by="OTHER_ALL",
-                all = TRUE)
-
-    colnames(tbl) <- c('Allele','Count (input file)','Count (post-matching)')
-
-    xlsx::addDataFrame(tbl , fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-
-    ##
-
-
-    row.index <- row.index + 6 #
-    xlsx.addTitle(fileSheet, rowIndex= row.index, title='Imputation status',
-                  titleStyle = SUB_TITLE_STYLE)
-
-
-
-    row.index <- row.index + 1 #
-    tbl = study$tables$imputed.tbl
-    # tbl$IMPUTED <- c('Genotyped','Imputed')
-    colnames(tbl) <- c('Status','Count')
-
-    xlsx::addDataFrame(tbl , fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = FALSE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-    ##
-
-
-
-
-
-    #
-    b <- t(data.frame('Negative strand variants' = study$neg.strand.count))
-    colnames(b) <- c('Count')
-
-    row.index <- row.index + 5
-    xlsx::addDataFrame(b , fileSheet, startRow= row.index, startColumn=1,
-                       col.names = TRUE ,row.names = TRUE,
-                       colnamesStyle = TABLE_COLNAMES_STYLE,
-                       rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-
-    # effect size comparison
-
-    if(!is.null(.QC$thisStudy$tables$betaCor.tbl)  & !is.na(config$supplementaryFiles$beta_ref_std)){
-
-      row.index <- row.index + 3 # 88
-      xlsx.addTitle(fileSheet, rowIndex= row.index, title="Effect-size comparison",
-                    titleStyle = SUB_TITLE_STYLE)
-
-      # b <- t(data.frame('r' = study$effect.rho_4))
-      # colnames(b) <- c('Value')
-
-      row.index <- row.index + 1
-      xlsx::addDataFrame(.QC$thisStudy$tables$betaCor.tbl , fileSheet, startRow= row.index, startColumn=1,
-                         col.names = TRUE ,row.names = TRUE,
-                         colnamesStyle = TABLE_COLNAMES_STYLE,
-                         rownamesStyle = TABLE_ROWNAMES_STYLE_Left)
-
-    row.index <- row.index + 6 # 9
-    xlsx.addTitle(fileSheet, rowIndex=row.index, title="* Data is presented as r(N). Variants were filtered on reference data P-values.",
-                  titleStyle = NOTE_TITLE_STYLE2)
-
-    row.index <- row.index + 1
-    xlsx.addTitle(fileSheet, rowIndex=row.index, title="** Data is presented as r(N). Variants were filtered on input result file P-values.",
-                  titleStyle = NOTE_TITLE_STYLE2)
-    }
-
-    ## END OF EXCEL REPORT
-    xlsx::setColumnWidth(fileSheet, colIndex= 1, colWidth = 30)
-    xlsx::setColumnWidth(fileSheet, colIndex = c(2:10), colWidth=20)
 
   }
 
+  ## AF correlation per chromosme
+  row.index <- row.index + 11 # 58
+
+  if( study$AFcor.std_ref.CHR != "NA" && nrow(study$AFcor.std_ref.CHR) > 0)
+  {
+    openxlsx::writeData(wb ,sheet ,x = "AF correlation for each chromosome" ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+    row.index <- row.index + 1 # 48
+
+    openxlsx::writeData(
+      wb,
+      sheet,
+      x = study$AFcor.std_ref.CHR,
+      startRow = row.index,
+      rowNames = FALSE,
+      colNames = TRUE
+    )
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(study$AFcor.std_ref.CHR))),cols = 1)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:2)
+
+    row.index <- row.index + nrow(study$AFcor.std_ref.CHR) + 2
+  }
+
+  ## summary statistics
+
+  openxlsx::writeData(wb ,sheet ,x = "QC summary statistics" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+  tbl <- t(data.table(
+    calculatePercent(study$rownum.PVcor,
+                     study$rowcount.step3,
+                     pretty = TRUE),
+    study$PVcor,
+    study$skewness,
+    study$skewness.HQ,
+    study$kurtosis,
+    study$kurtosis.HQ,
+    study$Visschers.stat,
+    study$Visschers.stat.HQ,
+    study$lambda,
+    study$lambda.gen,
+    study$lambda.imp,
+    study$MAX_N_TOTAL,
+    study$fixed.hwep,
+    study$fixed.impq,
+    study$fixed.callrate,
+    study$fixed.n_total
+  ))
+
+  tbl <- cbind(c('Number of variants for P-value correlation',
+                 'P-value correlation (all)',
+                 'Skewness',
+                 'Skewness (HQ)',
+                 'Kurtosis',
+                 'Kurtosis (HQ)',
+                 "Visscher's stat",
+                 "Visscher's stat (HQ)",
+                 "Lambda - total",
+                 'Lambda - genotyped',
+                 'Lambda - imputed',
+                 'Sample Size (Max)',
+                 "Fixed HWE P-value",
+                 "Fixed Imputation Quality",
+                 "Fixed Call Rate",
+                 "Fixed Sample Size"),tbl)
 
 
-  # ========= write to file ===========
+  row.index <- row.index + 1 # 59
 
-  xlsx::saveWorkbook(wb, config$paths$xlsx.report)
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = FALSE
+  )
 
-  return(TRUE)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+
+
+  # variable summary statistics
+
+  row.index <- row.index + 19 # 78
+  openxlsx::writeData(wb ,sheet ,x = "Distribution statistics" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+
+  row.index <- row.index + 2 # 80
+
+  openxlsx::writeData(wb ,sheet ,x = "All variants" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+  row.index <- row.index + 1
+
+  row.names(study$tables$variable.summary) <- c("min.","first_quartile","median","mean","third_quartile","max." )
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = t(study$tables$variable.summary),
+    startRow = row.index,
+    rowNames = TRUE,
+    colNames = TRUE
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 2:7)
+
+  ##
+  if(nrow(study$tables$variable.summary.HQ ) > 0 & study$HQ.count != study$rowcount.step3)
+  {
+    row.index <- row.index + 10
+
+    openxlsx::writeData(wb ,sheet ,x = "HQ variants only" ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+    row.index <- row.index + 1
+    row.names(study$tables$variable.summary.HQ) <- c("min.","first_quartile","median","mean","third_quartile","max." )
+    openxlsx::writeData(
+      wb,
+      sheet,
+      x = t(study$tables$variable.summary.HQ),
+      startRow = row.index,
+      rowNames = FALSE,
+      colNames = FALSE
+    )
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 2:7)
+  }
+  # chromosome summary statistics
+
+  row.index <- row.index + 10
+  openxlsx::writeData(wb ,sheet ,x = "Variant count for each chromosome" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+
+  ####
+  row.index <- row.index + 1 # 89
+  chr.tbl.length <- 0
+  if(!is.na(study$tables$CHR.tbl))
+  {
+    chr.tbl <-  study$tables$CHR.tbl
+    colnames(chr.tbl) <- c('Chromosome Number','Variant Count')
+    chr.tbl.length <- nrow(chr.tbl)
+
+    openxlsx::writeData(
+      wb,
+      sheet,
+      x = chr.tbl,
+      startRow = row.index,
+      rowNames = FALSE,
+      colNames = TRUE
+    )
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(chr.tbl))),cols = 1)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:2)
+
+  }
+
+  if(length(study$missing_chromosomes) >0 )
+  {
+
+    row.index <- row.index + nrow(chr.tbl) + 2
+
+    openxlsx::writeData(wb, sheet,
+                        x = sprintf("%s %s", "Missing chromosome(s) number", paste(study$missing_chromosomes,collapse = ", ")),
+                        startRow = row.index)
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+
+    row.index <- row.index + 2
+  }
+  else
+  {
+    row.index <- row.index + nrow(chr.tbl) + 2 #
+  }
+
+  ###############
+  ###
+  openxlsx::writeData(wb ,sheet ,x = "Effect allele distribution in SNP variants" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+  row.index <- row.index + 1 #
+
+  tbl = merge(study$tables$EFFECT_ALL.tbl,
+              study$tables$EFFECT_ALL.post.matching.tbl,
+              by="EFFECT_ALL",
+              all = TRUE)
+
+  colnames(tbl) <- c('Allele','Count (input file)','Count (post-matching)')
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = TRUE
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:3)
+
+
+  ###
+  row.index <- row.index + 6 #
+  openxlsx::writeData(wb ,sheet ,x = "Other allele distribution in SNP variants" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+  row.index <- row.index + 1 #
+
+  tbl = merge(study$tables$OTHER_ALL.tbl,
+              study$tables$OTHER_ALL.post.matching.tbl,
+              by="OTHER_ALL",
+              all = TRUE)
+
+  colnames(tbl) <- c('Allele','Count (input file)','Count (post-matching)')
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = TRUE
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:3)
+
+  ##
+
+
+  row.index <- row.index + 6 #
+  openxlsx::writeData(wb ,sheet ,x = "Imputation status" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+  row.index <- row.index + 1 #
+  tbl = study$tables$imputed.tbl
+  # tbl$IMPUTED <- c('Genotyped','Imputed')
+  colnames(tbl) <- c('Status','Count')
+
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = TRUE
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(tbl))),cols = 1)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:2)
+
+  ##
+
+
+  row.index <- row.index + 5
+
+  openxlsx::writeData(wb ,sheet ,x = "Negative strand variants" ,startRow = row.index)
+  openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+  tbl <- t(data.frame('Negative strand variants' = study$neg.strand.count))
+  colnames(tbl) <- c('Count')
+
+  row.index <- row.index + 1
+  openxlsx::writeData(
+    wb,
+    sheet,
+    x = tbl,
+    startRow = row.index,
+    rowNames = FALSE,
+    colNames = TRUE
+  )
+
+  openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = row.index:(row.index+1) ,cols = 1)
+
+
+
+  # effect size comparison
+
+  if(!is.null(study$tables$betaCor.tbl)  & !is.na(config$supplementaryFiles$beta_ref_std)){
+
+    row.index <- row.index + 3 # 88
+
+    openxlsx::writeData(wb ,sheet ,x = "Effect-size comparison" ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
+
+    row.index <- row.index + 1
+    openxlsx::writeData(
+      wb,
+      sheet,
+      x = study$tables$betaCor.tbl ,
+      startRow = row.index,
+      rowNames = TRUE,
+      colNames = TRUE
+    )
+
+    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(study$tables$betaCor.tbl))),cols = 1)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:3)
+
+
+
+    row.index <- row.index + 6 # 9
+    openxlsx::writeData(wb ,sheet ,x = "* Data is presented as r(N). Variants were filtered on reference data P-values." ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+
+    row.index <- row.index + 1
+    openxlsx::writeData(wb ,sheet ,x = "** Data is presented as r(N). Variants were filtered on input result file P-values." ,startRow = row.index)
+    openxlsx::addStyle(wb,sheet,style = styleList[['style3']],rows = row.index,cols = 1)
+
+  }
 
 }

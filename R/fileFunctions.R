@@ -107,7 +107,7 @@ check.unzip <- function() {
 
 check.xlsx.package <- function(existing.packages)
 {
-  if (is.element('xlsx', existing.packages))
+  if (is.element('openxlsx', existing.packages))
     return(TRUE)
   else
     return(FALSE)

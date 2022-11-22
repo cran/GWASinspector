@@ -21,7 +21,7 @@ system.check <- function()
     "pandoc" = ifelse(.QC$pandoc.exists , paste(rmarkdown::pandoc_version(),collapse = '.') , 'not available'),
     "kableExtra" = ifelse(.QC$kableExtra.package.exists,   paste(packageVersion('kableExtra'),collapse = '.') , 'not available'),
     "ggplot2" = .QC$ggplot2.version,
-    "xlsx" = ifelse(.QC$xlsx.package.exists,  paste(packageVersion('xlsx'),collapse = '.') , 'not available'),
+    "openxlsx" = ifelse(.QC$xlsx.package.exists,  paste(packageVersion('openxlsx'),collapse = '.') , 'not available'),
     "rJava" = ifelse(.QC$rJava.package.exists,  paste(packageVersion('rJava'),collapse = '.') , 'not available'),
     "RSQLite" = ifelse(.QC$rsqlite.package.exists,  paste(packageVersion('RSQLite'),collapse = '.') , 'not available'),
     "Capabilities" = '  '

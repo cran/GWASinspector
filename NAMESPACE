@@ -10,6 +10,7 @@ import(grid)
 import(RSQLite)
 import(R.utils)
 import(methods)
+import(openxlsx)
 importFrom(kableExtra,"%>%","kable_styling","column_spec","footnote")
 importFrom("grDevices", "dev.off", "graphics.off", "colorRampPalette", "jpeg", "png")
 importFrom("stats", "complete.cases", "cor", "median", "na.omit",

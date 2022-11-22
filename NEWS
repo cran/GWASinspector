@@ -49,3 +49,7 @@ Changes in version 1.5.7 (Jan 2022)
 ====================================
 	- Some minor debugging was done.
 
+Changes in version 1.6.0 (Nov 2022)
+====================================
+	- Due to problems with Java and rJava, XLSX package was replaced by OPENXLSX.
+

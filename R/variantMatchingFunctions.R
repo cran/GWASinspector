@@ -78,6 +78,9 @@ compareInputfileWithAlternateReferenceFile <- function(input.data)
     # if(!is.element('ignore', names(tmp.data)))
     #   tmp.data[,ignore := NA] ## added for consistency with reference data
 
+    tmp.data[,DATE_ADDED := as.character(DATE_ADDED)]
+    input.data[,DATE_ADDED := as.character(DATE_ADDED)]
+
     # bind matched data with reference set with  matched data from alt reference set
     input.data<-rbind(input.data[!is.na(REF),],tmp.data)
     rm(tmp.data)

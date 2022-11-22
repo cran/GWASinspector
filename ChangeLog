@@ -69,3 +69,7 @@ Changes in version 1.4.8.4 (Jan 2021)
 Changes in version 1.5.7 (Jan 2022)
 ====================================
 	- Some minor debugging was done.
+
+Changes in version 1.6.0 (Nov 2022)
+====================================
+	- XLSX package was replaced by OPENXLSX.

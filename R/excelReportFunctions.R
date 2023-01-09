@@ -955,30 +955,33 @@ file.excel.sheet <- function(wb,styleList,i,config,study.list) {
   ####
   row.index <- row.index + 1 # 89
   chr.tbl.length <- 0
-  if(!is.na(study$tables$CHR.tbl))
+  if(!is.null(study$tables$CHR.tbl))
   {
-    chr.tbl <-  study$tables$CHR.tbl
-    colnames(chr.tbl) <- c('Chromosome Number','Variant Count')
-    chr.tbl.length <- nrow(chr.tbl)
+    if(ncol(study$tables$CHR.tbl) == 2)
+    {
 
-    openxlsx::writeData(
-      wb,
-      sheet,
-      x = chr.tbl,
-      startRow = row.index,
-      rowNames = FALSE,
-      colNames = TRUE
-    )
+      chr.tbl <-  study$tables$CHR.tbl
+      colnames(chr.tbl) <- c('Chromosome Number','Variant Count')
+      chr.tbl.length <- nrow(chr.tbl)
 
-    openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+nrow(chr.tbl))),cols = 1)
-    openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:2)
+      openxlsx::writeData(
+        wb,
+        sheet,
+        x = chr.tbl,
+        startRow = row.index,
+        rowNames = FALSE,
+        colNames = TRUE
+      )
 
+      openxlsx::addStyle(wb,sheet,style = styleList[['style2_left']],rows = c(row.index:(row.index+ chr.tbl.length)),cols = 1)
+      openxlsx::addStyle(wb,sheet,style = styleList[['style5']],rows = row.index,cols = 1:2)
+    }
   }
+
+  row.index <- row.index + chr.tbl.length + 2
 
   if(length(study$missing_chromosomes) >0 )
   {
-
-    row.index <- row.index + nrow(chr.tbl) + 2
 
     openxlsx::writeData(wb, sheet,
                         x = sprintf("%s %s", "Missing chromosome(s) number", paste(study$missing_chromosomes,collapse = ", ")),
@@ -986,13 +989,9 @@ file.excel.sheet <- function(wb,styleList,i,config,study.list) {
 
     openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)
 
-
     row.index <- row.index + 2
   }
-  else
-  {
-    row.index <- row.index + nrow(chr.tbl) + 2 #
-  }
+
 
   ###############
   ###

@@ -1,11 +1,11 @@
 c2beab9e02159f9cca065091bbf86eda *ChangeLog
-8347c5dbe6251e6ab6293256c056f195 *DESCRIPTION
+ee392aadd2b1fb25fd9bcec29c8fb5e5 *DESCRIPTION
 bf172f719f799c28eaabb1caafe238f0 *NAMESPACE
 db23f9e6f0b8110d9da42fc58bb8b581 *NEWS
 987e064731a50026bacf3d44bda1f266 *R/GWASinspector.R
 fd01856803bddb9d993cdbbc63f8c5d5 *R/QQPlotFunction.R
 048d2a9a473a4123db830acb4ad47499 *R/Study.R
-02709bf7d068b06f2ba13e8a56282dd5 *R/aaa.R
+bb61622a276e2106d7c9fc115a799e92 *R/aaa.R
 026c95c5966b8052c10bab7f961766b9 *R/alleleMatch.R
 db0ae4dffcae0c408a2274cd8d33777a *R/altReferenceRelatedFucntions.R
 e07e7df9b49a1a89e38b0ce8c930e0a1 *R/applyHQfilter.R
@@ -19,7 +19,7 @@ d63486629029283de391d65d2472e319 *R/class_definition.R
 e47efbe2a84896890bb489b3c3b82155 *R/drawPlots.R
 0e3c1171e44a74d7e26ca8ec8eda8ce0 *R/effect_size_ref_make.R
 841ca507e0b8648489bd2b29d7167188 *R/effectsizePlotFunction.R
-1416e8fc8c6afc2d9e110207977bf2ab *R/excelReportFunctions.R
+242000c4100281d4c717f258b982c258 *R/excelReportFunctions.R
 22273732516571a3994c975d4bad7eef *R/fileFunctions.R
 0039c45be30876937cd63456b7bc6bc1 *R/getConfig.R
 84d488bede86f4675e94e396c99e2e50 *R/getHeaderTranslation.R
@@ -54,11 +54,11 @@ c47dd66db9699ad403211da3e6bb6638 *R/terminationFunctions.R
 139278c0aa360de87fa936d2be726f01 *R/variantMatchingFunctions.R
 e0d88cb3e0d2baee08a4568aa6167ece *R/variantModifierFunctions.R
 0b91a93bb8ca6c5a258d9f32d0f1bc4d *R/zzz.R
-6d254b4916351e7d8d6b0a58fb8e8f79 *build/vignette.rds
+7ac2d540376bfed9d45049b424709563 *build/vignette.rds
 ae93d3a0f7ab50378aefa6654b285172 *inst/CITATION
 d346512bbbdd54f09143491865111e7b *inst/doc/GWASinspector.R
 164cf77385974d2a94558ca019b671d9 *inst/doc/GWASinspector.Rmd
-cea26c840c33c9dc4bc93a099670b4ce *inst/doc/GWASinspector.html
+00c9fc13dcbab7cfc1a52664dee21657 *inst/doc/GWASinspector.html
 34df5f5f1f76a4d2b886c7772218110c *inst/extdata/DNA.png
 0078e825648fdc7a0617a128ee7db8e2 *inst/extdata/HapMap_CEU_r28_b36_EDIT_v10c_sample.rds
 489516f3e4068c1006857e5ffa87c163 *inst/extdata/alt_headers.txt
@@ -67,7 +67,7 @@ cea26c840c33c9dc4bc93a099670b4ce *inst/doc/GWASinspector.html
 a870d8e4b358ab1d0db307a8dd44938f *inst/extdata/demo.txt.gz
 bc7aa3e0fa5dc204ccc803d7e04e1ae3 *inst/extdata/sample_db.sqlite
 e6b6edb731864e9138c15f9e2a1e7b61 *inst/rmd/mainReport.rmd
-d46d96e0de4c16650866dc5d6a73043f *inst/rmd/mainReport_extra.rmd
+936cdaba0076ed91b313dd37d4873a40 *inst/rmd/mainReport_extra.rmd
 2726e47c582d1650f0b01f9f61963657 *inst/rmd/multiFileReport.rmd
 2819543d6b36fe47329d76acc4405b37 *inst/rmd/multiFileReport_alone_extra.rmd
 6fde0d72ea29d6d4f4480ebe6726d379 *inst/rmd/multiFileReport_extra.rmd

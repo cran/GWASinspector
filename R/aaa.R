@@ -8,7 +8,7 @@
 
 .QC$package.description <- 'Comprehensive, efficient and easy to use quality control of genome-wide association study results'
 
-.QC$script.version <- '1.6.0.0'
+.QC$script.version <- '1.6.1.0'
 
 .QC$url <- "GWASinspector.com"
 

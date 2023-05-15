@@ -99,7 +99,7 @@ checkRequiredColumnNames <- function(inputFile, study){
 
   if(is.null(nrow(data)) | nrow(data) == 0)
   {
-    print.and.log("File will be ignored. No data found.",'warning')
+    print_and_log("File will be ignored. No data found.",'warning')
     addEmptyStudy_pathOnly(inputFile)
     return(NULL)
 
@@ -123,11 +123,11 @@ checkRequiredColumnNames <- function(inputFile, study){
   #### check if all required comuns exist ####
   ## if not, script is stopped
 
-  crucial.columns<-getCrucialColumnNames.onFileLoading()
+  crucial.columns<-getCrucialColumnNames_onFileLoading()
   missing.crucial.column.indexes<-which(crucial.columns %notin% renamed.File.Columns)
 
   if(length(missing.crucial.column.indexes) > 0){
-    print.and.log(sprintf("File will be ignored. columns \'%s\' were not found.",
+    print_and_log(sprintf("File will be ignored. columns \'%s\' were not found.",
                           paste(crucial.columns[missing.crucial.column.indexes], collapse = '|')),
                   'warning')
     addEmptyStudy_pathOnly(inputFile)
@@ -137,17 +137,17 @@ checkRequiredColumnNames <- function(inputFile, study){
 
   ## check if file already has an EFFECT column. this is problematic and can not be continued
   if(is.element('EFFECT',original.File.Columns.upper))
-    print.and.log('Column EFFECT will be renamed to BETA!'
+    print_and_log('Column EFFECT will be renamed to BETA!'
                           ,'warning')
 
   if(is.element('EFFECT',renamed.File.Columns))
-    print.and.log('Input file can not have a column that is named EFFECT.'
+    print_and_log('Input file can not have a column that is named EFFECT.'
                   ,'fatal')
 
 
   ## check if file has the selected effect column , either BETA or OR
   # if(!is.element(.QC$config$input_parameters$effect_type,renamed.File.Columns))
-  #   print.and.log(sprintf('You have selected \"%s\" as the effect column, which is not found in the input file.' ,
+  #   print_and_log(sprintf('You have selected \"%s\" as the effect column, which is not found in the input file.' ,
   #                         .QC$config$input_parameters$effect_type ),'fatal')
 
 
@@ -163,19 +163,19 @@ checkRequiredColumnNames <- function(inputFile, study){
     if('PVALUE' %in% missing.columns){
       study$missing.PVALUE.column <- TRUE
 
-      print.and.log('PVALUE column is missing. calculated values will be used!',
+      print_and_log('PVALUE column is missing. calculated values will be used!',
                     'warning')
-      print.and.log('Pvalue correlation plot will not be saved!',
+      print_and_log('Pvalue correlation plot will not be saved!',
                     'warning')
     }
 
     # CHR is a crucial column now
 #     if('CHR' %in% missing.columns)
-#       print.and.log('Manhattan plot will not be saved (CHR column is missing)!',
+#       print_and_log('Manhattan plot will not be saved (CHR column is missing)!',
 #                     'warning')
 
     if('EFF_ALL_FREQ' %in% missing.columns)
-      print.and.log('Allele frequency plots will not be saved (EFF_ALL_FREQ column is missing)!',
+      print_and_log('Allele frequency plots will not be saved (EFF_ALL_FREQ column is missing)!',
                     'warning')
 
 
@@ -216,12 +216,12 @@ checkRequiredColumnNames <- function(inputFile, study){
   # VERY IMPORTANT: number of NA values in the first 100 lines of file
   # this is so important because it shows if columns are correctly seperated or not
   # i.e. header row may be separated based on space character while other rows are separated by tab
-  study$file.header.na <- count.NA(data)
+  study$file.header.na <- count_NA(data)
 
   return(study)
 }
 
-count.NA <- function(input.data){
+count_NA <- function(input.data){
 
   na.count <- length(which(is.na(input.data)))
   d <- dim(input.data)
@@ -231,7 +231,7 @@ count.NA <- function(input.data){
 }
 
 ##algorithm stops if one of these columns are missing
-getCrucialColumnNames.onFileLoading<-function()
+getCrucialColumnNames_onFileLoading<-function()
 {
   wanted.columns<-c(
     "CHR",
@@ -250,7 +250,7 @@ getCrucialColumnNames.onFileLoading<-function()
   return(wanted.columns)
 }
 
-getCrucialColumnNames.onFileAnalysis<-function()
+getCrucialColumnNames_onFileAnalysis<-function()
 {
   wanted.columns<-c(
     "CHR",
@@ -338,12 +338,12 @@ getFileHeaderKV<-function()
 # TODO delete
 #   ###checking header file
 #   if(ncol(headerTable) != 2L) {
-#     print.and.log(sprintf('\'headerTable\' should have two columns but has %s!',ncol(headerTable)),
+#     print_and_log(sprintf('\'headerTable\' should have two columns but has %s!',ncol(headerTable)),
 #                   'fatal')
 #   }
 #
 #   if(any(duplicated(headerTable[ ,2]))) {
-#     print.and.log('Duplicated items found in header table!',
+#     print_and_log('Duplicated items found in header table!',
 #                   'fatal')
 #   }
 
@@ -352,7 +352,7 @@ getFileHeaderKV<-function()
                          values = as.matrix(headerTable[, 1]))
   # flog.info("header KV file loaded!", name= .QC$log.name.main)
 
-  print.and.log('Header translation table created!',
+  print_and_log('Header translation table created!',
                 'info')
 
   return(headerKV)
@@ -381,8 +381,8 @@ replaceInputStringSetFromHashSet <- function(hashset , inputStringSet)
 
   tbl <- data.table('header' = inputStringSet , 'translated_header' = returnSet)
 
-  print.and.log('Header translation in input file...','info',display=.QC$config$debug$verbose)
-  print.and.log(kable(tbl,format = "rst"),
+  print_and_log('Header translation in input file...','info',display=.QC$config$debug$verbose)
+  print_and_log(kable(tbl,format = "rst"),
                 'info',
                 cat= FALSE,
                 display= .QC$config$debug$verbose)
@@ -391,7 +391,7 @@ replaceInputStringSetFromHashSet <- function(hashset , inputStringSet)
   if(any(duplicated(returnSet)))
   {
 
-    print.and.log('duplicated values are found in translated header!','warning',display=.QC$config$debug$verbose)
+    print_and_log('duplicated values are found in translated header!','warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
   else

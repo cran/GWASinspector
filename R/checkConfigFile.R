@@ -14,7 +14,7 @@ checkConfigFile <- function(config.file) {
 
   # check if file is in correct format
   if (!checkConfigFileSections(config))
-    runStopCommand('Config file is not in a correct format! run get.config() to obtain a template.')
+    runStopCommand('Config file is not in a correct format! run get_config() to obtain a template.')
 
   ### initiate config variables
   # newly added variable to config (NOT IN CONFIG FILE)
@@ -23,17 +23,17 @@ checkConfigFile <- function(config.file) {
   #=====================#
 
 
-  if (is.empty(config$paths$filename))
+  if (is_empty(config$paths$filename))
     config$paths$filename <- ".+"
 
-  if (is.empty(config$paths$dir_data))
+  if (is_empty(config$paths$dir_data))
     runStopCommand("Data directory not set!")
 
-  if (is.empty(config$paths$dir_output))
+  if (is_empty(config$paths$dir_output))
     runStopCommand("Output directory not set!")
 
 
-  if (is.empty(config$paths$dir_references))
+  if (is_empty(config$paths$dir_references))
     runStopCommand("Reference directory not set!")
 
   ## ========================================================
@@ -92,7 +92,7 @@ checkConfigFile <- function(config.file) {
 
 
   # check file order string
-  if (is.empty(config$input_parameters$file_order_string))
+  if (is_empty(config$input_parameters$file_order_string))
     config$input_parameters$file_order_string <- ""
   else
     config$input_parameters$file_order_string <-
@@ -146,7 +146,7 @@ checkConfigFile <- function(config.file) {
   #### HEADER file
 
   ## STOP the QC if header translation file is not mentioned or not found
-  if (is.empty(config$supplementaryFiles$header_translations))
+  if (is_empty(config$supplementaryFiles$header_translations))
   {
     runStopCommand("Alternative Header file not specified in the configuration file!")
   }
@@ -164,7 +164,7 @@ checkConfigFile <- function(config.file) {
 
   # 5
   ###reference file
-  if (is.empty(config$supplementaryFiles$allele_ref_std)) {
+  if (is_empty(config$supplementaryFiles$allele_ref_std)) {
     runStopCommand("Reference file not set!")
   }
   else {
@@ -187,7 +187,7 @@ checkConfigFile <- function(config.file) {
 
   ## check if population string is correct
   if(grepl(pattern = "sqlite",x = config$supplementaryFiles$allele_ref_std )
-     && is.empty(config$supplementaryFiles$allele_ref_std_population))
+     && is_empty(config$supplementaryFiles$allele_ref_std_population))
     runStopCommand("allele_ref_std_population parameter can not be empty.")
 
   if(!is.element(toupper(config$supplementaryFiles$allele_ref_std_population),
@@ -201,7 +201,7 @@ checkConfigFile <- function(config.file) {
   ### alternative reference file.
 
   # if it is not selected by user, the process of matching with alt-ref is skipped.
-  if (is.empty(config$supplementaryFiles$allele_ref_alt)) {
+  if (is_empty(config$supplementaryFiles$allele_ref_alt)) {
     config$supplementaryFiles$allele_ref_alt <- NA
   } else{
     # if this file is defined by uesr, it will be uploaded and updated after each study file is analyzed.
@@ -219,7 +219,7 @@ checkConfigFile <- function(config.file) {
 
 
   ### starandard reference file for EFFECT (BETA)
-  if (is.empty(config$supplementaryFiles$beta_ref_std)) {
+  if (is_empty(config$supplementaryFiles$beta_ref_std)) {
     config$supplementaryFiles$beta_ref_std <- NA
   } else{
     ## create full path of alt reference file
@@ -233,7 +233,7 @@ checkConfigFile <- function(config.file) {
   # 6
   ###read parameters
   ##set NA string set from config
-  if (is.empty(config$input_parameters$na.string))
+  if (is_empty(config$input_parameters$na.string))
     config$input_parameters$na.string <- c("NA", "nan", "NaN", ".")
   else
     config$input_parameters$na.string <-
@@ -243,7 +243,7 @@ checkConfigFile <- function(config.file) {
 
   ## 7
   ##set column separator from config file
-  if (is.empty(config$input_parameters$column_separator))
+  if (is_empty(config$input_parameters$column_separator))
     config$input_parameters$column_separator <- 'auto'
   else
     config$input_parameters$column_separator <-
@@ -252,7 +252,7 @@ checkConfigFile <- function(config.file) {
                           'auto')
 
   ##set effect type string  from config
-  if (is.empty(config$input_parameters$effect_type))
+  if (is_empty(config$input_parameters$effect_type))
     config$input_parameters$effect_type <- 'BETA'
   else
     config$input_parameters$effect_type <-
@@ -282,7 +282,7 @@ checkConfigFile <- function(config.file) {
 
   ## 8
   ## Imputed alleles - T or F
-  if (is.empty(config$input_parameters$imputed_T))
+  if (is_empty(config$input_parameters$imputed_T))
     config$input_parameters$imputed_T <- "TRUE|T|YES|Y"
   else
     config$input_parameters$imputed_T <-
@@ -291,7 +291,7 @@ checkConfigFile <- function(config.file) {
       collapse = '|'
     )
 
-  if (is.empty(config$input_parameters$imputed_F))
+  if (is_empty(config$input_parameters$imputed_F))
     config$input_parameters$imputed_F <- "FALSE|F|NO|N"
   else
     config$input_parameters$imputed_F <-
@@ -522,7 +522,7 @@ evaluateListsAsStrings <- function(input.name, input.string)
   output.list <- tryCatch(
     eval(parse(text = input.string)),
     warning = function(err) {
-      print.and.log(
+      print_and_log(
         sprintf(
           'error evaluating \'%s\' parameter in config file! should be written as a vector.',
           input.name
@@ -532,7 +532,7 @@ evaluateListsAsStrings <- function(input.name, input.string)
       return(NULL)
     },
     error = function(err) {
-      print.and.log(
+      print_and_log(
         sprintf(
           'error evaluating \'%s\' parameter in config file! should be written as a vector.',
           input.name
@@ -547,7 +547,7 @@ evaluateListsAsStrings <- function(input.name, input.string)
   if (is.vector(output.list))
     return(output.list)
   else
-    print.and.log(
+    print_and_log(
       sprintf(
         '\'%s\' parameter should be written as a vector in config file!',
         input.name
@@ -561,16 +561,16 @@ evaluateListsAsStrings <- function(input.name, input.string)
 
 ## TODO not complete yet
 printConfigVariables <- function(config) {
-  print.and.log(sprintf('Input directory: \'%s\'', config$paths$dir_data),
+  print_and_log(sprintf('Input directory: \'%s\'', config$paths$dir_data),
                 'info')
 
-  print.and.log(sprintf('Output directory: \'%s\'', config$paths$dir_output),
+  print_and_log(sprintf('Output directory: \'%s\'', config$paths$dir_output),
                 'info')
 
-  print.and.log(sprintf('References directory: \'%s\'', config$paths$dir_references),
+  print_and_log(sprintf('References directory: \'%s\'', config$paths$dir_references),
                 'info')
 
-  print.and.log(
+  print_and_log(
     sprintf(
       'Alternate header file: \'%s\'',
       config$supplementaryFiles$header_translations
@@ -578,7 +578,7 @@ printConfigVariables <- function(config) {
     'info'
   )
 
-  print.and.log(
+  print_and_log(
     sprintf(
       'Allele Frequency Reference file: \'%s\'',
       config$supplementaryFiles$allele_ref_std
@@ -587,7 +587,7 @@ printConfigVariables <- function(config) {
   )
 
   if (!is.na(config$supplementaryFiles$allele_ref_alt))
-    print.and.log(
+    print_and_log(
       sprintf(
         'Allele Frequency Alternative Reference file: \'%s\'',
         config$supplementaryFiles$allele_ref_alt
@@ -596,7 +596,7 @@ printConfigVariables <- function(config) {
     )
 
   if (!is.na(config$supplementaryFiles$beta_ref_std))
-    print.and.log(
+    print_and_log(
       sprintf(
         'Effect Size Reference file: \'%s\'',
         config$supplementaryFiles$beta_ref_std
@@ -606,7 +606,7 @@ printConfigVariables <- function(config) {
 
 
   if (!.QC$config$graphic.device)
-    print.and.log('No graphic devices are available. Plotting will be skipped!',
+    print_and_log('No graphic devices are available. Plotting will be skipped!',
                   'warning')
 
 
@@ -674,7 +674,7 @@ checkConfigParameters <-
 
 
 
-set.test.run.variables <- function(test.run)
+set_test_run_variables <- function(test.run)
 {
   if (test.run)
   {
@@ -692,7 +692,7 @@ set.test.run.variables <- function(test.run)
 
 
 
-make.config <- function(object)
+make_config <- function(object)
 {
   config <- list(
     paths = list(
@@ -776,7 +776,7 @@ make.config <- function(object)
 
 
   if (!is.na(config$supplementaryFiles$allele_ref_alt) &&
-      !is.empty(config$supplementaryFiles$allele_ref_alt) &&
+      !is_empty(config$supplementaryFiles$allele_ref_alt) &&
       file.exists(config$supplementaryFiles$allele_ref_alt))
     config$alt_ref_file_exists <- TRUE
   else
@@ -785,7 +785,7 @@ make.config <- function(object)
 
 
   if (config$plot_specs$make_plots)
-    config <- set.graphic.device(config)
+    config <- set_graphic_device(config)
   else
   {
     # set as default values if user does not want the plots

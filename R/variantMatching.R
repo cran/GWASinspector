@@ -1,4 +1,4 @@
-variant.match <- function(effect_allele, other_allele, ALT, REF, VT) {
+variant_match <- function(effect_allele, other_allele, ALT, REF, VT) {
 
   # Palindromic variants:
   # A-T
@@ -21,8 +21,8 @@ variant.match <- function(effect_allele, other_allele, ALT, REF, VT) {
   # Wrong == 4L
 
 
-  other_allele_switched <- switch.alleles.vectorized(other_allele)
-  effect_allele_switched <- switch.alleles.vectorized(effect_allele)
+  other_allele_switched <- switch_alleles_vectorized(other_allele)
+  effect_allele_switched <- switch_alleles_vectorized(effect_allele)
 
 
 

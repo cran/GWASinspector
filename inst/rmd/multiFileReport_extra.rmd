@@ -61,11 +61,11 @@ kableExtra::column_spec(2, extra_css='text-align:left')
 <h4 class="header2">Summary of the input GWAS files</h4>
 
 `r report.table <- t(data.table(
-       "<span class='mainItem'>Sample size (Max)</span>" = sapply(.QC$qc.study.list, function(x) return(thousand.sep(x$MAX_N_TOTAL))),
+       "<span class='mainItem'>Sample size (Max)</span>" = sapply(.QC$qc.study.list, function(x) return(thousand_sep(x$MAX_N_TOTAL))),
 	   
 	    "<span class='mainItem'>Missing columns</span>" = sapply(.QC$qc.study.list, function(x) return(paste(x$missing.Columns, collapse = ' | '))), 
 		
-       "<span class='mainItem'>Variants in input file</span>" = sapply(.QC$qc.study.list, function(x) return(thousand.sep(x$input.data.rowcount))), 
+       "<span class='mainItem'>Variants in input file</span>" = sapply(.QC$qc.study.list, function(x) return(thousand_sep(x$input.data.rowcount))), 
 		"<span class='item'>Missing crucial variable</span>" = sapply(.QC$qc.study.list, function(x) return(calculatePercent(x$missing.crucial.rowcount,
                                                   x$input.data.rowcount,
                                                   pretty = T))),

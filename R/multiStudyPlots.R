@@ -1,13 +1,13 @@
-multi.study.precision.plot <- function(study.list, graphic.device , figure.path){
+multi_study_precision_plot <- function(study.list, graphic.device , figure.path){
 
-  study.names <- sapply(study.list, get.study.name) # studyFunctions.R
+  study.names <- sapply(study.list, get_study_name) # studyFunctions.R
 
   # find the maximum length of file names for plot aspect and width
   # it should be at least 160
   p.width <-  max(sapply(study.names,nchar)) * 2
   p.width <- ifelse(p.width < 160 , 160 , p.width)
 
-  precision.table <- as.data.table(t(sapply(study.list, get.precision.plot.values))) #multiStudyFunctions.R
+  precision.table <- as.data.table(t(sapply(study.list, get_precision_plot_values))) #multiStudyFunctions.R
   precision.table <- cbind(precision.table,study.names)
 
   precision.table$SE.mean.HQ <- unlist(precision.table$SE.mean.HQ)
@@ -18,7 +18,7 @@ multi.study.precision.plot <- function(study.list, graphic.device , figure.path)
   precision.table[is.na(SE.mean.HQ) | is.na(sqrt.n) , missing := TRUE]
 
   if(any(!is.na(precision.table$missing))){
-    print.and.log(sprintf("studies removed from 'Precision Plot' due to NA value (possibly no HQ variants or missing N_Total column)! (%s)",
+    print_and_log(sprintf("studies removed from 'Precision Plot' due to NA value (possibly no HQ variants or missing N_Total column)! (%s)",
                           paste(precision.table[missing == TRUE]$study.names,collapse = ' | ')),'warning',display=.QC$config$debug$verbose)
     precision.table <- precision.table[is.na(missing)] ## if 'missing' column is not set to TRUE it is null and not missing
   }
@@ -82,11 +82,11 @@ multi.study.precision.plot <- function(study.list, graphic.device , figure.path)
     rm(plot)
     invisible(gc())
 
-    print.and.log("Precision plot is saved!",'info')
+    print_and_log("Precision plot is saved!",'info')
 
   }else
   {
-    print.and.log("Precision plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
+    print_and_log("Precision plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
   }
 
 }
@@ -96,9 +96,9 @@ multi.study.precision.plot <- function(study.list, graphic.device , figure.path)
 
 
 
-multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path){
+multi_study_skew_kurt_plot <- function(study.list, graphic.device , figure.path){
 
-  study.names <- sapply(study.list, get.study.name) # studyFunctions.R
+  study.names <- sapply(study.list, get_study_name) # studyFunctions.R
 
   # find the maximum length of file names for plot aspect and width
   # it should be at least 160
@@ -106,7 +106,7 @@ multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path)
   p.width <- ifelse(p.width < 160 , 160 , p.width)
 
 
-  skew.kurt.table <- as.data.table(t(sapply(study.list, get.skewness.kurtosis))) #multiStudyFunctions.R
+  skew.kurt.table <- as.data.table(t(sapply(study.list, get_skewness_kurtosis))) #multiStudyFunctions.R
   skew.kurt.table <- cbind(skew.kurt.table,study.names)
 
   skew.kurt.table$kurtosis <- unlist(skew.kurt.table$kurtosis)
@@ -116,7 +116,7 @@ multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path)
   # check if it has missing or NA values - No HQ variants
   skew.kurt.table[is.na(skewness) | is.na(kurtosis) , missing := TRUE]
   if(nrow(skew.kurt.table[missing == TRUE]) > 0){
-    print.and.log(sprintf("studies removed from 'Skewness-Kurtosis Plot' due to NA value (possibly no HQ variants)! (%s)",
+    print_and_log(sprintf("studies removed from 'Skewness-Kurtosis Plot' due to NA value (possibly no HQ variants)! (%s)",
                           paste(skew.kurt.table[missing==TRUE]$study.names,collapse = ' | ')),'warning',display=.QC$config$debug$verbose)
     skew.kurt.table <- skew.kurt.table[is.na(missing)]
   }
@@ -179,10 +179,10 @@ multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path)
     rm(plot)
     invisible(gc())
 
-    print.and.log("Skewness vs kurtosis plot is saved!",'info')
+    print_and_log("Skewness vs kurtosis plot is saved!",'info')
   }else
   {
-    print.and.log("Skewness vs kurtosis plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
+    print_and_log("Skewness vs kurtosis plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
   }
 }
 
@@ -191,7 +191,7 @@ multi.study.skew.kurt.plot <- function(study.list, graphic.device , figure.path)
 
 
 
-multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
+multi_study_eff_plot <- function(study.list, graphic.device , figure.path)
 {
 
   # order files on max sample size
@@ -201,7 +201,7 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
       if(all(sapply(study.list, function(x) ifelse("N_CASES" %in% x$renamed.File.Columns, TRUE , FALSE))))
       {
         study.list[order(sapply(study.list,'[[','MAX_N_CASES'))]
-        print.and.log("N_CASES column was used for ordering the plots.")
+        print_and_log("N_CASES column was used for ordering the plots.")
       }
       else
       {
@@ -210,7 +210,7 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
 
     },
     error = function(err) {
-      print.and.log(paste('Error in ordering list of files:',err$message),'warning',display=.QC$config$debug$verbose)
+      print_and_log(paste('Error in ordering list of files:',err$message),'warning',display=.QC$config$debug$verbose)
       return(study.list)
     }
   )
@@ -225,8 +225,8 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
   #if(any(sapply(effect.plot.list,is.null)))
   if(length(effect.plot.list2) != length(effect.plot.list))
   {
-    #print.and.log("Effect-size box plot NOT saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
-    print.and.log(sprintf("%s studies are removed from effect-size box plot!",length(effect.plot.list) - length(effect.plot.list2)),
+    #print_and_log("Effect-size box plot NOT saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
+    print_and_log(sprintf("%s studies are removed from effect-size box plot!",length(effect.plot.list) - length(effect.plot.list2)),
                   'warning',
                   display=.QC$config$debug$verbose)
   }
@@ -248,10 +248,10 @@ multi.study.eff.plot <- function(study.list, graphic.device , figure.path)
     invisible(gc())
 
 
-    print.and.log("Effect-size box plot is saved!",'info')
+    print_and_log("Effect-size box plot is saved!",'info')
   }else
   {
-    print.and.log("Effect-size box plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
+    print_and_log("Effect-size box plot not saved due to insufficient data!",'warning',display=.QC$config$debug$verbose)
   }
 }
 
@@ -271,7 +271,7 @@ generateEffectSizePlot <- function(study)
     if("N_CASES" %in% study$renamed.File.Columns)
     {
       file.N.max = study$MAX_N_CASES
-      print.and.log("N_CASES will be used for MAX_N value.")
+      print_and_log("N_CASES will be used for MAX_N value.")
     }
     else
       file.N.max = study$MAX_N_TOTAL
@@ -308,7 +308,7 @@ generateEffectSizePlot <- function(study)
 
 
     if(is.null(study$effect.plot.df_y_upper) || is.null(study$effect.plot.df_y_lower))
-      print.and.log("Error-bars missing for effect-size plot. Horizontal lines are at -0.1 and 0.1.","warning")
+      print_and_log("Error-bars missing for effect-size plot. Horizontal lines are at -0.1 and 0.1.","warning")
 
     return(plot)
   }

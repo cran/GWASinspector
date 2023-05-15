@@ -1,4 +1,4 @@
-validate.Inspector <- function(object, printWarnings = TRUE)
+validate_Inspector <- function(object, printWarnings = TRUE)
 {
   if (!is(object, "Inspector"))
     stop("Object must be of class Inspector", call. = FALSE)

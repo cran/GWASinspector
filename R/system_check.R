@@ -6,11 +6,11 @@
 #'
 #' @return System information and required functionalities for the QC algorithm are checked and reported as a data frame.
 #'
-system.check <- function()
+system_check <- function()
 {
   # message('\nThis table displays system information and checks if the required packages are available for QC process.\nCheck the package manual for detailed information.')
 
-  check.tools()
+  check_tools()
 
 
   tbl <- data.frame(t(data.frame(

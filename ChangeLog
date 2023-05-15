@@ -73,3 +73,16 @@ Changes in version 1.5.7 (Jan 2022)
 Changes in version 1.6.0 (Nov 2022)
 ====================================
 	- XLSX package was replaced by OPENXLSX.
+
+Changes in version 1.6.4 (May 2023)
+====================================
+	- Minor changes for compatibility with R v4.3.
+	- setup.inspector() is renamed to setup_inspector()
+	- run.inspector() is renamed to run_inspector()
+	- result.inspector() is renamed to result_inspector()
+	- demo.inspector() is renamed to demo_inspector()
+	- compare.GWASs() is renamed to compare_GWASs()
+	- system.check() is renamed to system_check()
+	- get.config() is renamed to get_config()
+	- get.headerTranslation() is renamed to get_headerTranslation()
+	- manhattan.plot() is renamed to manhattan_plot()

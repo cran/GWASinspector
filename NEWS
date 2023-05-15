@@ -53,3 +53,8 @@ Changes in version 1.6.0 (Nov 2022)
 ====================================
 	- Due to problems with Java and rJava, XLSX package was replaced by OPENXLSX.
 
+Changes in version 1.6.4 (May 2023)
+====================================
+	- Minor changes for compatibility with R v4.3.
+	- Main function names were renamed by replacing dot with underline.
+

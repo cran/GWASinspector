@@ -9,10 +9,10 @@
 # HQ
 # PVALUE.calculated
 
-process.each.file <- function(study){
+process_each_file <- function(study){
 
 
-  print.and.log(sprintf('============== [ File %s from %s ] ==============',
+  print_and_log(sprintf('============== [ File %s from %s ] ==============',
                         .QC$file.counter,
                         length(.QC$qc.study.list)),
                 'info',
@@ -35,19 +35,19 @@ process.each.file <- function(study){
 
   .QC$file.counter <- .QC$file.counter + 1 ## counter that displays how many files are processed
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
   ### uplolading and processing file
   ## ==============================================
   input.data <- uploadInputFile()
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
 
   # return null if file could not be read
   #====================================
   if(is.null(input.data)){
-    print.and.log('File removed from QC analysis due to error in loading!','warning')
+    print_and_log('File removed from QC analysis due to error in loading!','warning')
     addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
@@ -68,17 +68,17 @@ process.each.file <- function(study){
   ## ==============================================
 
   input.data <- processInputFile(input.data)
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
   # return null if error encountered
   #====================================
   if(is.null(input.data)){
-    print.and.log('File removed from QC analysis due to error in processing!','warning')
+    print_and_log('File removed from QC analysis due to error in processing!','warning')
     addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
-  # variable.statistics.pre.matching(input.data) moved to process.matched.data()
+  # variable_statistics_pre_matching(input.data) moved to process_matched_data()
 
   invisible(gc())
 
@@ -86,47 +86,47 @@ process.each.file <- function(study){
 
   ### matching with reference dataset
   ## ==============================================
-  print.and.log('Comparing input file with reference file (this might take long) ...','info')
+  print_and_log('Comparing input file with reference file (this might take long) ...','info')
   input.data<-tryCatch(compareInputfileWithReferenceData(input.data),
                        error = function(err) {
-                         print.and.log(paste('Error in comparing process:' , err$message), 'warning')
+                         print_and_log(paste('Error in comparing process:' , err$message), 'warning')
                          return(NULL)
                        }
   )
 
   #====================================
   if(is.null(input.data)){
-    print.and.log('File removed from QC analysis due to error in comparing process!','warning')
+    print_and_log('File removed from QC analysis due to error in comparing process!','warning')
     addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
   invisible(gc())
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
 
   ## allele matching
   ## ==============================================
-  print.and.log('Allele matching vs Allele Freq reference dataset ...','info')
+  print_and_log('Allele matching vs Allele Freq reference dataset ...','info')
 
   input.data <- tryCatch(input.data[,c("match_result","palindromic") :=
-                                      variant.match(EFFECT_ALL,OTHER_ALL,ALT,REF,VT),
+                                      variant_match(EFFECT_ALL,OTHER_ALL,ALT,REF,VT),
                                     by = list(EFFECT_ALL,OTHER_ALL,ALT,REF,VT)],
                          error = function(err) {
-                           print.and.log(paste('Error in allele matching:' , err$message), 'warning')
+                           print_and_log(paste('Error in allele matching:' , err$message), 'warning')
                            return(NULL)
                          }
   )
 
   #====================================
   if(is.null(input.data)){
-    print.and.log('File removed from QC analysis due to error in allele matching!','warning')
+    print_and_log('File removed from QC analysis due to error in allele matching!','warning')
     addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
 
   invisible(gc())
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
 
 
@@ -134,17 +134,17 @@ process.each.file <- function(study){
   # IMPORTANT: variants may be removed in 1 step
   # 3- mismatched variants
   ## ==============================================
-  print.and.log('Data processing ...','info')
-  input.data <- tryCatch(process.matched.data(input.data),
+  print_and_log('Data processing ...','info')
+  input.data <- tryCatch(process_matched_data(input.data),
                          error = function(err) {
-                           print.and.log(paste('Error in variant processing:' , err$message), 'warning')
+                           print_and_log(paste('Error in variant processing:' , err$message), 'warning')
                            return(NULL)
                          }
   )
 
   #====================================
   if(is.null(input.data)){
-    print.and.log('File removed from QC analysis due to error in variant processing!','warning')
+    print_and_log('File removed from QC analysis due to error in variant processing!','warning')
     addEmptyStudy_studyInstance(.QC$thisStudy)
     return(NULL)
   }
@@ -157,17 +157,17 @@ process.each.file <- function(study){
   ## Calculations
   ## ==============================================
   ## calculate Pvalue from stderr and effect
-  input.data <- calculate.PVALUE(input.data) #pValueFunctions.R
+  input.data <- calculate_PVALUE(input.data) #pValueFunctions.R
 
   ## calculate correlation between the 2 Pvalues
-  calculate.pvalue.correlation(input.data)
+  calculate_pvalue_correlation(input.data)
 
   # calcualte AF correlation between study and std ref
-  calculate.af.correlation.std_ref(input.data) #calculationFunctions.R
+  calculate_af_correlation_std_ref(input.data) #calculationFunctions.R
 
   # calcualte AF correlation between study and alt ref
   if(!is.na(config$supplementaryFiles$allele_ref_alt))
-    calculate.af.correlation.alt_ref(input.data) #calculationFunctions.R
+    calculate_af_correlation_alt_ref(input.data) #calculationFunctions.R
 
   # selcet high quality variants based on 4 filters
   input.data <- applyHQfilter(input.data) #calculationFunctions.R
@@ -181,16 +181,16 @@ process.each.file <- function(study){
   }
   else if(.QC$thisStudy$HQ.count > 0)
   {
-    .QC$thisStudy$tables$variable.summary.HQ <- variable.statistics.post.matching_HQ(input.data)
+    .QC$thisStudy$tables$variable.summary.HQ <- variable_statistics_post_matching_HQ(input.data)
   }
 
   ##TODO  outliers are defined as skewness > 0.1 or < -0.1, or kurtosis > 10
   calculateSkewness(input.data)
-  calculateSkewness.HQ(input.data)
+  calculateSkewness_HQ(input.data)
   calculateKurtosis(input.data)
-  calculateKurtosis.HQ(input.data)
+  calculateKurtosis_HQ(input.data)
   calculateVischerStats(input.data)
-  calculateVischerStats.HQ(input.data)
+  calculateVischerStats_HQ(input.data)
   calculateLambda(input.data)
 
 
@@ -230,7 +230,7 @@ process.each.file <- function(study){
   # if("N_CASES" %in% .QC$thisStudy$renamed.File.Columns)
   # {
   #   file.N.max = .QC$thisStudy$MAX_N_CASES
-  #   print.and.log("N_CASES will be used for MAX_N value.")
+  #   print_and_log("N_CASES will be used for MAX_N value.")
   # }
   # else
   #   file.N.max = .QC$thisStudy$MAX_N_TOTAL
@@ -258,7 +258,7 @@ process.each.file <- function(study){
   ## ==============================================
   #cat('\n--- [evaluating alternate reference ...] ---',fill=TRUE)
   if(!is.na(config$supplementaryFiles$allele_ref_alt))
-    update.alternate.reference(input.data)
+    update_alternate_reference(input.data)
 
 
 
@@ -282,7 +282,7 @@ process.each.file <- function(study){
   input.data[, wrong := NULL]
 
   invisible(gc())
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
 
 
@@ -290,24 +290,24 @@ process.each.file <- function(study){
 
   ## 6- plots
   ## ==============================================
-  print.and.log('Plotting ...','info')
+  print_and_log('Plotting ...','info')
   drawPlots(input.data)
 
   invisible(gc())
 
 
   ## ==============================================
-  print.and.log('Saving data set ...','info')
+  print_and_log('Saving data set ...','info')
   ## missing pvalues set from calculated pvalues
-  input.data <-fill.missing.pvalues.from.calculated.pvalues(input.data)
+  input.data <-fill_missing_pvalues_from_calculated_pvalues(input.data)
 
 
-  saveDataSet.final(input.data) #'saveFilesFunctions.R'
+  saveDataSet_final(input.data) #'saveFilesFunctions.R'
 
 
 
   invisible(gc())
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
 
   ## data cleaning 2
@@ -322,7 +322,7 @@ process.each.file <- function(study){
   .QC$thisStudy$endtime <- Sys.time()
 
   # save txt report file
-  report.to.txt.file(.QC$thisStudy)
+  report_to_txt_file(.QC$thisStudy)
 
 
 
@@ -333,10 +333,10 @@ process.each.file <- function(study){
 
   if(nrow(.QC$reference.data.effect) > 0 ){
 
-    print.and.log('Comparing input file with Effect-Size reference file ...','info')
+    print_and_log('Comparing input file with Effect-Size reference file ...','info')
     input.data<-tryCatch(compareInputfileWithBetaReferenceFile(input.data),
                          error = function(err) {
-                           print.and.log(paste('Error in comparing with Effect-Size reference:' , err$message), 'warning')
+                           print_and_log(paste('Error in comparing with Effect-Size reference:' , err$message), 'warning')
                            return(data.table())
                          }
     )
@@ -353,10 +353,10 @@ process.each.file <- function(study){
 
 
       # THIS STEP IS NOT REQUIRED, BECAUSE DATA IS ALREADY MATCHED WITH REFERENCE DATASET
-      # print.and.log('Allele matching vs Effect-Size reference dataset ...','info')
+      # print_and_log('Allele matching vs Effect-Size reference dataset ...','info')
       # input.data <- tryCatch(allele.match.effectPlot(input.data),
       #                        error = function(err) {
-      #                          print.and.log(paste('Error in allele matching:' , err$message), 'warning')
+      #                          print_and_log(paste('Error in allele matching:' , err$message), 'warning')
       #                          return(NULL)
       #                        }
       # )
@@ -365,11 +365,11 @@ process.each.file <- function(study){
 
 
       if(config$plot_specs$make_plots & !is.null(input.data))
-        tryCatch(plot.DataEFFECT.vs.RefEFFECT(input.data,
+        tryCatch(plot_DataEFFECT_vs_RefEFFECT(input.data,
                                               .QC$thisStudy$effPlotPath,
                                               .QC$thisStudy$plot.title),
                  error = function(err) {
-                   print.and.log(paste('Error plotting effect-size correlation plot:' , err$message), 'warning')
+                   print_and_log(paste('Error plotting effect-size correlation plot:' , err$message), 'warning')
                    return(NULL)
                  }
         )
@@ -377,8 +377,8 @@ process.each.file <- function(study){
 
     }else
     {
-      print.and.log('No variants were found in Effect-size reference dataset!','warning')
-      print.and.log('Effect-size comparison plot is skipped!','warning')
+      print_and_log('No variants were found in Effect-size reference dataset!','warning')
+      print_and_log('Effect-size comparison plot is skipped!','warning')
       .QC$thisStudy$effect.rho_4 <- 'NA (no variants were found)'
     }
 
@@ -417,23 +417,23 @@ process.each.file <- function(study){
   }
 
   ## save significant variants ( p-value  < 1e-8  & HQ & rsID) ==> CHR-POS-MARKER-PVALUE
-  #save.significant.variants(input.data)
+  #save_significant_variants(input.data)
 
 
   # save rds file
-  studyClass <- create.Study(.QC$thisStudy)
+  studyClass <- create_Study(.QC$thisStudy)
   # .QC$StudyList <- append( .QC$StudyList , studyClass)
   .QC$StudyList@studyList <- append(.QC$StudyList@studyList , studyClass)
   .QC$StudyList@studyCount <- length(.QC$StudyList@studyList)
 
-  save.rds.file(.QC$thisStudy)
+  save_rds_file(.QC$thisStudy)
 
   rm(input.data)
   invisible(gc())
 
   ## ended
   ##==============
-  print.and.log('\n','info')
+  print_and_log('\n','info')
 
   ## add info to text report
   writeTXTreport("\n==============================================")
@@ -448,7 +448,7 @@ process.each.file <- function(study){
 
 
 
-create.file.specific.config <- function(file.name){
+create_file_specific_config <- function(file.name){
 
   ### these varaibles are used for each file that is QC'ed ###
 
@@ -584,21 +584,21 @@ create.file.specific.config <- function(file.name){
 
 
   ###------
-  print.and.log(sprintf("Checking Study file : '%s'",file.name),
+  print_and_log(sprintf("Checking Study file : '%s'",file.name),
                 'info')
 
-  # get file line count if file is not zipped
+  # get_file_line_count if file is not zipped
   # if(config$test.run) # do not count the lines if it is a test run
   #   study$file.line.count <- 'NA (test run)'
   # else if(study$zipped.File)  # do not count the lines if it is zipped
   #   study$file.line.count <- 'NA (zipped file)'
   # else
-  #   study$file.line.count <- get.file.line.count(file.name)
+  #   study$file.line.count <- get_file_line_count(file.name)
 
-  # get file line count if file is not zipped
+  # get_file_line_count if file is not zipped
   if(study$file.extension != 'zip') # do not count the lines if it is a test run
   {
-    fileInspection <- get.file.line.count_RUtils(file.name)
+    fileInspection <- get_file_line_count_RUtils(file.name)
     study$file.line.count <- fileInspection[1]
     study$file.endsWithNewLine <- fileInspection[2]
   }
@@ -886,19 +886,19 @@ create.file.specific.config <- function(file.name){
   study <-  tryCatch(checkRequiredColumnNames(file.name,study),
                      error = function(err)
                      {
-                       print.and.log(paste('Could not read file header:',err$message),'warning')
+                       print_and_log(paste('Could not read file header:',err$message),'warning')
                        return(NULL)
                      }
   )
 
-  # print.and.log("\nColumn check is done!",'info')
+  # print_and_log("\nColumn check is done!",'info')
   # cat('----------------------------------------------------',fill = TRUE)
   if(!is.null(study))
     return(study)
 
 }
 
-get.file.line.count <- function(file.path)
+get_file_line_count <- function(file.path)
 {
 
   ## get line count of input file
@@ -931,7 +931,7 @@ get.file.line.count <- function(file.path)
   return(file.line.count)
 }
 
-get.file.line.count_RUtils <- function(file.path)
+get_file_line_count_RUtils <- function(file.path)
 {
 
   ## get line count of input file
@@ -957,13 +957,13 @@ get.file.line.count_RUtils <- function(file.path)
   return(file.line.count)
 }
 
-get.study.name <- function(study) {
+get_study_name <- function(study) {
 
   return(study$file.name)
 }
 
 
-get.skewness.kurtosis <- function(study) {
+get_skewness_kurtosis <- function(study) {
   vec <- data.table('kurtosis' = study$kurtosis.HQ,
                     'skewness' = study$skewness.HQ,
                     'order' = study$number)
@@ -971,7 +971,7 @@ get.skewness.kurtosis <- function(study) {
   return(vec)
 }
 
-get.precision.plot.values <- function(study) {
+get_precision_plot_values <- function(study) {
   vec <- data.table('SE.mean.HQ' = 1 / study$STDERR.mean.HQ,
                     'sqrt.n' = sqrt(study$MAX_N_TOTAL),
                     'order' = study$number)
@@ -979,7 +979,7 @@ get.precision.plot.values <- function(study) {
   return(vec)
 }
 
-verify.files.with.user <- function(qc.study.list, user.verification)
+verify_files_with_user <- function(qc.study.list, user.verification)
 {
 
   study.table <- sapply(qc.study.list,function(study)
@@ -992,12 +992,12 @@ verify.files.with.user <- function(qc.study.list, user.verification)
   )
 
   if(is.null(ncol(study.table)))
-    print.and.log('Error in filenames. check if filename contains space or dash or another uknown character.','fatal')
+    print_and_log('Error in filenames. check if filename contains space or dash or another uknown character.','fatal')
 
   study.table <- cbind(seq(1:ncol(study.table)),t(study.table))
   colnames(study.table)[1] <- '#'
 
-  print.and.log(kable(study.table,format = "rst"),
+  print_and_log(kable(study.table,format = "rst"),
                 'info',
                 cat= FALSE)
 
@@ -1016,7 +1016,7 @@ verify.files.with.user <- function(qc.study.list, user.verification)
 }
 
 
-variable.statistics.pre.matching <- function(input.data)
+variable_statistics_pre_matching <- function(input.data)
 {
 
   # count alleles for report
@@ -1026,7 +1026,7 @@ variable.statistics.pre.matching <- function(input.data)
 
 }
 
-variable.statistics.post.matching <- function(input.data)
+variable_statistics_post_matching <- function(input.data)
 {
   # pallindromics
   .QC$thisStudy$palindromic.rows <- input.data[palindromic ==TRUE,.N]
@@ -1051,7 +1051,7 @@ variable.statistics.post.matching <- function(input.data)
     .QC$thisStudy$tables$CHR.tbl$CHR <- as.character(.QC$thisStudy$tables$CHR.tbl$CHR)
     .QC$thisStudy$tables$CHR.tbl[is.na(CHR), CHR:= 'missing']
 
-    .QC$thisStudy$tables$CHR.tbl$N <- thousand.sep(.QC$thisStudy$tables$CHR.tbl$N)
+    .QC$thisStudy$tables$CHR.tbl$N <- thousand_sep(.QC$thisStudy$tables$CHR.tbl$N)
   }else{
     .QC$thisStudy$tables$CHR.tbl <- NA
     .QC$thisStudy$tables$CHR.tbl$CHR <- ''
@@ -1114,7 +1114,7 @@ variable.statistics.post.matching <- function(input.data)
 
 }
 
-variable.statistics.post.matching_HQ <- function(input.data)
+variable_statistics_post_matching_HQ <- function(input.data)
 {
 
   existing.columns <- intersect(c('PVALUE','HWE_PVAL','CALLRATE','EFF_ALL_FREQ','IMP_QUALITY','EFFECT','STDERR') ,

@@ -1,4 +1,4 @@
-plot.DataEFFECT.vs.RefEFFECT<-function(input.data, effPlotPath, plot.title.text)
+plot_DataEFFECT_vs_RefEFFECT<-function(input.data, effPlotPath, plot.title.text)
 {
 
 
@@ -41,7 +41,7 @@ plot.DataEFFECT.vs.RefEFFECT<-function(input.data, effPlotPath, plot.title.text)
          height =120,
          dpi = 300)
 
-  print.and.log(sprintf('Effect-Size comparison plot saved! %s variants.',nrow(input.data)),
+  print_and_log(sprintf('Effect-Size comparison plot saved! %s variants.',nrow(input.data)),
                 'info')
 
   rm(eff.ggplot)

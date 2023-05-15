@@ -16,7 +16,7 @@
 #' @param check.columns Whether to check input columns for invalid values
 #' @return Generates and saves a Manhattan plot for the provided data.
 #'
-manhattan.plot <- function(dataset,
+manhattan_plot <- function(dataset,
                      chr,
                      pvalue,
                      position,
@@ -116,15 +116,15 @@ manhattan.plot <- function(dataset,
   # this step is not required if function is called from package and as part of GWASinspector
   # check.columns parameter is false from GWASinspector
   if(check.columns){
-    plot.data <- process.column.CHR(plot.data)
-    plot.data <- process.column.POSITION(plot.data)
-    plot.data <- process.column.PVALUE(plot.data)
+    plot.data <- process_column_CHR(plot.data)
+    plot.data <- process_column_POSITION(plot.data)
+    plot.data <- process_column_PVALUE(plot.data)
 
     if(!missing.beta)
       plot.data[EFFECT == -1 , EFFECT:= NA]
 
     if(!missing.std.err)
-      plot.data <- process.column.STDERR(plot.data)
+      plot.data <- process_column_STDERR(plot.data)
   }
   # 5- calcualte missing p
   missing.p.count <- nrow(plot.data[is.na(PVALUE)])
@@ -157,7 +157,7 @@ manhattan.plot <- function(dataset,
   plot.data <- plot.data[!is.na(CHR) & PVALUE < p.threshold]
 
   ## manhattanPlotFunction.R
-  plot.manhattan.standalone(plot.data[,list(CHR,PVALUE,POSITION)], plot.title,plot.subtitle, sig.threshold.log, fileName)
+  plot_manhattan_standalone(plot.data[,list(CHR,PVALUE,POSITION)], plot.title,plot.subtitle, sig.threshold.log, fileName)
 
 
 
@@ -167,7 +167,7 @@ manhattan.plot <- function(dataset,
 
 
 # used inside package
-man.plot <- function(dataset,
+man_plot <- function(dataset,
                      chr,
                      pvalue,
                      position,
@@ -196,17 +196,17 @@ man.plot <- function(dataset,
 
   # check if columns are present
   if(!is.element(chr,names(dataset))){
-    print.and.log('skipping Manhattan plot! \'CHR\' column not found.','warning')
+    print_and_log('skipping Manhattan plot! \'CHR\' column not found.','warning')
     return(NULL)
   }
 
   if(!is.element(pvalue,names(dataset))){
-    print.and.log('skipping Manhattan plot! \'P-value\' column not found.','warning')
+    print_and_log('skipping Manhattan plot! \'P-value\' column not found.','warning')
     return(NULL)
   }
 
   if(!is.element(position,names(dataset))){
-    print.and.log('skipping Manhattan plot! \'Position\' column not found.','warning')
+    print_and_log('skipping Manhattan plot! \'Position\' column not found.','warning')
     return(NULL)
   }
 
@@ -270,21 +270,21 @@ man.plot <- function(dataset,
   # this step is not required if function is called from package and as part of GWASinspector
   # check.columns parameter is false from GWASinspector
   if(check.columns){
-    plot.data <- process.column.CHR(plot.data)
-    plot.data <- process.column.POSITION(plot.data)
-    plot.data <- process.column.PVALUE(plot.data)
+    plot.data <- process_column_CHR(plot.data)
+    plot.data <- process_column_POSITION(plot.data)
+    plot.data <- process_column_PVALUE(plot.data)
 
     if(!missing.beta)
       plot.data[EFFECT == -1 , EFFECT:= NA]
 
     if(!missing.std.err)
-      plot.data <- process.column.STDERR(plot.data)
+      plot.data <- process_column_STDERR(plot.data)
   }
   # 5- calcualte missing p
   missing.p.count <- nrow(plot.data[is.na(PVALUE)])
 
   if( missing.p.count > 0){ # if there are missing pvaluse, try to replace them from calculated  values or calculate now
-    print.and.log(sprintf('missing P-values are found in dataset (%s from %s variants)!',
+    print_and_log(sprintf('missing P-values are found in dataset (%s from %s variants)!',
                           missing.p.count,
                           nrow(plot.data)),
                   'warning')
@@ -292,18 +292,18 @@ man.plot <- function(dataset,
     if('PVALUE.calculated' %in% selected.col.names) # if function is called from package
     {
       plot.data[is.na(PVALUE), PVALUE := PVALUE.calculated]
-      print.and.log('missing P-values are calculated and replaced!','info')
+      print_and_log('missing P-values are calculated and replaced!','info')
     }
     else{
       if(!missing.std.err & !missing.beta)
       {
         plot.data[is.na(PVALUE), PVALUE := pchisq((EFFECT/STDERR)^2, 1, lower.tail=FALSE)]
-        print.and.log('missing P-values are calculated from STDERR and Beta values!'
+        print_and_log('missing P-values are calculated from STDERR and Beta values!'
                       ,'warning')
       }
       else
       {
-        print.and.log('Define STDERR and Beta columns for calculating missing P-values'
+        print_and_log('Define STDERR and Beta columns for calculating missing P-values'
                       ,'warning')
       }
     }
@@ -314,7 +314,7 @@ man.plot <- function(dataset,
   plot.data <- plot.data[!is.na(CHR) & PVALUE < p.threshold]
 
   ## manhattanPlotFunction.R
-  plot.manhattan(plot.data[,list(CHR,PVALUE,POSITION)], plot.title,plot.subtitle, sig.threshold.log, fileName)
+  plot_manhattan(plot.data[,list(CHR,PVALUE,POSITION)], plot.title,plot.subtitle, sig.threshold.log, fileName)
 
 
 

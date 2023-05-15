@@ -1,4 +1,4 @@
-calculate.pvalue.correlation <- function(input.data) {
+calculate_pvalue_correlation <- function(input.data) {
 
   # if the pvalue coumn is missing , correlation will not be calculated
   if(.QC$thisStudy$missing.PVALUE.column)
@@ -24,7 +24,7 @@ calculate.pvalue.correlation <- function(input.data) {
 
 
 
-calculate.PVALUE <- function(input.data)
+calculate_PVALUE <- function(input.data)
 {
   ## calculate pvalue based on stderr and beta
 
@@ -42,7 +42,7 @@ calculate.PVALUE <- function(input.data)
   if(.QC$thisStudy$missing.PVALUE.column)
   {
     input.data$PVALUE <- input.data$PVALUE.calculated
-    print.and.log('PVALUE column is created and filled from calculated values!','info')
+    print_and_log('PVALUE column is created and filled from calculated values!','info')
   }
 
 
@@ -54,14 +54,14 @@ calculate.PVALUE <- function(input.data)
 
 ## this function is run at the end of algorithm before saving the final file.
 ## because missing pvalues should not be analyzed during QC
-fill.missing.pvalues.from.calculated.pvalues <- function(input.data){
+fill_missing_pvalues_from_calculated_pvalues <- function(input.data){
 
   if(.QC$config$input_parameters$calculate_missing_p){
 
     # check for missing PVALUES and repkkcae the missings
     input.data[is.na(PVALUE),
                PVALUE := PVALUE.calculated]
-    print.and.log('Missing PVALUES replaced according to EFFECT and STDERR values!','info')
+    print_and_log('Missing PVALUES replaced according to EFFECT and STDERR values!','info')
   }
   return(input.data)
 }
@@ -69,7 +69,7 @@ fill.missing.pvalues.from.calculated.pvalues <- function(input.data){
 
 ## correct extreme values
 #this is only done for plottings and does not affect the input data
-correct.extreme.pvalues <- function(input.data){
+correct_extreme_pvalues <- function(input.data){
 
 
   input.data[PVALUE < 10^-300, PVALUE := 10^-300]
@@ -77,7 +77,7 @@ correct.extreme.pvalues <- function(input.data){
   return(input.data)
 }
 
-correct.extreme.calculated.pvalues <- function(input.data){
+correct_extreme_calculated_pvalues <- function(input.data){
 
   input.data[PVALUE.calculated < 10^-300, PVALUE.calculated := 10^-300]
 

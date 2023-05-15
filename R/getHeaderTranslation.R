@@ -8,7 +8,7 @@
 #' @param dir.path Path to the folder for saving a header-translation table file.
 #' @return Copies a sample header-translation table in the specified folder.
 #'
-get.headerTranslation <- function(dir.path)
+get_headerTranslation <- function(dir.path)
 {
   file.name = 'alt_headers.txt'
 

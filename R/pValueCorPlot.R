@@ -1,18 +1,18 @@
-plot.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlotPath,plot.subtitle){
+plot_observedP_vs_expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlotPath,plot.subtitle){
 
 
   study.sample <- input.data[PVALUE < plot_cutoff_p]
 
   if(nrow(study.sample) < 1)
   {
-    print.and.log('No valid P-value below threshold exist. P-value correlation plot skipped!',
+    print_and_log('No valid P-value below threshold exist. P-value correlation plot skipped!',
                   'warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
 
   ## p < 10^-300 => 10^-300
-  study.sample <- correct.extreme.pvalues(study.sample)
-  study.sample <- correct.extreme.calculated.pvalues(study.sample)
+  study.sample <- correct_extreme_pvalues(study.sample)
+  study.sample <- correct_extreme_calculated_pvalues(study.sample)
 
 
 
@@ -71,7 +71,7 @@ plot.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlot
 
 
 
-  print.and.log("P-value correlation plot saved! ",
+  print_and_log("P-value correlation plot saved! ",
                 'info')
 
   #### remove variables from RAM
@@ -80,21 +80,21 @@ plot.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlot
 }
 
 
-plot.observedP.vs.expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlotPath,plot.subtitle){
+plot_observedP_vs_expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlotPath,plot.subtitle){
 
 
   study.sample <- input.data[PVALUE < plot_cutoff_p]
 
   if(nrow(study.sample) < 1)
   {
-    print.and.log('No valid P-value below threshold exist. P-value correlation plot skipped!',
+    print_and_log('No valid P-value below threshold exist. P-value correlation plot skipped!',
                   'warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
 
   ## p < 10^-300 => 10^-300
-  study.sample <- correct.extreme.pvalues(study.sample)
-  study.sample <- correct.extreme.calculated.pvalues(study.sample)
+  study.sample <- correct_extreme_pvalues(study.sample)
+  study.sample <- correct_extreme_calculated_pvalues(study.sample)
 
 
 
@@ -187,7 +187,7 @@ plot.observedP.vs.expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCo
 
 
 
-  print.and.log("P-value correlation plot saved! ",
+  print_and_log("P-value correlation plot saved! ",
                 'info')
 
   #### remove variables from RAM
@@ -196,14 +196,14 @@ plot.observedP.vs.expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCo
 }
 
 
-plotScatterSmooth.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorSmPlotPath,plot.subtitle){
+plotScatterSmooth_observedP_vs_expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorSmPlotPath,plot.subtitle){
 
 
   study.sample <- input.data[PVALUE < plot_cutoff_p]
 
   if(nrow(study.sample) < 1)
   {
-    print.and.log('No valid P-value below threshold exist. P-value correlation plot skipped!',
+    print_and_log('No valid P-value below threshold exist. P-value correlation plot skipped!',
                   'warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
@@ -247,7 +247,7 @@ plotScatterSmooth.observedP.vs.expectedP<-function(input.data,plot_cutoff_p,PVco
 
   dev.off()
 
-  print.and.log("P-value correlation plot saved! ",
+  print_and_log("P-value correlation plot saved! ",
                 'info')
 
 }

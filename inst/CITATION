@@ -1,8 +1,8 @@
-citHeader('To cite package "GWASinspector" in publications use:')
+citHeader('If you use GWASinspector in published research, please cite the following paper:')
 
-citEntry(entry = "Article",
+bibentry(bibtype = "Article",
 title        = "GWASinspector: comprehensive quality control of genome-wide association study results",
-author       = personList(as.person("Alireza Ani"),
+author       = c(as.person("Alireza Ani"),
                  as.person('Peter J van der Most'),
                  as.person("Harold Snieder"),
                  as.person("Ahmad Vaez"),
@@ -10,13 +10,8 @@ author       = personList(as.person("Alireza Ani"),
                  ),
 journal      = "Bioinformatics",
 year         = "2021",
-month        = "01",
-issn         = "1367-4803",
 doi          = "10.1093/bioinformatics/btaa1084",
 url          = "https://doi.org/10.1093/bioinformatics/btaa1084",
-note         = "btaa1084",
-eprint       = "https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btaa1084/35669591/btaa1084.pdf",
-
-textVersion  =
-paste("Ani A, van der Most PJ, Snieder H, Vaez A, Nolte IM. GWASinspector: comprehensive quality control of genome-wide association study results. Bioinformatics. 2021 Jan 8. DOI: 10.1093/bioinformatics/btaa1084")
+textVersion  = "Ani A, van der Most PJ, Snieder H, Vaez A, Nolte IM. GWASinspector: comprehensive quality control of genome-wide association study results. Bioinformatics. 2021 Jan 8. DOI: 10.1093/bioinformatics/btaa1084"
 )
+

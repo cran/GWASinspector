@@ -1,16 +1,16 @@
 #' Runs the QC pipeline on a set of GWAS result files
 #'
 #' This is the main function of the package for running the QC algorithm on a set of GWAS result files.
-#' It requires an object of class \linkS4class{Inspector} which should be created by \code{\link{setup.inspector}}.
+#' It requires an object of class \linkS4class{Inspector} which should be created by \code{\link{setup_inspector}}.
 #' Check the package vignette and tutorial for more details on this topic.
 #'
-#' @param inspector An instance of \linkS4class{Inspector} class. Check \code{\link{setup.inspector}} for more details.
+#' @param inspector An instance of \linkS4class{Inspector} class. Check \code{\link{setup_inspector}} for more details.
 #' @param verbose logical. If FALSE, no messages will show up in the terminal and are only saved in the log file.
 #' @param test.run logical. If TRUE, only the first 1000 lines of each data file are loaded and analyzed;
 #' plots and saving the cleaned output dataset are skipped. Default value is FALSE.
 #' @return Reports from running the algorithm on a single or a series of GWAS result files are generated and saved.
 #'
-run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
+run_inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 {
 
   if(missing(inspector))
@@ -19,7 +19,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   if (!is(inspector, "Inspector"))
     stop("Object must be of class Inspector.", call. = FALSE)
 
-  if(!validate.Inspector(inspector, printWarnings = FALSE))
+  if(!validate_Inspector(inspector, printWarnings = FALSE))
     stop("Function interrupted.", call. = FALSE)
 
 .QC$verbose <- verbose
@@ -41,7 +41,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
   #### get config
   ## TODO create it, not borrow it
-  .QC$config<-make.config(inspector)
+  .QC$config<-make_config(inspector)
 
   start.time <-  proc.time()
   .QC$config$new_items$starttime <- Sys.time()
@@ -66,13 +66,13 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
   log.file.path <- setupLogOptions(.QC$config)
   ##==============
-  print.and.log(sprintf('%s (v.%s) - Inspection started!',.QC$package.name, .QC$script.version),
+  print_and_log(sprintf('%s (v.%s) - Inspection started!',.QC$package.name, .QC$script.version),
                 'info',
                 display=.QC$config$debug$verbose)
 
-  print.and.log(sprintf("Log file saved at \'%s\'",log.file.path))
+  print_and_log(sprintf("Log file saved at \'%s\'",log.file.path))
 
-  check.tools() #suppFunctions.R
+  check_tools() #suppFunctions.R
   .QC$headerKV<-getFileHeaderKV()
 
   ##print and log some config variable
@@ -115,7 +115,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
     .QC$alt.reference.data <- tryCatch(uploadAltReferenceFile(),
                                        error= function(err)
                                        {
-                                         print.and.log(paste('Error loading alternative reference dataset: ',err$message),'warning')
+                                         print_and_log(paste('Error loading alternative reference dataset: ',err$message),'warning')
                                          return(data.table())
                                        }
     )
@@ -125,7 +125,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
     tryCatch(checkAltReferenceFileIntegrity(),
              error= function(err)
              {
-               print.and.log(paste('Error verifying alternative reference dataset: ',err$message),'warning')
+               print_and_log(paste('Error verifying alternative reference dataset: ',err$message),'warning')
                return(data.table(numeric(0)))
              })
   }
@@ -147,7 +147,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
     .QC$reference.data.effect <- tryCatch(uploadBetaReferenceFile(),
                                           error= function(err)
                                           {
-                                            print.and.log(paste('Error loading effect size reference dataset: ',err$message),'warning')
+                                            print_and_log(paste('Error loading effect size reference dataset: ',err$message),'warning')
                                             return(data.table())
                                           }
     )
@@ -158,7 +158,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
     tryCatch(checkBetaReferenceFileIntegrity(),
              error= function(err)
              {
-               print.and.log(paste('Error verifying effect size reference dataset: ',err$message),'warning')
+               print_and_log(paste('Error verifying effect size reference dataset: ',err$message),'warning')
                return(data.table())
              }
     )
@@ -170,17 +170,17 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   if(.QC$verbose)
     cat('\n---------- [analyzing input files] ----------\n', fill = TRUE)
 
-  set.test.run.variables(test.run)
+  set_test_run_variables(test.run)
 
   .QC$qc.study.list <- lapply(inspector@input_files,
-                              create.file.specific.config)
+                              create_file_specific_config)
 
 
   # remove problematic file from list
   .QC$qc.study.list[sapply(.QC$qc.study.list, is.null)] <- NULL
 
   if(length(.QC$qc.study.list) == 0 )
-    print.and.log('All Files Removed From Further Analysis During Header Checking!','fatal')
+    print_and_log('All Files Removed From Further Analysis During Header Checking!','fatal')
 
 
 
@@ -189,26 +189,26 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
   # display study files, missing columns and line number to user
   # ask if algorithm should be done
-  # verify.files.with.user(.QC$qc.study.list)
+  # verify_files_with_user(.QC$qc.study.list)
 
-  print.and.log('\n','info',cat=TRUE)
+  print_and_log('\n','info',cat=TRUE)
 
   ## upload files one by one
   # process and check for missing ...
   # match
   # plot
   ## =====================================
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
 
   .QC$qc.study.list <- lapply(.QC$qc.study.list,
-                              process.each.file)
+                              process_each_file)
 
 
   # remove null files from list
   .QC$qc.study.list[sapply(.QC$qc.study.list, is.null)] <- NULL
 
   if(length(.QC$qc.study.list) == 0 )
-    print.and.log('All Files Removed From Further Analysis During Processing!','fatal')
+    print_and_log('All Files Removed From Further Analysis During Processing!','fatal')
 
 
   .QC$config$new_items$endtime <- Sys.time()
@@ -217,7 +217,7 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   # compare different studies together if there are more than one
   # draw precision , skew-kurt and effect plots
   ## =====================================
-  multi.file.comparison()
+  multi_file_comparison()
 
 
 
@@ -226,10 +226,10 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   ## =====================================
   if(nrow(.QC$alt.reference.data) > 0 & nrow(.QC$alt.reference.data) > alt.reference.data.rowcount)
   {
-    tryCatch(save.alternate.reference(),
+    tryCatch(save_alternate_reference(),
              error= function(err)
              {
-               print.and.log(paste('Error saving alternate reference file: ',err$message),'warning')
+               print_and_log(paste('Error saving alternate reference file: ',err$message),'warning')
              }
     )
 
@@ -258,10 +258,10 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
 
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
   # REPORT html and excel
   ## ==============================================
-  create.report.files()
+  create_report_files()
 
 
   ### post QC processes
@@ -274,10 +274,10 @@ run.inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
 
 
-  #print.and.log(mem_used(),'info',cat= FALSE)
+  #print_and_log(mem_used(),'info',cat= FALSE)
   ## 9- termination functions
-  print.and.log(sprintf('\nFinished analyzing %s files!',length(.QC$qc.study.list)))
-  print.and.log(sprintf("Run time: %s",timetaken(start.time)))# END LOG
+  print_and_log(sprintf('\nFinished analyzing %s files!',length(.QC$qc.study.list)))
+  print_and_log(sprintf("Run time: %s",timetaken(start.time)))# END LOG
 
 
   inspector@StudyList <- .QC$StudyList

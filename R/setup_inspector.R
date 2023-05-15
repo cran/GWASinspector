@@ -1,14 +1,14 @@
 #' Importing a configuration file into R for setting the pipeline parameters
 #'
-#' To run a QC in GWASinspector, copy a template configuration file to your machine using the \code{\link{get.config}} command at first, and edit it to suit your requirements.
-#' Next, use the \code{\link{setup.inspector}} function to check the configuration file and import it into R.
-#' This will create an object of the inspector class, which can then be processed using \code{\link{run.inspector}}.
+#' To run a QC in GWASinspector, copy a template configuration file to your machine using the \code{\link{get_config}} command at first, and edit it to suit your requirements.
+#' Next, use the \code{\link{setup_inspector}} function to check the configuration file and import it into R.
+#' This will create an object of the inspector class, which can then be processed using \code{\link{run_inspector}}.
 #'
-#' @param config.file character. Path to a configuration (.ini) file. For a sample configuration file, see \code{\link{get.config}}.
+#' @param config.file character. Path to a configuration (.ini) file. For a sample configuration file, see \code{\link{get_config}}.
 #' @param validate logical. Whether to validate the object.
 #' @return returns a new instance of \linkS4class{Inspector} class.
 #'
-setup.inspector <- function(config.file , validate = TRUE)
+setup_inspector <- function(config.file , validate = TRUE)
 {
 
 
@@ -96,7 +96,7 @@ setup.inspector <- function(config.file , validate = TRUE)
 
   if(!validate) ## return the object without validating
     return(object)
-  else if(validate.Inspector(object))
+  else if(validate_Inspector(object, printWarnings = TRUE))
     return(object)
 
 }

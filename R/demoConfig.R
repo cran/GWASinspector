@@ -1,4 +1,4 @@
-example.config <- function(result.dir, config)
+example_config <- function(result.dir, config)
 {
   message('This is a demo run for GWASinspector package.')
 
@@ -16,7 +16,7 @@ example.config <- function(result.dir, config)
       dir.create(new.dir)
   }, error = function(err)
   {
-    print.and.log(paste('Could not create output directory', err$message),
+    print_and_log(paste('Could not create output directory', err$message),
                   'fatal')
   })
 

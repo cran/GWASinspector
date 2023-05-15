@@ -1,4 +1,4 @@
-calculate.af.correlation.std_ref <- function(input.data) {
+calculate_af_correlation_std_ref <- function(input.data) {
 
   if('EFF_ALL_FREQ' %notin% colnames(input.data))
     return(NULL)
@@ -42,7 +42,7 @@ calculate.af.correlation.std_ref <- function(input.data) {
 
 }
 
-calculate.af.correlation.alt_ref <- function(input.data) {
+calculate_af_correlation_alt_ref <- function(input.data) {
 
   if('EFF_ALL_FREQ' %notin% colnames(input.data))
     return(NULL)
@@ -86,7 +86,7 @@ calculateSkewness <- function(input.data){
 
 }
 
-calculateSkewness.HQ <- function(input.data){
+calculateSkewness_HQ <- function(input.data){
 
   skewness <- signif(input.data[HQ ==TRUE,
                                 sum( (EFFECT  - mean(EFFECT))^3) / ((length(EFFECT)-1) * sd(EFFECT) ^ 3 )],3)
@@ -111,7 +111,7 @@ calculateKurtosis <- function(input.data){
 
 }
 
-calculateKurtosis.HQ <- function(input.data){
+calculateKurtosis_HQ <- function(input.data){
 
   kurtosis <- signif(input.data[HQ ==TRUE,
                                 sum( (EFFECT  - mean(EFFECT))^4) / ((length(EFFECT)-1) * sd(EFFECT) ^ 4 )],3)
@@ -142,7 +142,7 @@ calculateVischerStats <- function(input.data){
 
 }
 
-calculateVischerStats.HQ <- function(input.data){
+calculateVischerStats_HQ <- function(input.data){
 
   if('EFF_ALL_FREQ' %notin% colnames(input.data))
     return(NULL)

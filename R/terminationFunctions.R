@@ -14,7 +14,7 @@ getDefaultSystemOptions<-function()
 
 removeFunctionVariablesFromRAM<-function(){
 
-  print.and.log('cleaning workspace...','info')
+  print_and_log('cleaning workspace...','info')
 
   if(exists("reference.data",envir = .QC))
     if(is(.QC$reference.data, "SQLiteConnection"))
@@ -35,7 +35,7 @@ removeFunctionVariablesFromRAM<-function(){
  #
  #
  #  if(dev.close.result)
- #    print.and.log('Graphic devices are closed.','info')
+ #    print_and_log('Graphic devices are closed.','info')
 
 
   invisible(gc()) ## Free RAM

@@ -4,24 +4,24 @@ getRSQLiteDatabase <- function(database.path){
     return(DB)
   }
   else{
-    print.and.log(paste('database file not found at:',database.path),'fatal')
+    print_and_log(paste('database file not found at:',database.path),'fatal')
     return(NULL)
   }
 
 }
 
-getRSQLiteDatabase.tableCount <- function(database){
+getRSQLiteDatabase_tableCount <- function(database){
 
   tblCount <- length(RSQLite::dbListTables(database))
 
   if(tblCount > 0)
     return(tblCount)
   else
-    print.and.log('Database is empty!','fatal')
+    print_and_log('Database is empty!','fatal')
 
 }
 
-getRSQLiteDatabase.hasINDEL <- function(database){
+getRSQLiteDatabase_hasINDEL <- function(database){
   # get the first table of database
   tbl <- RSQLite::dbListTables(database)[1]
   # check if it has INDELS
@@ -34,7 +34,7 @@ getRSQLiteDatabase.hasINDEL <- function(database){
 
 }
 
-getRSQLiteDatabase.SubPopulationExists <- function(database){
+getRSQLiteDatabase_SubPopulationExists <- function(database){
 
   population.Column = switch(.QC$config$supplementaryFiles$allele_ref_std_population,
                              'AMR'= 'AMR_AF',
@@ -77,19 +77,19 @@ getRSQLiteDatabase.SubPopulationExists <- function(database){
     available.population <- paste(available.population,collapse = ' | ')
     available.population <- paste('Available population data:' , available.population)
 
-    print.and.log(sprintf('Allele frequency data for \'%s\' population is not found in database! %s',
+    print_and_log(sprintf('Allele frequency data for \'%s\' population is not found in database! %s',
                           .QC$config$supplementaryFiles$allele_ref_std_population,
                           available.population),
                   'fatal')
 
 
-    # print.and.log('COMMON super population code is selected by default.','warning')
+    # print_and_log('COMMON super population code is selected by default.','warning')
     #
     # .QC$config$supplementaryFiles$allele_ref_std_population <- 'AF'
   }
   else
   {
-    print.and.log(sprintf('Allele frequency data for \'%s\' population will be used.',
+    print_and_log(sprintf('Allele frequency data for \'%s\' population will be used.',
                           .QC$config$supplementaryFiles$allele_ref_std_population),
                   'info')
 
@@ -99,7 +99,7 @@ getRSQLiteDatabase.SubPopulationExists <- function(database){
 
 }
 
-getRSQLiteDatabase.tableNames <- function(database)
+getRSQLiteDatabase_tableNames <- function(database)
 {
 
   tableNames <- RSQLite::dbListTables(database)
@@ -111,8 +111,8 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
   if(!is.element('CHR',names(input.data)))
   {
-    print.and.log('CHR column is required for matching with reference database!','warning')
-    print.and.log('input file is ignored!','warning')
+    print_and_log('CHR column is required for matching with reference database!','warning')
+    print_and_log('input file is ignored!','warning')
     return(NULL)
   }
 
@@ -137,7 +137,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
 
   ## merging data
-  if(is.null(data.table::key(input.data)) || data.table::key(input.data) != 'hID')
+  if(is.null(data.table::key(input.data)) || any(data.table::key(input.data) != 'hID'))
     data.table::setkey(input.data,hID)
 
   rs <- data.table::setDT(rs , key = 'hID')
@@ -154,7 +154,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
 
   if(length(dup.allele) > 0)
   {
-    #print.and.log(paste('found duplicates in reference matching :',length(dup.allele)),'warning')
+    #print_and_log(paste('found duplicates in reference matching :',length(dup.allele)),'warning')
     input.data <- input.data[!dup.allele]
   }
 
@@ -187,7 +187,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
   # these are
   # 1- INS or DEL on the same position with different alleles
   # 2- different INDEL types on the same position (INS/DEL)
-  input.data <- save.remove.ambiguous.variants(input.data)
+  input.data <- save_remove_ambiguous_variants(input.data)
 
 
 
@@ -205,7 +205,7 @@ compareInputfileWithReferenceDataBase <- function(input.data)
   if(any(input.data$MULTI_ALLELIC == 1, na.rm = TRUE))
   {
     input.data[MULTI_ALLELIC == 1,
-               c('ALT','AF') := clean.multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
+               c('ALT','AF') := clean_multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
                by = list(EFFECT_ALL , OTHER_ALL,REF, ALT,AF)]
 
     # some multi-allele INDEL AFs are all 0 and will be returned the same way due to missing alleles
@@ -251,23 +251,23 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
   new.hIDs <- unlist(input.data[!is.element(hID , .QC$searched.hIDs),hID])
 
   # search new hIDs
-  rs <- search.database(new.hIDs)
+  rs <- search_database(new.hIDs)
 
   # some information
   # show how many variant information is in memory
-#  print.and.log(paste0('Variant info from previous search: ',nrow(.QC$stored.reference.data)),
+#  print_and_log(paste0('Variant info from previous search: ',nrow(.QC$stored.reference.data)),
 #                'info',
 #                display=.QC$config$debug$verbose)
 #
-#  print.and.log(paste0('Variants searched before: ',length(.QC$searched.hIDs)),
+#  print_and_log(paste0('Variants searched before: ',length(.QC$searched.hIDs)),
 #                'info',
 #                display=.QC$config$debug$verbose)
 #
-#  print.and.log(paste0('Variant not seen before: ',length(new.hIDs)),
+#  print_and_log(paste0('Variant not seen before: ',length(new.hIDs)),
 #                'info',
 #                display=.QC$config$debug$verbose)
 #
-#  print.and.log(paste0('New found variants: ',nrow(rs)),
+#  print_and_log(paste0('New found variants: ',nrow(rs)),
 #                'info',
 #                display=.QC$config$debug$verbose)
   ## ==========
@@ -283,10 +283,10 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
   }
 
   # add key if not existing
-  if(is.null(data.table::key(.QC$stored.reference.data)) || data.table::key(.QC$stored.reference.data) != 'hID')
+  if(is.null(data.table::key(.QC$stored.reference.data)) || any(data.table::key(.QC$stored.reference.data) != 'hID'))
     data.table::setkey(.QC$stored.reference.data , hID)
 
-  if(is.null(data.table::key(input.data)) || data.table::key(input.data) != 'hID')
+  if(is.null(data.table::key(input.data)) || any(data.table::key(input.data) != 'hID'))
     data.table::setkey(input.data , hID)
 
 
@@ -298,7 +298,7 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
 
   if(length(dup.allele) > 0)
   {
-    #print.and.log(paste('found duplicates in reference matching :',length(dup.allele)),'warning')
+    #print_and_log(paste('found duplicates in reference matching :',length(dup.allele)),'warning')
     input.data <- input.data[!dup.allele]
   }
 
@@ -322,7 +322,7 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
   # these are
   # 1- INS or DEL on the same position with different alleles
   # 2- different INDEL types on the same position (INS/DEL)
-  input.data <- save.remove.ambiguous.variants(input.data)
+  input.data <- save_remove_ambiguous_variants(input.data)
 
 
 
@@ -340,7 +340,7 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
   if(any(input.data$MULTI_ALLELIC == 1, na.rm = TRUE))
   {
     input.data[MULTI_ALLELIC == 1,
-               c('ALT','AF') := clean.multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
+               c('ALT','AF') := clean_multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
                by = list(EFFECT_ALL , OTHER_ALL,REF, ALT,AF)]
 
     # some multi-allele INDEL AFs are all 0 and will be returned the same way due to missing alleles
@@ -381,7 +381,7 @@ compareInputfileWithStoredReferenceFile <- function(input.data)
 }
 
 
-search.database <- function(variantIDs)
+search_database <- function(variantIDs)
 {
 
   if(.QC$config$output_parameters$add_column_rsid &&  ## get REF_RSID if user has selected in config file
@@ -408,7 +408,7 @@ search.database <- function(variantIDs)
 
 
 
-merge.rs <- function(id,rs)
+merge_rs <- function(id,rs)
 {
   # var <- rs[fmatch(id,rs$hID),]
   # return(list(var$REF,var$ALT,var$AF))

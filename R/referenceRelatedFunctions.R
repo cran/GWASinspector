@@ -17,15 +17,15 @@ uploadReferenceFile<-function()
     allele_ref_stdDB <- getRSQLiteDatabase(referenceFile)
 
     # check if database has tables - break the process if table count == 0
-    allele_ref_stdDB_table <- getRSQLiteDatabase.tableCount(allele_ref_stdDB)
+    allele_ref_stdDB_table <- getRSQLiteDatabase_tableCount(allele_ref_stdDB)
 
     # check if selected subpopulation exists in DB
-    getRSQLiteDatabase.SubPopulationExists(allele_ref_stdDB)
+    getRSQLiteDatabase_SubPopulationExists(allele_ref_stdDB)
 
     # check if table has INDEL variants or not
-   # .QC$reference.data.has.INDEL <- getRSQLiteDatabase.hasINDEL(allele_ref_stdDB)
+   # .QC$reference.data.has.INDEL <- getRSQLiteDatabase_hasINDEL(allele_ref_stdDB)
 
-    print.and.log(sprintf("Reference database found at \'%s\' : including %s tables!",
+    print_and_log(sprintf("Reference database found at \'%s\' : including %s tables!",
                           referenceFile,allele_ref_stdDB_table),
                   'info')
 
@@ -55,8 +55,8 @@ uploadReferenceFile<-function()
   if(!is.data.table(allele_ref_std))
     allele_ref_std<-as.data.table(allele_ref_std)
 
-  print.and.log(sprintf("Reference file \'%s\' loaded (%s x %s)!",
-                        referenceFile,thousand.sep(nrow(allele_ref_std)),ncol(allele_ref_std)),
+  print_and_log(sprintf("Reference file \'%s\' loaded (%s x %s)!",
+                        referenceFile,thousand_sep(nrow(allele_ref_std)),ncol(allele_ref_std)),
                 'info')
 
   return(allele_ref_std)
@@ -85,7 +85,7 @@ checkReferenceFileIntegrity <- function() {
   missing.ref.col.index <- which(required.ref.col.names %notin% ref.col.names)
 
   if(length(missing.ref.col.index) > 0)
-    print.and.log(sprintf('Missing crucial column in reference file : \'%s\' !',
+    print_and_log(sprintf('Missing crucial column in reference file : \'%s\' !',
                           paste(required.ref.col.names[missing.ref.col.index],collapse = '|')),
                   'fatal')
   else
@@ -114,7 +114,7 @@ checkReferenceFileIntegrity <- function() {
     #   .QC$reference.data.has.INDEL <- TRUE
 
 
-    print.and.log('Reference file validated!',
+    print_and_log('Reference file validated!',
                   'info')
   }
 }

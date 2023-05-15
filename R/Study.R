@@ -1,4 +1,4 @@
-create.Study <- function(study)
+create_Study <- function(study)
 {
 
   object <- new(

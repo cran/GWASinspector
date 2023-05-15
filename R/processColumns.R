@@ -19,7 +19,7 @@
 
 
 ##CHR column should be as character type
-process.column.CHR <- function(input.data){
+process_column_CHR <- function(input.data){
 
   .QC$thisStudy$character.chromosome <- FALSE
 
@@ -59,7 +59,7 @@ process.column.CHR <- function(input.data){
 }
 
 ## convert chromosomes from numeric to character
-deconvert.column.CHR <- function(input.data){
+deconvert_column_CHR <- function(input.data){
 
   if(!is.character(input.data$CHR))
     input.data[,CHR := as.character(CHR)]
@@ -74,7 +74,7 @@ deconvert.column.CHR <- function(input.data){
 }
 
 ##########
-process.column.EFFECT_ALL<- function(input.data){
+process_column_EFFECT_ALL<- function(input.data){
 
   ## convert empty strings to NA
   input.data[trimws(EFFECT_ALL) == '' , EFFECT_ALL := NA]
@@ -93,14 +93,14 @@ process.column.EFFECT_ALL<- function(input.data){
   if(any(is.element(input.data$EFFECT_ALL,c('D','I','R'))))
   {
     .QC$thisStudy$hanNoneBaseAlleles <- TRUE
-    print.and.log('File uses non-standard characters for alleles!','warning',display=.QC$config$debug$verbose)
+    print_and_log('File uses non-standard characters for alleles!','warning',display=.QC$config$debug$verbose)
   }
 
   return(input.data)
 }
 
 ##########
-process.column.OTHER_ALL<- function(input.data){
+process_column_OTHER_ALL<- function(input.data){
 
   ## convert empty strings to NA
   input.data[trimws(OTHER_ALL) == '' , OTHER_ALL := NA]
@@ -121,7 +121,7 @@ process.column.OTHER_ALL<- function(input.data){
 
 ##########
 
-process.column.BOTH_ALL <- function(input.data) {
+process_column_BOTH_ALL <- function(input.data) {
 
   invalid.items <- which(nchar(input.data$OTHER_ALL) > 1 & nchar(input.data$EFFECT_ALL) > 1)
 
@@ -139,8 +139,8 @@ process.column.BOTH_ALL <- function(input.data) {
                   ordered = .QC$config$output_parameters$ordered)
 
 
-    print.and.log(sprintf('%s variants with conflicting alleles were found.',
-                          thousand.sep(length(invalid.items))),
+    print_and_log(sprintf('%s variants with conflicting alleles were found.',
+                          thousand_sep(length(invalid.items))),
                   'warning',
                   display=.QC$config$debug$verbose)
 
@@ -151,7 +151,7 @@ process.column.BOTH_ALL <- function(input.data) {
 }
 
 ##########
-process.column.IMPUTED<- function(input.data){
+process_column_IMPUTED<- function(input.data){
   config <- .QC$config
   # FIXME check if convert to uppercase is required for as.logical function
   # FIXME TRUE FALSE or 0 1
@@ -204,7 +204,7 @@ process.column.IMPUTED<- function(input.data){
 
 
 ##########
-process.column.STRAND<- function(input.data){
+process_column_STRAND<- function(input.data){
 
   input.data<-switchNegativeStrandsToPositive(input.data) ## variantModifierFUnction.R
 
@@ -227,7 +227,7 @@ process.column.STRAND<- function(input.data){
 
 
 ##########
-process.column.POSITION<- function(input.data){
+process_column_POSITION<- function(input.data){
   if(!is.numeric(input.data$POSITION))
     input.data[,POSITION := as.numeric(POSITION)]
 
@@ -249,7 +249,7 @@ process.column.POSITION<- function(input.data){
 }
 
 ##########
-process.column.EFFECT<- function(input.data){
+process_column_EFFECT<- function(input.data){
 
   # ==== convert Beta to OR
   # odds_ratio = exp(Beta)
@@ -278,7 +278,7 @@ process.column.EFFECT<- function(input.data){
 
       if(length(infinite.ORs) > 0)
       {
-        print.and.log(paste0('variants with Infinite OR value are removed from input file: ',length(infinite.ORs)),'warning',display=.QC$config$debug$verbose)
+        print_and_log(paste0('variants with Infinite OR value are removed from input file: ',length(infinite.ORs)),'warning',display=.QC$config$debug$verbose)
         input.data[is.infinite(EFFECT), EFFECT := NA]
         # input.data <- input.data[!infinite.ORs,]
       }
@@ -309,7 +309,7 @@ process.column.EFFECT<- function(input.data){
 }
 
 ##########
-process.column.STDERR<- function(input.data){
+process_column_STDERR<- function(input.data){
   if(!is.numeric(input.data$STDERR))
     input.data[,STDERR := as.numeric(STDERR)]
   #input.data$STDERR<-as.numeric(input.data$STDERR)
@@ -340,7 +340,7 @@ process.column.STDERR<- function(input.data){
 
 
 ##########
-process.column.PVALUE<- function(input.data){
+process_column_PVALUE<- function(input.data){
   if(!is.numeric(input.data$PVALUE))
     input.data[,PVALUE := as.numeric(PVALUE)]
   # input.data$PVALUE<-as.numeric(input.data$PVALUE)
@@ -369,7 +369,7 @@ process.column.PVALUE<- function(input.data){
 }
 
 ##########
-process.column.EFF_ALL_FREQ<- function(input.data){
+process_column_EFF_ALL_FREQ<- function(input.data){
   if(!is.numeric(input.data$EFF_ALL_FREQ))
     input.data[,EFF_ALL_FREQ := as.numeric(EFF_ALL_FREQ)]
   #input.data$EFF_ALL_FREQ<-as.numeric(input.data$EFF_ALL_FREQ)
@@ -405,7 +405,7 @@ process.column.EFF_ALL_FREQ<- function(input.data){
 }
 
 ##########
-process.column.HWE_PVAL<- function(input.data){
+process_column_HWE_PVAL<- function(input.data){
   if(!is.numeric(input.data$HWE_PVAL))
     input.data[,HWE_PVAL := as.numeric(HWE_PVAL)]
   #input.data$HWE_PVAL<-as.numeric(input.data$HWE_PVAL)
@@ -447,7 +447,7 @@ process.column.HWE_PVAL<- function(input.data){
 }
 
 ##########
-process.column.IMP_QUALITY<- function(input.data){
+process_column_IMP_QUALITY<- function(input.data){
   config <- .QC$config
 
   if(!is.numeric(input.data$IMP_QUALITY))
@@ -483,7 +483,7 @@ process.column.IMP_QUALITY<- function(input.data){
 }
 
 ##########
-process.column.CALLRATE<- function(input.data){
+process_column_CALLRATE<- function(input.data){
   if(!is.numeric(input.data$CALLRATE))
     input.data[,CALLRATE := as.numeric(CALLRATE)]
   #input.data$CALLRATE<-as.numeric(input.data$CALLRATE)
@@ -524,7 +524,7 @@ process.column.CALLRATE<- function(input.data){
 
 ##########
 
-process.column.N_CASES<- function(input.data){
+process_column_N_CASES<- function(input.data){
 
   if(!is.numeric(input.data$N_CASES))
     input.data[,N_CASES := as.numeric(N_CASES)]
@@ -533,14 +533,14 @@ process.column.N_CASES<- function(input.data){
 
   if(.QC$thisStudy$MAX_N_CASES == Inf | .QC$thisStudy$MAX_N_CASES == -Inf)
   {
-    print.and.log('Maximum of N_CASES was Inf and was converted to NA!',
+    print_and_log('Maximum of N_CASES was Inf and was converted to NA!',
                   'warning',
                   display=.QC$config$debug$verbose)
     .QC$thisStudy$MAX_N_CASES = NA
   }
   else if(.QC$thisStudy$MAX_N_CASES %% 1 != 0) # round the value if it has decimal points
   {
-    print.and.log(sprintf("%s %s ==> %s",
+    print_and_log(sprintf("%s %s ==> %s",
                           'Maximum of N_CASES had decimal point and was rounded!',
                           .QC$thisStudy$MAX_N_CASES,
                           round(.QC$thisStudy$MAX_N_CASES ,digits = 0)),
@@ -552,7 +552,7 @@ process.column.N_CASES<- function(input.data){
 
   # Fixed sample size
   if(length(unique(input.data$N_CASES)) == 1)
-    print.and.log(sprintf("%s %s",
+    print_and_log(sprintf("%s %s",
                           'N_CASES is fixed!',
                           input.data[1]$N_CASES),
                   'warning',display=.QC$config$debug$verbose)
@@ -561,7 +561,7 @@ process.column.N_CASES<- function(input.data){
 
 ########################################
 
-process.column.N_TOTAL<- function(input.data){
+process_column_N_TOTAL<- function(input.data){
   if(!is.numeric(input.data$N_TOTAL))
     input.data[,N_TOTAL := as.numeric(N_TOTAL)]
   #input.data$N_TOTAL<-as.numeric(input.data$N_TOTAL)
@@ -584,7 +584,7 @@ process.column.N_TOTAL<- function(input.data){
 
   if(.QC$thisStudy$MAX_N_TOTAL == Inf | .QC$thisStudy$MAX_N_TOTAL == -Inf)
   {
-    print.and.log(sprintf("%s %s %s",
+    print_and_log(sprintf("%s %s %s",
                           'Maximum of N_TOTAL was ', .QC$thisStudy$MAX_N_TOTAL,' and was converted to NA!'),
                   'warning',
                   display=.QC$config$debug$verbose)
@@ -593,7 +593,7 @@ process.column.N_TOTAL<- function(input.data){
   }
   else if(.QC$thisStudy$MAX_N_TOTAL %% 1 != 0) # round the value if it has decimal points
   {
-    print.and.log(sprintf("%s %s ==> %s",
+    print_and_log(sprintf("%s %s ==> %s",
                           'Maximum of N_TOTAL had decimal point and was rounded!',
                           .QC$thisStudy$MAX_N_TOTAL,
                           round(.QC$thisStudy$MAX_N_TOTAL ,digits = 0)),
@@ -614,7 +614,7 @@ process.column.N_TOTAL<- function(input.data){
 }
 
 
-process.column.MARKER<- function(input.data){
+process_column_MARKER<- function(input.data){
 
   ## FIXME nothing set for invalid marker
   .QC$thisStudy$column.INVALID.list$MARKER <- numeric(0L)

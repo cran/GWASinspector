@@ -1,7 +1,7 @@
-plot.DataMAF.vs.RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,AFcor.INDEL,plot.title.text)
+plot_DataMAF_vs_RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,AFcor.INDEL,plot.title.text)
 {
   if(!is.numeric(AFcor) || !is.numeric(AFcor.palindromic)){
-    print.and.log('Allele frequency plot is skipped!','warning',display=.QC$config$debug$verbose)
+    print_and_log('Allele frequency plot is skipped!','warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
 
@@ -271,10 +271,10 @@ plot.DataMAF.vs.RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,
 
 
   #### write log ####
-  print.and.log(paste('AF correlation plot nodes (all):', nrow(all.alleles)),'info',display=.QC$config$debug$verbose)
-  print.and.log(paste('AF correlation plot nodes (ambiguous) :', nrow(amb.alleles)),'info',display=.QC$config$debug$verbose)
+  print_and_log(paste('AF correlation plot nodes (all):', nrow(all.alleles)),'info',display=.QC$config$debug$verbose)
+  print_and_log(paste('AF correlation plot nodes (ambiguous) :', nrow(amb.alleles)),'info',display=.QC$config$debug$verbose)
 
-  print.and.log(sprintf("Allele frequency correlation plot saved!"),
+  print_and_log(sprintf("Allele frequency correlation plot saved!"),
                 'info')
 
 
@@ -291,10 +291,10 @@ plot.DataMAF.vs.RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,
 
 }
 
-plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,AFcor.palindromic,AFcor.INDEL,plot.title.text)
+plotScatterSmooth_DataMAF_vs_RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,AFcor.palindromic,AFcor.INDEL,plot.title.text)
 {
   if(!is.numeric(AFcor) || !is.numeric(AFcor.palindromic)){
-    print.and.log('Allele frequency plot is skipped!','warning',display=.QC$config$debug$verbose)
+    print_and_log('Allele frequency plot is skipped!','warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
 
@@ -495,7 +495,7 @@ plotScatterSmooth.DataMAF.vs.RefMAF<-function(input.data,stdMafSmPlotPath,AFcor,
   dev.off()
 
 
-  print.and.log(sprintf("Allele frequency correlation plot saved!"),
+  print_and_log(sprintf("Allele frequency correlation plot saved!"),
                 'info')
 
 

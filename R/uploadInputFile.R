@@ -29,7 +29,7 @@ uploadInputFile<-function()
   read.method <- 'fread'
 
   ###
-  print.and.log(sprintf("Loading Study file : '%s'",file.path),
+  print_and_log(sprintf("Loading Study file : '%s'",file.path),
                 'info')
 
   if(file.extension == "zip")
@@ -89,7 +89,7 @@ uploadInputFile<-function()
         input.data
       }
       ,error=function(err) {
-        print.and.log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
+        print_and_log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
         return(NULL)
       }
     )
@@ -148,7 +148,7 @@ uploadInputFile<-function()
   #       input.data
   #     }
   #     ,error=function(err) {
-  #       print.and.log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
+  #       print_and_log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
   #       return(NULL)
   #     }
   #   )
@@ -176,7 +176,7 @@ uploadInputFile<-function()
       }
       ,
       error=function(err)  {
-        print.and.log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
+        print_and_log(sprintf('Error found in input file - switching to method #2! %s',err$message),'warning',display=.QC$config$debug$verbose)
 
 return(NULL)
 
@@ -223,7 +223,7 @@ return(NULL)
         input.data
       },
       error=function(err) {
-        print.and.log(sprintf('ignoring input file',err$message),'warning')
+        print_and_log(sprintf('ignoring input file',err$message),'warning')
         return(NULL)
       }
     )
@@ -247,7 +247,7 @@ return(NULL)
 
   if(ncol(input.data) != length(study$renamed.File.Columns.sorted))
   {
-    print.and.log('Error in file name column names! column name can not be empty.','warning')
+    print_and_log('Error in file name column names! column name can not be empty.','warning')
     return(NULL)
   }
 
@@ -264,27 +264,27 @@ return(NULL)
   if(nrow(input.data) > 0)
   {
     dims <- dim(input.data)
-    print.and.log(sprintf('Input file loaded (%s x %s)!',thousand.sep(dims[1]),dims[2]),'info')
+    print_and_log(sprintf('Input file loaded (%s x %s)!',thousand_sep(dims[1]),dims[2]),'info')
   }
   else{
-    print.and.log('Empty input data! file is ignored.','warning')
+    print_and_log('Empty input data! file is ignored.','warning')
     return(NULL)
   }
 
 
   # get some information before anything changes
-  input.data <- input.data.preAnalysis.report(input.data)
+  input.data <- input_data_preAnalysis_report(input.data)
 
 
   ### do some simple processings, like toupper(),...
-  input.data = input.data.preprocessing(input.data)
+  input.data = input_data_preprocessing(input.data)
   # input.data <- input.data
-  print.and.log(paste(read.method, 'was used for reading this file.'),'info' , display=.QC$config$debug$verbose)
+  print_and_log(paste(read.method, 'was used for reading this file.'),'info' , display=.QC$config$debug$verbose)
 
   return(input.data)
 }
 
-input.data.preprocessing <- function(input.data) {
+input_data_preprocessing <- function(input.data) {
 
 
   input.data[, EFFECT_ALL := toupper(EFFECT_ALL)]
@@ -298,14 +298,14 @@ input.data.preprocessing <- function(input.data) {
 }
 
 
-input.data.preAnalysis.report <- function(input.data)
+input_data_preAnalysis_report <- function(input.data)
 {
 
   if('CHR' %in% names(input.data))
   {
 
-    print.and.log('Variants distribution on each chromosome in input file...','info',display=.QC$config$debug$verbose)
-    print.and.log(kable(input.data[, .N ,by=CHR][order(as.numeric(CHR))],format = "rst"),
+    print_and_log('Variants distribution on each chromosome in input file...','info',display=.QC$config$debug$verbose)
+    print_and_log(kable(input.data[, .N ,by=CHR][order(as.numeric(CHR))],format = "rst"),
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)
@@ -319,8 +319,8 @@ input.data.preAnalysis.report <- function(input.data)
 
     tbl <- input.data[, .N ,keyby=IMPUTED]
 
-    print.and.log('Imputation distribution in input file...','info',display=.QC$config$debug$verbose)
-    print.and.log(kable(tbl,format = "rst"),
+    print_and_log('Imputation distribution in input file...','info',display=.QC$config$debug$verbose)
+    print_and_log(kable(tbl,format = "rst"),
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)

@@ -51,7 +51,7 @@ processInputFile <- function(input.data) {
 
   input.data <- tryCatch(processCrucialColumns(input.data), #is in this file
                          error = function(err) {
-                           print.and.log(paste('Error in processing crucial columns:' , err$message), 'warning')
+                           print_and_log(paste('Error in processing crucial columns:' , err$message), 'warning')
                            return(NULL)
                          }
   )
@@ -63,9 +63,9 @@ processInputFile <- function(input.data) {
   ## data is removed from dataset
   ## [filename_output]_SNPs_removed.txt
 
-  input.data <-tryCatch(save.and.remove.unusable.variants(input.data,input.data.backup), #saveFileFunctions.R
+  input.data <-tryCatch(save_and_remove_unusable_variants(input.data,input.data.backup), #saveFileFunctions.R
                         error = function(err) {
-                          print.and.log(paste('Error in removing crucial columns:' , err$message), 'warning')
+                          print_and_log(paste('Error in removing crucial columns:' , err$message), 'warning')
                           return(NULL)
                         }
   )
@@ -76,7 +76,7 @@ processInputFile <- function(input.data) {
   # remove duplicate Marker names and save as separate file
   input.data <- tryCatch(removeDuplicateVariants(input.data),
                          error = function(err) {
-                           print.and.log(paste('Error in processing duplicated columns:' , err$message), 'warning')
+                           print_and_log(paste('Error in processing duplicated columns:' , err$message), 'warning')
                            return(NULL)
                          }
   )
@@ -93,7 +93,7 @@ processInputFile <- function(input.data) {
 
   if(remaining.rows == 0)
   {
-    print.and.log('ALL ROWS WERE DELETED WHILE CHECKING CRUCIAL VAIRABLES! CHECK INPUT FILE FOR DATA INTEGRITY!',
+    print_and_log('ALL ROWS WERE DELETED WHILE CHECKING CRUCIAL VAIRABLES! CHECK INPUT FILE FOR DATA INTEGRITY!',
                   'warning')
     return(NULL)
   }
@@ -113,7 +113,7 @@ processInputFile <- function(input.data) {
 
   input.data <- tryCatch(processNonCrucialColumns(input.data),
                          error = function(err) {
-                           print.and.log(paste('Error in processing non-crucial columns:' , err$message), 'warning')
+                           print_and_log(paste('Error in processing non-crucial columns:' , err$message), 'warning')
                            return(NULL)
                          }
   )
@@ -125,7 +125,7 @@ processInputFile <- function(input.data) {
   #### step 5: saving imrprobable datas [SNPs are NOT removed from dataset]
   ## invalid values in non-crucial variables ---- [filename]_SNPs_improbable_values.txt
 
-  save.NA.Dataset(input.data , input.data.backup)
+  save_NA_Dataset(input.data , input.data.backup)
 
   rm(input.data.backup) # file is saved and no need for this variable anymore
   invisible(gc())
@@ -136,7 +136,7 @@ processInputFile <- function(input.data) {
 
   input.data<-tryCatch(removeMonomorphicVariants(input.data), ## variantModifierFUnction.R
                        error = function(err) {
-                         print.and.log(paste('Error in processing monomorphic columns:' , err$message), 'warning')
+                         print_and_log(paste('Error in processing monomorphic columns:' , err$message), 'warning')
                          return(NULL)
                        }
   )
@@ -151,8 +151,8 @@ processInputFile <- function(input.data) {
   input.data <- tryCatch(variantDiscrimination(input.data),
                          error = function(err) {
                            # all variants are set as SNP if there was an error in  this phase
-                           print.and.log(paste('Error in discriminating variant types:' , err$message), 'warning')
-                           print.and.log('All variants are set as SNP.', 'warning')
+                           print_and_log(paste('Error in discriminating variant types:' , err$message), 'warning')
+                           print_and_log('All variants are set as SNP.', 'warning')
                            input.data[, VT := 1]
                            return(input.data)
                          }
@@ -162,7 +162,7 @@ processInputFile <- function(input.data) {
   ## remove chormosomal snps based on user input
   input.data<-tryCatch(removeChromosomeVariants(input.data), # variantModifierFUnctions.R
                        error = function(err) {
-                         print.and.log(paste('Error in processing chromosal variants:' , err$message), 'warning')
+                         print_and_log(paste('Error in processing chromosal variants:' , err$message), 'warning')
                          return(NULL)
                        }
   )
@@ -177,7 +177,7 @@ processInputFile <- function(input.data) {
 
   if(remaining.rows == 0)
   {
-    print.and.log('ALL ROWS WERE DELETED IN STEP2! CHECK INPUT FILE FOR DATA INTEGRITY!',
+    print_and_log('ALL ROWS WERE DELETED IN STEP2! CHECK INPUT FILE FOR DATA INTEGRITY!',
                   'warning')
     return(NULL)
   }
@@ -199,89 +199,89 @@ processNonCrucialColumns <- function(input.data) {
 
   # THIS HAS BECOME A CRUCIAL COLUMN FOR hID
   # if('CHR' %in% column.names)
-  #   input.data <- tryCatch(process.column.CHR(input.data),
+  #   input.data <- tryCatch(process_column_CHR(input.data),
   #                          error = function(err) {
-  #                            print.and.log(paste('Error in processing CHR:' , err$message), 'warning')
+  #                            print_and_log(paste('Error in processing CHR:' , err$message), 'warning')
   #                            return(NULL)
   #                          }
   #   )
 
 
   if('IMPUTED' %in% column.names)
-    input.data <- tryCatch(process.column.IMPUTED(input.data),
+    input.data <- tryCatch(process_column_IMPUTED(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing IMPUTED:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing IMPUTED:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('MARKER' %in% column.names)
-    input.data <- tryCatch(process.column.MARKER(input.data),
+    input.data <- tryCatch(process_column_MARKER(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing MARKER:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing MARKER:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
 
   if('STRAND' %in% column.names)
-    input.data <- tryCatch(process.column.STRAND(input.data),
+    input.data <- tryCatch(process_column_STRAND(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing STRAND:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing STRAND:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('PVALUE' %in% column.names)
-    input.data <- tryCatch(process.column.PVALUE(input.data),
+    input.data <- tryCatch(process_column_PVALUE(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing PVALUE:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing PVALUE:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('EFF_ALL_FREQ' %in% column.names)
-    input.data <- tryCatch(process.column.EFF_ALL_FREQ(input.data),
+    input.data <- tryCatch(process_column_EFF_ALL_FREQ(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing EFF_ALL_FREQ:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing EFF_ALL_FREQ:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('HWE_PVAL' %in% column.names)
-    input.data <- tryCatch(process.column.HWE_PVAL(input.data),
+    input.data <- tryCatch(process_column_HWE_PVAL(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing HWE_PVAL:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing HWE_PVAL:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('IMP_QUALITY' %in% column.names)
-    input.data <- tryCatch(process.column.IMP_QUALITY(input.data),
+    input.data <- tryCatch(process_column_IMP_QUALITY(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing IMP_QUALITY:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing IMP_QUALITY:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('CALLRATE' %in% column.names)
-    input.data <- tryCatch(process.column.CALLRATE(input.data),
+    input.data <- tryCatch(process_column_CALLRATE(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing CALLRATE:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing CALLRATE:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('N_TOTAL' %in% column.names)
-    input.data <- tryCatch(process.column.N_TOTAL(input.data),
+    input.data <- tryCatch(process_column_N_TOTAL(input.data),
                            error = function(err) {
-                             print.and.log(paste('Error in processing N_TOTAL:' , err$message), 'warning')
+                             print_and_log(paste('Error in processing N_TOTAL:' , err$message), 'warning')
                              return(NULL)
                            }
     )
 
   if('N_CASES' %in% column.names)
-    process.column.N_CASES(input.data)
+    process_column_N_CASES(input.data)
 
 
   return(input.data)
@@ -290,13 +290,13 @@ processNonCrucialColumns <- function(input.data) {
 
 processCrucialColumns <- function(input.data) {
 
-  input.data <- process.column.EFFECT_ALL(input.data)
-  input.data <- process.column.OTHER_ALL(input.data)
-  input.data <- process.column.EFFECT(input.data)
-  input.data <- process.column.STDERR(input.data)
- # input.data <- process.column.MARKER(input.data)
-  input.data <- process.column.CHR(input.data)
-  input.data <- process.column.POSITION(input.data)
+  input.data <- process_column_EFFECT_ALL(input.data)
+  input.data <- process_column_OTHER_ALL(input.data)
+  input.data <- process_column_EFFECT(input.data)
+  input.data <- process_column_STDERR(input.data)
+ # input.data <- process_column_MARKER(input.data)
+  input.data <- process_column_CHR(input.data)
+  input.data <- process_column_POSITION(input.data)
 
   return (input.data)
 }
@@ -319,7 +319,7 @@ variantDiscrimination <- function(input.data) {
   # check if reference data has INDEL values
 
   # if(.QC$thisStudy$hasINDEL & !.QC$reference.data.has.INDEL)
-  #   print.and.log('Input file has INDEL variants but Reference dataset does not include any!','warning')
+  #   print_and_log('Input file has INDEL variants but Reference dataset does not include any!','warning')
 
 
   if('CHR' %in% names(input.data)) # if chr column exists
@@ -340,12 +340,12 @@ add_hIDcolumn <- function(input.data, data.file = TRUE){
 
   if('CHR' %notin% names(input.data)){ # can not make hID if there is not a chr column
 
-    print.and.log('CHR column is missing! variant matching will be done by rsID.','warning')
+    print_and_log('CHR column is missing! variant matching will be done by rsID.','warning')
 
   }
   else if(is.element('hID', names(input.data))){ # do not make hid if already exists in file
 
-    print.and.log('hID column already existed in input file and was not generated!','warning')
+    print_and_log('hID column already existed in input file and was not generated!','warning')
 
     if(data.file)
       .QC$thisStudy$hID.added <- TRUE

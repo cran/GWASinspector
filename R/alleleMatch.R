@@ -1,5 +1,5 @@
 
-switch.flip.variant <- function(matched.data){
+switch_flip_variant <- function(matched.data){
   # switched variants should be :
   # only snp alleles are switched
   # matched.data[VT == 1 & switch == TRUE, `:=` (EFFECT_ALL = ALT ,
@@ -56,7 +56,7 @@ removeDuplicatedINDELs <- function(matched.data)
   matched.data
 }
 
-process.matched.data <- function(matched.data) {
+process_matched_data <- function(matched.data) {
 
   # remove duplicated INDELs
   matched.data <- removeDuplicatedINDELs(matched.data)
@@ -65,24 +65,24 @@ process.matched.data <- function(matched.data) {
   reportAlleleMatchStat(matched.data)
 
   # remove mismatches from dataset
-  matched.data <- save.remove.mismatch.Variants(matched.data)
+  matched.data <- save_remove_mismatch_Variants(matched.data)
 
 
   if(nrow(matched.data) == 0)
   {
-    print.and.log('ALL ROWS WERE DELETED AFTER ALLELE MATCHING! CHECK INPUT FILE FOR DATA INTEGRITY (step 3)!',
+    print_and_log('ALL ROWS WERE DELETED AFTER ALLELE MATCHING! CHECK INPUT FILE FOR DATA INTEGRITY (step 3)!',
                   'warning')
 
     return(NULL)
   }
 
-  variable.statistics.pre.matching(matched.data)
+  variable_statistics_pre_matching(matched.data)
 
   # only for debugging purposes
   # checks for .QC$config$debug$save_pre_modification_file == TRUE
-  save.pre_modification.file(matched.data)
+  save_pre_modification_file(matched.data)
 
-  matched.data <- switch.flip.variant(matched.data)
+  matched.data <- switch_flip_variant(matched.data)
 
   # remove duplicate Marker names and save as separate file after matching with reference dataset
   # this is the second duplicated variant check
@@ -91,7 +91,7 @@ process.matched.data <- function(matched.data) {
 
   if(nrow(matched.data) == 0)
   {
-    print.and.log('ALL ROWS WERE DELETED AFTER POST VARIANT MATCHING DUPLICATE CHECKING (step 3)!',
+    print_and_log('ALL ROWS WERE DELETED AFTER POST VARIANT MATCHING DUPLICATE CHECKING (step 3)!',
                   'warning')
 
     return(NULL)
@@ -99,10 +99,10 @@ process.matched.data <- function(matched.data) {
 
   .QC$thisStudy$rowcount.step3 <- nrow(matched.data)
 
-  variable.statistics.post.matching(matched.data)
+  variable_statistics_post_matching(matched.data)
 
   #report variables with highDIff
-  check.diffEAF(matched.data)
+  check_diffEAF(matched.data)
 
   return(matched.data)
 }
@@ -147,7 +147,7 @@ reportAlleleMatchStat <- function(matched.data) {
 }
 
 
-check.diffEAF <- function(input.data) {
+check_diffEAF <- function(input.data) {
   study <- .QC$thisStudy
 
 
@@ -189,7 +189,7 @@ check.diffEAF <- function(input.data) {
 }
 
 
-save.remove.mismatch.Variants <- function(input.data) {
+save_remove_mismatch_Variants <- function(input.data) {
 
   # remove multi allelic variants
   # variants that are found in database but cannot be matched due to many variants on the same positions
@@ -199,7 +199,7 @@ save.remove.mismatch.Variants <- function(input.data) {
   {
     multiAllelic.data <- subset(input.data[head(multiAllelic.rows,100),] ,
                                 select = .QC$thisStudy$renamed.File.Columns.sorted)
-    print.and.log(sprintf("%s multi allelic variants removed from dataset (step 3)!",length(multiAllelic.rows)),
+    print_and_log(sprintf("%s multi allelic variants removed from dataset (step 3)!",length(multiAllelic.rows)),
                   'warning',display=.QC$config$debug$verbose)
     saveDataSet(multiAllelic.data,
                 .QC$thisStudy$SNPs_multi_allelic.path,
@@ -224,7 +224,7 @@ save.remove.mismatch.Variants <- function(input.data) {
   if(length(mismatched.rows) >0){
     mismatched.data <- subset(input.data[head(mismatched.rows,100),] ,
                               select = .QC$thisStudy$renamed.File.Columns.sorted)
-    print.and.log(sprintf("%s mismatched variants removed from dataset (step 3)!",length(mismatched.rows)),
+    print_and_log(sprintf("%s mismatched variants removed from dataset (step 3)!",length(mismatched.rows)),
                   'warning',display=.QC$config$debug$verbose)
     saveDataSet(mismatched.data,
                 .QC$thisStudy$SNPs_mismatches.path,
@@ -244,7 +244,7 @@ save.remove.mismatch.Variants <- function(input.data) {
 }
 
 
-save.remove.ambiguous.variants <- function(input.data)
+save_remove_ambiguous_variants <- function(input.data)
 {
 
   if(!.QC$thisStudy$hanNoneBaseAlleles)
@@ -271,7 +271,7 @@ save.remove.ambiguous.variants <- function(input.data)
     duplicate.positions.variants <- duplicate.positions.variants[!(duplicated(hID)),]
 
     .QC$thisStudy$ambiguos.rows <- nrow(duplicate.positions.variants)
-    print.and.log(sprintf("%s ambiguous variants removed from dataset (step 3)!",.QC$thisStudy$ambiguos.rows),
+    print_and_log(sprintf("%s ambiguous variants removed from dataset (step 3)!",.QC$thisStudy$ambiguos.rows),
                   'warning',display=.QC$config$debug$verbose)
 
     saveDataSet(subset(head(duplicate.positions.variants,100) ,

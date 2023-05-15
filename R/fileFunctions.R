@@ -1,6 +1,6 @@
-reformat.columns <- function(input.file, output.file = NULL, sep='\t')
+reformat_columns <- function(input.file, output.file = NULL, sep='\t')
 {
-  if(!check.awk())
+  if(!check_awk())
   {
     stop('This function requires gawk command!\nRTools not found or PATH variable does not contain it! see: https://cran.rstudio.com/bin/windows/Rtools/',call. = FALSE)
   }
@@ -57,7 +57,7 @@ checkFolderPermission <- function(config) {
 
 
 # Make sure awk is installed. This is part of Rtools.
-check.awk <- function() {
+check_awk <- function() {
 
   # installed <- invisible(system('gawk --v') == 0)
 
@@ -70,7 +70,7 @@ check.awk <- function() {
 }
 
 # Make sure wc command is installed. This is part of Rtools.
-check.wc <- function() {
+check_wc <- function() {
 
   if(Sys.which('wc') != '')
     return(TRUE)
@@ -80,7 +80,7 @@ check.wc <- function() {
 }
 
 
-check.java <- function() {
+check_java <- function() {
 
   if(Sys.which('java') != '')
     return(TRUE)
@@ -90,7 +90,7 @@ check.java <- function() {
 }
 
 # Make sure gzip command is installed. This is part of Rtools.
-check.gzip <- function() {
+check_gzip <- function() {
   if(Sys.which('gzip') != '')
     return(TRUE)
   else
@@ -98,14 +98,14 @@ check.gzip <- function() {
 }
 
 # Make sure gzip command is installed. This is part of Rtools.
-check.unzip <- function() {
+check_unzip <- function() {
   if(Sys.which('unzip') != '')
     return(TRUE)
   else
     return(FALSE)
 }
 
-check.xlsx.package <- function(existing.packages)
+check_xlsx_package <- function(existing.packages)
 {
   if (is.element('openxlsx', existing.packages))
     return(TRUE)
@@ -113,7 +113,7 @@ check.xlsx.package <- function(existing.packages)
     return(FALSE)
 }
 
-check.rsqlite.package <- function(existing.packages)
+check_rsqlite_package <- function(existing.packages)
 {
   if (is.element('RSQLite', existing.packages))
     return(TRUE)
@@ -121,7 +121,7 @@ check.rsqlite.package <- function(existing.packages)
     return(FALSE)
 }
 
-get.R.version <- function(){
+get_R_version <- function(){
 
   name <- trimws(gsub('\\([^)]*\\)',
                R.Version()$version.string,
@@ -135,7 +135,7 @@ get.R.version <- function(){
 
 
 
-check.kableExtra.package <- function(existing.packages)
+check_kableExtra_package <- function(existing.packages)
 {
   if (is.element('kableExtra', existing.packages))
   {
@@ -151,7 +151,7 @@ check.kableExtra.package <- function(existing.packages)
 }
 
 
-check.rJava.package <- function(existing.packages)
+check_rJava_package <- function(existing.packages)
 {
   if (is.element('rJava', existing.packages))
     return(TRUE)
@@ -160,7 +160,7 @@ check.rJava.package <- function(existing.packages)
 }
 
 
-check.ggplot2.version <- function(existing.packages)
+check_ggplot2_version <- function(existing.packages)
 {
   if (is.element('ggplot2', existing.packages))
     return(paste(packageVersion('ggplot2'),collapse = '.'))
@@ -169,7 +169,7 @@ check.ggplot2.version <- function(existing.packages)
 }
 
 
-check.pandoc <- function()
+check_pandoc <- function()
 {
   if (rmarkdown::pandoc_available())
     return(TRUE)
@@ -177,7 +177,7 @@ check.pandoc <- function()
     return(FALSE)
 }
 
-get.OS <- function()
+get_OS <- function()
 {
   sys <- Sys.info()
   return(paste(sys['sysname'], sys['release']))
@@ -185,7 +185,7 @@ get.OS <- function()
 
 
 removeDuplicatedLines <- function(input.data) {
-  print.and.log('Looking for duplicated lines ...','info')
+  print_and_log('Looking for duplicated lines ...','info')
 
   dup_lines <- which(duplicated(input.data))
   .QC$thisStudy$dup_lines_count <- length(dup_lines)
@@ -195,14 +195,14 @@ removeDuplicatedLines <- function(input.data) {
 
     tbl <- input.data[dup_lines, .N ,keyby=CHR]
 
-    print.and.log('duplicated lines distribution in input file...','info',display=.QC$config$debug$verbose)
-    print.and.log(kable(tbl,format = "rst"),
+    print_and_log('duplicated lines distribution in input file...','info',display=.QC$config$debug$verbose)
+    print_and_log(kable(tbl,format = "rst"),
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)
 
 
-    print.and.log(sprintf('Duplicated lines found in input file: %s lines were removed.',
+    print_and_log(sprintf('Duplicated lines found in input file: %s lines were removed.',
                           format(.QC$thisStudy$dup_lines_count,big.mark = ',',scientific = FALSE)),
                   'warning',display=.QC$config$debug$verbose)
     input.data <- input.data[!dup_lines,]

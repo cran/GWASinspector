@@ -2,19 +2,19 @@ writeExcelReportFile <- function()
 {
 
 
-  report.success <- tryCatch(create.xlsx.report(.QC$config,.QC$qc.study.list),
+  report.success <- tryCatch(create_xlsx_report(.QC$config,.QC$qc.study.list),
                              error = function(err)  {
-                               print.and.log(paste0('Excel report could not be saved. ', err$message),'warning')
+                               print_and_log(paste0('Excel report could not be saved. ', err$message),'warning')
                                return(FALSE)
                              }
   )
 
   if(report.success)
-    print.and.log(sprintf('Excel report file saved at: \'%s\'', .QC$config$paths$xlsx.report),'info')
+    print_and_log(sprintf('Excel report file saved at: \'%s\'', .QC$config$paths$xlsx.report),'info')
 }
 
 
-create.xlsx.report <- function(config,study.list){
+create_xlsx_report <- function(config,study.list){
 
 
   ##### styles ####
@@ -73,18 +73,18 @@ create.xlsx.report <- function(config,study.list){
 
 
   ## first sheet
-  first.excel.sheet(wb,styleList,config,study.list)
+  first_excel_sheet(wb,styleList,config,study.list)
 
   ## second sheet
-  second.excel.sheet(wb,styleList,config,study.list)
+  second_excel_sheet(wb,styleList,config,study.list)
 
   ## third sheet
-  third.excel.sheet(wb,styleList,config,study.list)
+  third_excel_sheet(wb,styleList,config,study.list)
 
   ## sheet per file
   for(i in 1:length(study.list))
   {
-    file.excel.sheet(wb,styleList,i,config,study.list)
+    file_excel_sheet(wb,styleList,i,config,study.list)
   }
 
   ## save output file
@@ -98,7 +98,7 @@ create.xlsx.report <- function(config,study.list){
 
 }
 
-first.excel.sheet <- function(wb,styleList,config,study.list) {
+first_excel_sheet <- function(wb,styleList,config,study.list) {
 
   sheet <- openxlsx::addWorksheet(wb, sheetName = "Report variables")
 
@@ -143,7 +143,7 @@ first.excel.sheet <- function(wb,styleList,config,study.list) {
 
 }
 
-second.excel.sheet <- function(wb,styleList,config,study.list) {
+second_excel_sheet <- function(wb,styleList,config,study.list) {
 
 
   sheet <- openxlsx::addWorksheet(wb, sheetName = "File Names")
@@ -173,7 +173,7 @@ second.excel.sheet <- function(wb,styleList,config,study.list) {
 
 }
 
-third.excel.sheet <- function(wb,styleList,config,study.list) {
+third_excel_sheet <- function(wb,styleList,config,study.list) {
 
 
   sheet <- openxlsx::addWorksheet(wb, sheetName = "Multi File Report")
@@ -336,7 +336,7 @@ third.excel.sheet <- function(wb,styleList,config,study.list) {
 
 }
 
-file.excel.sheet <- function(wb,styleList,i,config,study.list) {
+file_excel_sheet <- function(wb,styleList,i,config,study.list) {
 
   sheet <- openxlsx::addWorksheet(wb, sheetName = paste0('File ',i))
   study <- study.list[[i]]
@@ -815,7 +815,7 @@ file.excel.sheet <- function(wb,styleList,i,config,study.list) {
   ## AF correlation per chromosme
   row.index <- row.index + 11 # 58
 
-  if( study$AFcor.std_ref.CHR != "NA" && nrow(study$AFcor.std_ref.CHR) > 0)
+  if( any(is.na(study$AFcor.std_ref.CHR)) && nrow(study$AFcor.std_ref.CHR) > 0)
   {
     openxlsx::writeData(wb ,sheet ,x = "AF correlation for each chromosome" ,startRow = row.index)
     openxlsx::addStyle(wb,sheet,style = styleList[['style4']],rows = row.index,cols = 1)

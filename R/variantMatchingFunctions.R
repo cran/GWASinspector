@@ -18,7 +18,7 @@ compareInputfileWithReferenceData <- function(input.data)
   input.data <- tryCatch(compareInputfileWithAlternateReferenceFile(input.data),
                          error = function(x)
                          {
-                           print.and.log(paste('Error in searching alternate reference database:',x$message),
+                           print_and_log(paste('Error in searching alternate reference database:',x$message),
                                          'warning')
                            return(input.data)
                          })
@@ -31,7 +31,7 @@ compareInputfileWithAlternateReferenceFile <- function(input.data)
   #check if alt ref data has any rows & there are unfound variants
   if(nrow(.QC$alt.reference.data) > 0 & input.data[is.na(REF),.N] > 0 )
   {
-    print.and.log('Comparing input file with alternate reference file ...','info')
+    print_and_log('Comparing input file with alternate reference file ...','info')
     # we only want to check unfound variants in the alt ref dataset
     # we only need original file columns, so , added columns from checking with reference file from previous step should be deleted
     if(.QC$thisStudy$hID.added)
@@ -138,7 +138,7 @@ compareInputfileWithReferenceFile<-function(input.data)
   if(any(input.data$MULTI_ALLELIC == 1, na.rm = TRUE))
   {
     input.data[MULTI_ALLELIC == 1,
-               c('ALT','AF') := clean.multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
+               c('ALT','AF') := clean_multi_alleles(EFFECT_ALL , OTHER_ALL, REF, ALT, AF) ,
                by = list(EFFECT_ALL , OTHER_ALL,REF, ALT,AF)]
 
     # some multi-allele INDEL AFs are all 0 and will be returned the same way due to missing alleles
@@ -205,7 +205,7 @@ compareInputfileWithBetaReferenceFile<-function(input.data)
   }
   else
   {
-    print.and.log('hID is missing. Can not compare input file with reference dataset.','warning',display=.QC$config$debug$verbose)
+    print_and_log('hID is missing. Can not compare input file with reference dataset.','warning',display=.QC$config$debug$verbose)
     return(data.table())
   }
 

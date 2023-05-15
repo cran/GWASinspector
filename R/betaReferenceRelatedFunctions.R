@@ -14,7 +14,7 @@ uploadBetaReferenceFile<-function()
 
     # make sure RDATA file contains the correct variable name
     if(!exists('beta_ref_std'))
-      print.and.log('Beta (Effect) reference file should contain \'beta_ref_std\' variable! use RDS or txt file instead of RDATA!','warning')
+      print_and_log('Beta (Effect) reference file should contain \'beta_ref_std\' variable! use RDS or txt file instead of RDATA!','warning')
 
   }else if(file.extension == 'rds')
   {
@@ -34,7 +34,7 @@ uploadBetaReferenceFile<-function()
     beta_ref_std<-as.data.table(beta_ref_std)
 
 
-  print.and.log(sprintf("Effect-size Reference file \'%s\' loaded (%s x %s)!",
+  print_and_log(sprintf("Effect-size Reference file \'%s\' loaded (%s x %s)!",
                         betaReferenceFile,nrow(beta_ref_std),ncol(beta_ref_std)),
                 'info')
 
@@ -49,7 +49,7 @@ checkBetaReferenceFileIntegrity <- function() {
 
   if(is.null(.QC$reference.data.effect) | nrow(.QC$reference.data.effect) == 0 )
   {
-    print.and.log('Effect-Size referene file is empty!','warning')
+    print_and_log('Effect-Size referene file is empty!','warning')
     return(data.table())
   }
 
@@ -66,10 +66,10 @@ checkBetaReferenceFileIntegrity <- function() {
 
 
   if(length(missing.ref.col.index) > 0){
-    print.and.log(sprintf('Missing crucial column in Effect-Size reference file : \'%s\' !',
+    print_and_log(sprintf('Missing crucial column in Effect-Size reference file : \'%s\' !',
                           paste(required.ref.col.names[missing.ref.col.index],collapse = '|')),
                   'warning')
-    print.and.log('Effect-size comparison is skipped!', 'warning')
+    print_and_log('Effect-size comparison is skipped!', 'warning')
     .QC$reference.data.effect <- data.table()
   }
   else
@@ -79,7 +79,7 @@ checkBetaReferenceFileIntegrity <- function() {
     names(.QC$reference.data.effect)[names(.QC$reference.data.effect) == 'EFF_ALL'] <- 'ALT'
     names(.QC$reference.data.effect)[names(.QC$reference.data.effect) == 'NON_EFF_ALL'] <- 'REF'
 
-    print.and.log('Effect-Size Reference file validated!', 'info')
+    print_and_log('Effect-Size Reference file validated!', 'info')
   }
 }
 

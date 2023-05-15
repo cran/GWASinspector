@@ -7,7 +7,7 @@
 #' @param output.path character, full path to the folder where output files should be saved.
 #' @return Key metrics report and plots of previously inspected files are generated and saved in the specified output folder.
 #'
-compare.GWASs <- function(input.file.list, output.path)
+compare_GWASs <- function(input.file.list, output.path)
 {
   if(missing(input.file.list) || missing(output.path))
     stop('Function arguments are not set.', call. = FALSE)
@@ -20,7 +20,7 @@ compare.GWASs <- function(input.file.list, output.path)
 
   ##==========================
 
-  output.path <- check.output.dir(output.path)
+  output.path <- check_output_dir(output.path)
 
 
   #
@@ -42,7 +42,7 @@ compare.GWASs <- function(input.file.list, output.path)
 
 
 
-  .QC$input.file.list  <- check.if.files.exist.and.more.than.one(input.file.list)
+  .QC$input.file.list  <- check_if_files_exist_and_more_than_one(input.file.list)
 
   .QC$input.file.list <- lapply(.QC$input.file.list,
                             readRDS)
@@ -63,17 +63,17 @@ compare.GWASs <- function(input.file.list, output.path)
   }
 
 
-  create.comparison.plots(.QC$input.file.list,
+  create_comparison_plots(.QC$input.file.list,
                           'png',
                           .QC$precisionPlotPath,
                           .QC$skew_kurtPlotPath,
                           .QC$effsizePlotPath)
 
-  multi.file.txt.report.file(.QC$input.file.list,
+  multi_file_txt_report_file(.QC$input.file.list,
                              .QC$txt.report.path)
 
 
-  multi.file.html.report.file(.QC,
+  multi_file_html_report_file(.QC,
                               output.path ,
                               'report.html')
 
@@ -86,7 +86,7 @@ compare.GWASs <- function(input.file.list, output.path)
 
 ############################################################
 
-create.comparison.plots <- function(input.file.list,
+create_comparison_plots <- function(input.file.list,
                                     graphic.device ,
                                     precisionPlotPath ,
                                     skew_kurt ,
@@ -94,7 +94,7 @@ create.comparison.plots <- function(input.file.list,
 {
 
 
-  tryCatch( suppressWarnings(multi.study.precision.plot(input.file.list ,
+  tryCatch( suppressWarnings(multi_study_precision_plot(input.file.list ,
                                                         graphic.device ,
                                                         precisionPlotPath)),
             error = function(err){
@@ -103,14 +103,14 @@ create.comparison.plots <- function(input.file.list,
   )
 
   # skew-kurt plot
-  tryCatch(multi.study.skew.kurt.plot(input.file.list, graphic.device , skew_kurt),
+  tryCatch(multi_study_skew_kurt_plot(input.file.list, graphic.device , skew_kurt),
            error = function(err){
              message(paste('Warning in skewness-kurtosis plot:',err$message))
            }
   )
 
   # boxplot effects
-  tryCatch(multi.study.eff.plot(input.file.list , graphic.device , effsizePlotPath),
+  tryCatch(multi_study_eff_plot(input.file.list , graphic.device , effsizePlotPath),
            error = function(err){
              message(paste('Warning in effect-size comparison plot:',err$message))
            }
@@ -118,7 +118,7 @@ create.comparison.plots <- function(input.file.list,
 }
 
 
-check.if.files.exist.and.more.than.one <- function(input.file.list)
+check_if_files_exist_and_more_than_one <- function(input.file.list)
 {
 
   if(length(input.file.list) < 2)
@@ -126,7 +126,7 @@ check.if.files.exist.and.more.than.one <- function(input.file.list)
 
 
 
-  input.file.exists = sapply(input.file.list, check.each.GWAS.file)
+  input.file.exists = sapply(input.file.list, check_each_GWAS_file)
   input.file.list = input.file.list[which(input.file.exists)]
 
   if(length(input.file.list) < 2)
@@ -136,7 +136,7 @@ check.if.files.exist.and.more.than.one <- function(input.file.list)
 }
 
 
-check.each.GWAS.file <- function(GWAS.file.path)
+check_each_GWAS_file <- function(GWAS.file.path)
 {
   if(!file.exists(GWAS.file.path))
   {
@@ -149,7 +149,7 @@ check.each.GWAS.file <- function(GWAS.file.path)
 }
 
 
-check.output.dir <- function(output.path)
+check_output_dir <- function(output.path)
 {
   new.dir <- NULL
 
@@ -184,7 +184,7 @@ check.output.dir <- function(output.path)
   return(new.dir)
 }
 
-check.output.report.files <- function(output.path, filename)
+check_output_report_files <- function(output.path, filename)
 {
   report.path = paste(output.path,filename,sep = '/')
 
@@ -195,7 +195,7 @@ check.output.report.files <- function(output.path, filename)
 }
 
 
-write.to.report.file <- function(message,txt.report.path){
+write_to_report_file <- function(message,txt.report.path){
 
   write(message,
         file= txt.report.path,
@@ -204,13 +204,13 @@ write.to.report.file <- function(message,txt.report.path){
 }
 
 
-multi.file.txt.report.file <- function(study.list, txt.report.path)
+multi_file_txt_report_file <- function(study.list, txt.report.path)
 {
 
-  write.to.report.file('==================================================',txt.report.path)
-  write.to.report.file('============== Quality Check Report ==============',txt.report.path)
-  write.to.report.file('==================================================',txt.report.path)
-  write.to.report.file(' ',txt.report.path)
+  write_to_report_file('==================================================',txt.report.path)
+  write_to_report_file('============== Quality Check Report ==============',txt.report.path)
+  write_to_report_file('==================================================',txt.report.path)
+  write_to_report_file(' ',txt.report.path)
 
 
   ## ======================================
@@ -219,12 +219,12 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
   colnames(report.table) <- c('Number', 'Study Name')
   row.names(report.table) <- seq(1:nrow(report.table))
 
-  write.to.report.file(kable(report.table,format = 'rst'),txt.report.path)
+  write_to_report_file(kable(report.table,format = 'rst'),txt.report.path)
 
 
-  write.to.report.file(' ',txt.report.path)
-  write.to.report.file(' ',txt.report.path)
-  write.to.report.file(' ',txt.report.path)
+  write_to_report_file(' ',txt.report.path)
+  write_to_report_file(' ',txt.report.path)
+  write_to_report_file(' ',txt.report.path)
 
   ## ======================================
   report.table <- t(data.table(
@@ -288,22 +288,22 @@ multi.file.txt.report.file <- function(study.list, txt.report.path)
 
   colnames(report.table) <- seq(1:length(study.list))
 
-  write.to.report.file(knitr::kable(report.table, align = "c" ,format = 'rst'),txt.report.path)
+  write_to_report_file(knitr::kable(report.table, align = "c" ,format = 'rst'),txt.report.path)
 
 
-  write.to.report.file(' ',txt.report.path)
-  write.to.report.file('* step1: removing variants with missing crucial values.',txt.report.path)
-  write.to.report.file('** step2: removing monomorphic or duplicated variants, and specified chromosomes.',txt.report.path)
-  write.to.report.file('*** step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.',txt.report.path)
+  write_to_report_file(' ',txt.report.path)
+  write_to_report_file('* step1: removing variants with missing crucial values.',txt.report.path)
+  write_to_report_file('** step2: removing monomorphic or duplicated variants, and specified chromosomes.',txt.report.path)
+  write_to_report_file('*** step3: removing mismatched, ambiguous and multi-allelic variants that could not be verified.',txt.report.path)
 
-  write.to.report.file('\n==============================================',txt.report.path)
-  write.to.report.file(sprintf('Generated by GWASinspector package - v.%s', utils::packageVersion('GWASinspector')),txt.report.path)
-  write.to.report.file(as.character(Sys.time()),txt.report.path)
+  write_to_report_file('\n==============================================',txt.report.path)
+  write_to_report_file(sprintf('Generated by GWASinspector package - v.%s', utils::packageVersion('GWASinspector')),txt.report.path)
+  write_to_report_file(as.character(Sys.time()),txt.report.path)
 
   message(sprintf("Output file saved from %s input files." ,length(study.list)))
 }
 
-multi.file.html.report.file <- function(.QC, html.report.folder , html.report.file)
+multi_file_html_report_file <- function(.QC, html.report.folder , html.report.file)
 {
   input.file.list <- .QC$input.file.list
 
@@ -344,7 +344,7 @@ multi.file.html.report.file <- function(.QC, html.report.folder , html.report.fi
     },
     error=function(err){
 
-      print.and.log(paste('---[ERROR saving main html file!---]\nThe result is also saved as txt and is in the output folder.',err$message),
+      print_and_log(paste('---[ERROR saving main html file!---]\nThe result is also saved as txt and is in the output folder.',err$message),
                     'warning')
 
       return(FALSE)

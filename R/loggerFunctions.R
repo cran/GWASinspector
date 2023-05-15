@@ -15,7 +15,7 @@ setupLogOptions <- function(config,
 }
 
 
-print.and.log <- function(message,
+print_and_log <- function(message,
                           level = "info",
                           cat = TRUE,
                           display = TRUE) {

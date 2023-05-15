@@ -1,4 +1,4 @@
-multi.file.comparison <- function() {
+multi_file_comparison <- function() {
 
 
 
@@ -6,7 +6,7 @@ multi.file.comparison <- function() {
   if(length(.QC$qc.study.list) < 2)
     return(NULL)
 
-  print.and.log('============== Comparing Input Files ==============',
+  print_and_log('============== Comparing Input Files ==============',
                 'info')
 
 
@@ -14,7 +14,7 @@ multi.file.comparison <- function() {
   # .QC$qc.study.list <- tryCatch(
   #   .QC$qc.study.list[order(sapply(.QC$qc.study.list,'[[','MAX_N_TOTAL'))],
   #   error = function(err) {
-  #     print.and.log(paste('Error in ordering list of files:',err$message),'warning')
+  #     print_and_log(paste('Error in ordering list of files:',err$message),'warning')
   #     return(.QC$qc.study.list)
   #   }
   # )
@@ -23,7 +23,7 @@ multi.file.comparison <- function() {
 
   ## text report
   # ========================================
-  finalReport.to.txt.file(.QC$config,
+  finalReport_to_txt_file(.QC$config,
                           .QC$qc.study.list)
 
 
@@ -36,37 +36,37 @@ multi.file.comparison <- function() {
 
     graphic.device = .QC$graphic.device
 
-    tryCatch( multi.study.precision.plot(.QC$qc.study.list , graphic.device , .QC$config$paths$precisionPlotPath),
+    tryCatch( multi_study_precision_plot(.QC$qc.study.list , graphic.device , .QC$config$paths$precisionPlotPath),
               error = function(err){
-                print.and.log(paste('error in plotting precision plot:',err$message),'warning',display=.QC$config$debug$verbose)
+                print_and_log(paste('error in plotting precision plot:',err$message),'warning',display=.QC$config$debug$verbose)
               }
     )
 
     # skew-kurt plot
-    tryCatch(multi.study.skew.kurt.plot(.QC$qc.study.list, graphic.device , .QC$config$paths$skew_kurt),
+    tryCatch(multi_study_skew_kurt_plot(.QC$qc.study.list, graphic.device , .QC$config$paths$skew_kurt),
              error = function(err){
-               print.and.log(paste('error in plotting skewness-kurtosis plot:',err$message),'warning',display=.QC$config$debug$verbose)
+               print_and_log(paste('error in plotting skewness-kurtosis plot:',err$message),'warning',display=.QC$config$debug$verbose)
              }
     )
 
     # boxplot effects
-    tryCatch(multi.study.eff.plot(.QC$qc.study.list , graphic.device , .QC$config$paths$effsizePlotPath),
+    tryCatch(multi_study_eff_plot(.QC$qc.study.list , graphic.device , .QC$config$paths$effsizePlotPath),
              error = function(err){
-               print.and.log(paste('error in plotting effect-size comparison plot:',err$message),'warning',display=.QC$config$debug$verbose)
+               print_and_log(paste('error in plotting effect-size comparison plot:',err$message),'warning',display=.QC$config$debug$verbose)
              }
     )
 
   }
   else
   {
-    print.and.log('Plots are skipped!','warning',display=.QC$config$debug$verbose)
+    print_and_log('Plots are skipped!','warning',display=.QC$config$debug$verbose)
   }
 
   ## free RAM
   invisible(gc())
 }
 
-finalReport.to.txt.file <- function(config,study.list)
+finalReport_to_txt_file <- function(config,study.list)
 {
 
   #Save the final report for multiple file comparisons
@@ -193,7 +193,7 @@ finalReport.to.txt.file <- function(config,study.list)
   writeFileComparisonTXTreport(as.character(Sys.time()))
 
 
-  print.and.log(sprintf('Report file saved as \'%s\'', .QC$config$paths$txt.report),
+  print_and_log(sprintf('Report file saved as \'%s\'', .QC$config$paths$txt.report),
                 'info')
 
 }

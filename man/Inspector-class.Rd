@@ -6,7 +6,7 @@
 \alias{Inspector}
 \title{An S4 class to represent the methods and parameters for inspecting a list of GWAS study result files.}
 \description{
-An object of this class is created by \code{\link{setup.inspector}} function. Each section of the
+An object of this class is created by \code{\link{setup_inspector}} function. Each section of the
 configuration file is represented as a list of attributes in this object.
 }
 \section{Slots}{

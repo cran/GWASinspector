@@ -5,7 +5,7 @@
 #' @param result.dir character. Path to the output folder for saving QC result files
 #' @return QC reports from running the algorithm on a sample GWAS file are generated and saved in the specified folder.
 #'
-demo.inspector <- function(result.dir)
+demo_inspector <- function(result.dir)
 {
 
   if(missing(result.dir))
@@ -35,7 +35,7 @@ demo.inspector <- function(result.dir)
   .QC$StudyList <- new("StudyList")
   .QC$file.counter <- 1
   .QC$config<-checkConfigFile(ex.config.file)
-  .QC$config <- example.config(result.dir, .QC$config)
+  .QC$config <- example_config(result.dir, .QC$config)
 
   start.time = proc.time()
   inspector@start_time <- Sys.time()
@@ -49,9 +49,9 @@ demo.inspector <- function(result.dir)
   log.file.path <- setupLogOptions(.QC$config)
 
   ##==============
-  print.and.log("Inspection started!")
+  print_and_log("Inspection started!")
 
-  check.tools()
+  check_tools()
 
   printConfigVariables(.QC$config)
 
@@ -59,31 +59,31 @@ demo.inspector <- function(result.dir)
   .QC$headerKV<-tryCatch(getFileHeaderKV(),
                          error= function(err)
                          {
-                           print.and.log(paste('Error in creating header table.',err$message),'fatal')
+                           print_and_log(paste('Error in creating header table.',err$message),'fatal')
                          }
   )
 
 
   cat('\n---------- [analyzing input files] ----------\n',fill = TRUE)
   .QC$qc.study.list <- lapply(.QC$config$paths$filename,
-                             create.file.specific.config)
+                             create_file_specific_config)
 
 
   .QC$reference.data <- uploadReferenceFile()
   checkReferenceFileIntegrity()
 
   .QC$qc.study.list <- lapply(.QC$qc.study.list,
-                              process.each.file)
+                              process_each_file)
 
   invisible(gc())
 
   .QC$config$new_items$endtime <- Sys.time()
 
-  create.report.files()
+  create_report_files()
 
   inspector@end_time <- .QC$config$new_items$endtime
 
-  print.and.log(sprintf('\nFinished analyzing %s files!',length(.QC$qc.study.list)))
-  print.and.log(sprintf("Run time: %s",timetaken(start.time)))# END LOG
+  print_and_log(sprintf('\nFinished analyzing %s files!',length(.QC$qc.study.list)))
+  print_and_log(sprintf("Run time: %s",timetaken(start.time)))# END LOG
 
 }

@@ -64,8 +64,8 @@ uploadAltReferenceFile<-function()
 
 
 
-  print.and.log(sprintf("Alternative Reference file \'%s\' loaded (%s x %s)!",
-                        altReferenceFile,thousand.sep(nrow(allele_ref_alt_std)),ncol(allele_ref_alt_std)),
+  print_and_log(sprintf("Alternative Reference file \'%s\' loaded (%s x %s)!",
+                        altReferenceFile,thousand_sep(nrow(allele_ref_alt_std)),ncol(allele_ref_alt_std)),
                 'info')
 
 
@@ -91,7 +91,7 @@ checkAltReferenceFileIntegrity <- function() {
 
   if(length(missing.ref.col.index) > 0)
   {
-    print.and.log(sprintf('Missing crucial column in alternative reference file : \'%s\' !',
+    print_and_log(sprintf('Missing crucial column in alternative reference file : \'%s\' !',
                           paste(required.ref.col.names[missing.ref.col.index],collapse = '|')),
                   'warning',display=.QC$config$debug$verbose)
 
@@ -102,7 +102,7 @@ checkAltReferenceFileIntegrity <- function() {
     #check for duplicated hIDs
     checkDuplicatedHID_in_Alt_Ref()
 
-    print.and.log('Alternative Reference file validated!',
+    print_and_log('Alternative Reference file validated!',
                   'info')
   }
 }
@@ -114,7 +114,7 @@ checkDuplicatedHID_in_Alt_Ref <- function()
   if(length(dups) > 0)
   {
     .QC$alt.reference.data <- .QC$alt.reference.data[!dups,]
-    print.and.log(sprintf('%s duplicated items found in alternate reference and are removed!',
+    print_and_log(sprintf('%s duplicated items found in alternate reference and are removed!',
                           length(dups)),
                   'warning',display=.QC$config$debug$verbose)
 
@@ -123,7 +123,7 @@ checkDuplicatedHID_in_Alt_Ref <- function()
 
 
 
-update.alternate.reference <- function(input.data) {
+update_alternate_reference <- function(input.data) {
 
 
   # find variants that were not dounf in either references and have a valid allele frequency
@@ -158,14 +158,14 @@ update.alternate.reference <- function(input.data) {
 
     # ==
 
-    print.and.log(sprintf('Alternative Reference file is updated with %s rows', thousand.sep(nrow(unknown.variants))),
+    print_and_log(sprintf('Alternative Reference file is updated with %s rows', thousand_sep(nrow(unknown.variants))),
                   'info')
   }
 }
 
 
 
-save.alternate.reference <- function()
+save_alternate_reference <- function()
 {
   altReferenceFile <- .QC$config$supplementaryFiles$allele_ref_alt
   file.extension <- tolower(file_ext(altReferenceFile))
@@ -198,5 +198,5 @@ save.alternate.reference <- function()
   }
 
 
-  print.and.log('Alternate reference file is saved!','info')
+  print_and_log('Alternate reference file is saved!','info')
 }

@@ -24,7 +24,7 @@ StudyList <- setClass(
 
 #' An S4 class to represent the methods and parameters for inspecting a list of GWAS study result files.
 #'
-#' An object of this class is created by \code{\link{setup.inspector}} function. Each section of the
+#' An object of this class is created by \code{\link{setup_inspector}} function. Each section of the
 #' configuration file is represented as a list of attributes in this object.
 #'
 #' @slot paths A list of parameters which indicate \strong{Paths} section from configuration file.
@@ -339,7 +339,7 @@ setMethod(
     cat("\n\n   Results")
     if(object@StudyList@studyCount > 0)
     {
-      cat(sprintf("\n\t%s report objects are included. use \"result.inspector()\" function for detail.", object@StudyList@studyCount))
+      cat(sprintf("\n\t%s report objects are included. use \"result_inspector()\" function for detail.", object@StudyList@studyCount))
       cat(sprintf("\n\tLast run: %s", object@start_time))
     }else
       cat("\n\tQC has not been performed yet.")

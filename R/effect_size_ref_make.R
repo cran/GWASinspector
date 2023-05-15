@@ -10,19 +10,19 @@ effect_size_ref_make <- function(dataset, db_path)
               file = db_path,
               version = '2')
 
-      print.and.log(
+      print_and_log(
         sprintf('Effect-size reference file saved with %s rows.', nrow(dataset)),
         'info',
         display = .QC$config$debug$verbose
       )
     }, error = function(err)
     {
-      print.and.log(paste( 'Error occured when saving the effect-size reference!', err$message),
+      print_and_log(paste( 'Error occured when saving the effect-size reference!', err$message),
         'warning')
     })
 
   } else{
-    print.and.log('PVALUE not found in dataset to save as effect-size reference file!','warning',
+    print_and_log('PVALUE not found in dataset to save as effect-size reference file!','warning',
                   display = .QC$config$debug$verbose)
   }
 }

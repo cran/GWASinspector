@@ -9,7 +9,7 @@ not <- is.na
 
 ## swithc alleles
 ## TODO multicharacter alleles e.g.  'TCC' => 'AGG'
-switch.allele<-function(allele)
+switch_allele<-function(allele)
 {
   switched.allele<-switch(as.character(allele),
                           'A'='T',
@@ -22,7 +22,7 @@ switch.allele<-function(allele)
 }
 
 
-switch.allele.vectorized<-function(allele)
+switch_allele_vectorized<-function(allele)
 {
 
   switched.allele <- ifelse(allele == "A", "T",
@@ -32,12 +32,12 @@ switch.allele.vectorized<-function(allele)
   return(switched.allele)
 }
 
-switch.alleles.vectorized<-function(allele)
+switch_alleles_vectorized<-function(allele)
 {
 
   ifelse(nchar(allele) == 1,
-         switch.allele.vectorized(allele), ## SNPs
-         paste(sapply(strsplit(allele,''), switch.allele.vectorized),collapse = "")) # IN/DELs
+         switch_allele_vectorized(allele), ## SNPs
+         paste(sapply(strsplit(allele,''), switch_allele_vectorized),collapse = "")) # IN/DELs
 
 }
 
@@ -63,7 +63,7 @@ changeROptions<-function(){
   if(capabilities('cairo'))
     options(bitmapType='cairo')
   else
-    print.and.log('cairo module not available! run system.check()','warning')
+    print_and_log('cairo module not available! run system_check()','warning')
 }
 
 
@@ -91,7 +91,7 @@ calculatePlotThreshold <- function(input.data) {
 
   }else if(plot.itemcount.threshold > 1 &&  plot.itemcount.threshold > rowCount){  #check if threshold is not more than file rows
 
-    print.and.log('Plot threshold more than file size! value set to 10 percent.','warning',display=.QC$config$debug$verbose)
+    print_and_log('Plot threshold more than file size! value set to 10 percent.','warning',display=.QC$config$debug$verbose)
 
     plot.itemcount.threshold <- as.integer(rowCount / 10)
 
@@ -117,7 +117,7 @@ calculatePercent <- function(sample.count,
      !is.numeric(total.count) |
      is.na(sample.count))
   {
-    #print.and.log('Error calculating percent value!','fatal')
+    #print_and_log('Error calculating percent value!','fatal')
     return(NA)
   }
 
@@ -139,7 +139,7 @@ calculatePercent <- function(sample.count,
 
 
 
-check.tools <- function()
+check_tools <- function()
 {
   existing.packages <- installed.packages()[,1]
 
@@ -147,42 +147,42 @@ check.tools <- function()
   # fileFunctions.R
 
   # used for synchronizing column sep character in all rows
-  .QC$awk.exists <- check.awk()
+  .QC$awk.exists <- check_awk()
 
   # used for counting file lines. important to make sure if all rows has been read by fread.
   # number of lines and number of variants should match
-  .QC$wc.exists <- check.wc()
+  .QC$wc.exists <- check_wc()
 
-  .QC$java.exists <- check.java()
+  .QC$java.exists <- check_java()
 
   # used for reading zipped files.
   # fread does not have a built in reader for zip files
-  .QC$gzip.exists <- check.gzip()
-  .QC$unzip.exists <- check.unzip()
+  .QC$gzip.exists <- check_gzip()
+  .QC$unzip.exists <- check_unzip()
 
 
-  .QC$xlsx.package.exists <- check.xlsx.package(existing.packages)
+  .QC$xlsx.package.exists <- check_xlsx_package(existing.packages)
 
-  .QC$rsqlite.package.exists <- check.rsqlite.package(existing.packages)
+  .QC$rsqlite.package.exists <- check_rsqlite_package(existing.packages)
 
-  .QC$kableExtra.package.exists <- check.kableExtra.package(existing.packages)
+  .QC$kableExtra.package.exists <- check_kableExtra_package(existing.packages)
 
-  .QC$rJava.package.exists <- check.rJava.package(existing.packages)
+  .QC$rJava.package.exists <- check_rJava_package(existing.packages)
 
-  .QC$r.version<- get.R.version()
+  .QC$r.version<- get_R_version()
 
-  .QC$pandoc.exists <-  check.pandoc()
+  .QC$pandoc.exists <-  check_pandoc()
 
-  .QC$ggplot2.version <- check.ggplot2.version(existing.packages)
+  .QC$ggplot2.version <- check_ggplot2_version(existing.packages)
 
-  .QC$OS <- get.OS()
+  .QC$OS <- get_OS()
 }
 
 
 
 ## used for checking config file input variables
 # return false is parameter is not set by user or not found
-is.empty <- function(parameter) {
+is_empty <- function(parameter) {
   #if(!exists(deparse(substitute(parameter))) || is.null(parameter) || parameter == '')
   if(is.null(parameter) || parameter == '')
     return(TRUE)
@@ -191,7 +191,7 @@ is.empty <- function(parameter) {
 }
 
 
-thousand.sep <- function(input)
+thousand_sep <- function(input)
 {
   tryCatch(
     return(format(as.numeric(input), big.mark="," , scientific = FALSE)),
@@ -214,7 +214,7 @@ increment <- function(value,factor)
 # A,C  0.1,0  => A 0.1
 # A,C  0,0  => A,C 0
 # A,C  0.1,0.5  => A,C 0.1,0.5
-tri.to.bi.alleles <- function(alleles,freqs) {
+tri_to_bi_alleles <- function(alleles,freqs) {
   afs <- strsplit(freqs,',')
   alts <- strsplit(alleles,',')
 
@@ -229,7 +229,7 @@ tri.to.bi.alleles <- function(alleles,freqs) {
   }
 }
 
-tri.to.bi.freq <- function(alleles,freqs) {
+tri_to_bi_freq <- function(alleles,freqs) {
   afs <- strsplit(freqs,',')
   alts <- strsplit(alleles,',')
 
@@ -246,7 +246,7 @@ tri.to.bi.freq <- function(alleles,freqs) {
 }
 
 
-clean.multi_alleles <- function(A1,A2,REF,ALT,AF)
+clean_multi_alleles <- function(A1,A2,REF,ALT,AF)
 {
   tbl <- cbind(data.table('allele' = strsplit(ALT,',')[[1]]),
                data.table('freqs' = strsplit(AF,',')[[1]]))
@@ -267,21 +267,21 @@ clean.multi_alleles <- function(A1,A2,REF,ALT,AF)
         variant <- tbl[allele == A1,]
         output <- list(variant$allele, variant$freqs)
       }
-      else if (A1 == switch.alleles.vectorized(REF) && is.element(switch.alleles.vectorized(A2),tbl$allele)) # flipped and switched variants
+      else if (A1 == switch_alleles_vectorized(REF) && is.element(switch_alleles_vectorized(A2),tbl$allele)) # flipped and switched variants
       {
-        variant <- tbl[allele == switch.alleles.vectorized(A2),]
+        variant <- tbl[allele == switch_alleles_vectorized(A2),]
         output <- list(variant$allele, variant$freqs)
       }
-      else if(A2 == switch.alleles.vectorized(REF) && is.element(switch.alleles.vectorized(A1),tbl$allele)) # switched variants
+      else if(A2 == switch_alleles_vectorized(REF) && is.element(switch_alleles_vectorized(A1),tbl$allele)) # switched variants
       {
-        variant <- tbl[allele == switch.alleles.vectorized(A1),]
+        variant <- tbl[allele == switch_alleles_vectorized(A1),]
         output <- list(variant$allele, variant$freqs)
       }
 
       return(output)
     },
     error = function(err) {
-      print.and.log(sprintf('Error in variant %s , %s , %s , %s',A1,A2,REF,ALT),'warning',display=.QC$config$debug$verbose)
+      print_and_log(sprintf('Error in variant %s , %s , %s , %s',A1,A2,REF,ALT),'warning',display=.QC$config$debug$verbose)
       return(output)
     }
   )

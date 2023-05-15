@@ -1,6 +1,6 @@
 #this file includes functions for saving data sets and logging the job
 # 1- saveDataSet()  => general function
-# 2- saveDataSet.final() => saving matched data at the end of algorithm IF TRUE in config file
+# 2- saveDataSet_final() => saving matched data at the end of algorithm IF TRUE in config file
 
 
 
@@ -47,7 +47,7 @@ saveDataSet <- function(dataset,
              compress = "auto"),
       error = function(err)
       {
-        print.and.log(sprintf("Error saving file! check below message for more information:\n%s",
+        print_and_log(sprintf("Error saving file! check below message for more information:\n%s",
                               err),
                       'warning')
       }
@@ -63,7 +63,7 @@ saveDataSet <- function(dataset,
 
       error = function(err)
       {
-        print.and.log(sprintf("Error saving file! check below message for more information:\n%s",
+        print_and_log(sprintf("Error saving file! check below message for more information:\n%s",
                               err),
                       'warning')
       }
@@ -73,14 +73,14 @@ saveDataSet <- function(dataset,
 
   ## 2- create log
   if(zipped)
-    print.and.log(sprintf("A zipped data file is saved as '%s' with '%s' rows!",
+    print_and_log(sprintf("A zipped data file is saved as '%s' with '%s' rows!",
                           file.path,
-                          thousand.sep(nrow(dataset))),
+                          thousand_sep(nrow(dataset))),
                   'info')
   else
-    print.and.log(sprintf("A data file is saved as '%s' with '%s' rows!",
+    print_and_log(sprintf("A data file is saved as '%s' with '%s' rows!",
                           file.path,
-                          thousand.sep(nrow(dataset))),
+                          thousand_sep(nrow(dataset))),
                   'info')
 
 }
@@ -88,7 +88,7 @@ saveDataSet <- function(dataset,
 
 
 ## TODO use 'filename_output' for saved file
-saveDataSet.final<-function(dataset)
+saveDataSet_final<-function(dataset)
 {
   config <- .QC$config
 
@@ -148,7 +148,7 @@ saveDataSet.final<-function(dataset)
     # check if there were characters in chromosome column that should be reconverted to characters
     ## =========================================
     if(.QC$thisStudy$character.chromosome)
-      dataset <- deconvert.column.CHR(dataset)
+      dataset <- deconvert_column_CHR(dataset)
 
     # make sure position is not saved as scientific number ,e.g. 8e-6
     dataset$POSITION<-format(dataset$POSITION,scientific = FALSE,trim = TRUE)
@@ -202,16 +202,16 @@ saveDataSet.final<-function(dataset)
 
 
   }else{
-    print.and.log('Saving final dataset is skipped!','warning',display=.QC$config$debug$verbose)
+    print_and_log('Saving final dataset is skipped!','warning',display=.QC$config$debug$verbose)
   }
 }
 
 
-save.NA.Dataset <- function(input.data,input.data.backup) {
+save_NA_Dataset <- function(input.data,input.data.backup) {
 
   #get the list of noncrucial columns that should be checked for NA values
   nonCrucialColumns <- getNonCrucialColumnNames()
-  crucialColumns <- getCrucialColumnNames.onFileAnalysis()
+  crucialColumns <- getCrucialColumnNames_onFileAnalysis()
 
   # get column names of input file
   current.col.names <- colnames(input.data)
@@ -228,7 +228,7 @@ save.NA.Dataset <- function(input.data,input.data.backup) {
       #if(input.data[is.na(eval(parse(text = x))), .N] == row.count)
       if(all(is.na(input.data[,eval(parse(text = x))])))
       {
-        print.and.log(sprintf('Column \'%s\' removed from improbable_variant file because all where NA!',x)
+        print_and_log(sprintf('Column \'%s\' removed from improbable_variant file because all where NA!',x)
                       ,'warning',display=.QC$config$debug$verbose)
         return(FALSE)
       }
@@ -279,7 +279,7 @@ save.NA.Dataset <- function(input.data,input.data.backup) {
 }
 
 
-save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
+save_and_remove_unusable_variants <- function(input.data,input.data.backup) {
 
   #TODO break to two functions
   ## === 1 - first check allele columns => data is saved as SNPS_invalid_alleles.txt
@@ -306,7 +306,7 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
 
   ## find rows with NA in allele columns
   ## data is removed from dataset
-  # invalid alleles are set to NA in processCOlumns() => process.column.EFFECT_ALL()
+  # invalid alleles are set to NA in processCOlumns() => process_column_EFFECT_ALL()
   # so, invalid.allele.index is a subset of missing.allele.index
   #
 
@@ -316,7 +316,7 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
   ## first 100 is saved
   ## data is removed from dataset
 
-  crucial.columns <- getCrucialColumnNames.onFileAnalysis()
+  crucial.columns <- getCrucialColumnNames_onFileAnalysis()
   # allele columns are checked in previous phase (SNPs_invalid_allele) and not needed here
   crucial.columns <- crucial.columns[!crucial.columns %in% c('EFFECT_ALL','OTHER_ALL')]
 
@@ -372,7 +372,7 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
 
   if(length(total.NA.list.union) > 0)
   {
-    print.and.log(sprintf('%s variants that missed a crucial value were removed from dataset (step 1)!',thousand.sep(length(total.NA.list.union))),
+    print_and_log(sprintf('%s variants that missed a crucial value were removed from dataset (step 1)!',thousand_sep(length(total.NA.list.union))),
                   'warning',display=.QC$config$debug$verbose)
     input.data <- input.data[!total.NA.list.union]
     .QC$thisStudy$missing.crucial.rowcount <- length(total.NA.list.union)
@@ -381,13 +381,13 @@ save.and.remove.unusable.variants <- function(input.data,input.data.backup) {
 
   # also remove variants wher nchar(EA) > 1 and nchar(OA) > 1
   # e.g.    EA = GCGCGCGTA and OA = TGTG
-  # input.data <- process.column.BOTH_ALL(input.data)
+  # input.data <- process_column_BOTH_ALL(input.data)
 
 
   return(input.data)
 }
 
-save.significant.variants <- function(input.data) {
+save_significant_variants <- function(input.data) {
 
   sig.variants <- input.data[HQ == TRUE &
                                PVALUE < 5e-08 &
@@ -404,7 +404,7 @@ save.significant.variants <- function(input.data) {
 
 
 # this is for debugging purposes only
-save.pre_modification.file <- function(pre.modification.file)
+save_pre_modification_file <- function(pre.modification.file)
 {
 
   if(.QC$config$debug$save_pre_modification_file)

@@ -13,25 +13,25 @@ removeChromosomeVariants<-function(input.data){
 	       config$remove_chromosomes$remove_Y,
 	       config$remove_chromosomes$remove_XY,
 	       config$remove_chromosomes$remove_M))
-    input.data <- find.and.remove.ChromosomeVariant(input.data)
+    input.data <- find_and_remove_ChromosomeVariant(input.data)
 
 
   return(input.data)
 }
 
 
-find.and.remove.ChromosomeVariant<-function(input.data){
+find_and_remove_ChromosomeVariant<-function(input.data){
 	config <- .QC$config
 
-	print.and.log("Removing specified chromosomes ...")
+	print_and_log("Removing specified chromosomes ...")
 
   ##REMOVE a chromosome from input file
   if(config$remove_chromosomes$remove_X == TRUE){
     r.index <- which(input.data$CHR == 23)
     .QC$thisStudy$x.chr.count.removed <- length(r.index)
 
-    print.and.log(sprintf('data from chromosome X will be deleted! (%s rows)',
-                          thousand.sep(.QC$thisStudy$x.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
+    print_and_log(sprintf('data from chromosome X will be deleted! (%s rows)',
+                          thousand_sep(.QC$thisStudy$x.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
     input.data<-input.data[!r.index,]
   }
 
@@ -39,8 +39,8 @@ find.and.remove.ChromosomeVariant<-function(input.data){
     r.index <- which(input.data$CHR == 24)
     .QC$thisStudy$y.chr.count.removed <- length(r.index)
 
-    print.and.log(sprintf('data from chromosome Y will be deleted! (%s rows)',
-                          thousand.sep(.QC$thisStudy$y.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
+    print_and_log(sprintf('data from chromosome Y will be deleted! (%s rows)',
+                          thousand_sep(.QC$thisStudy$y.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
 
     input.data<-input.data[!r.index,]
   }
@@ -49,8 +49,8 @@ find.and.remove.ChromosomeVariant<-function(input.data){
     r.index <- which(input.data$CHR == 25)
     .QC$thisStudy$xy.chr.count.removed <- length(r.index)
 
-    print.and.log(sprintf('data from chromosome XY will be deleted! (%s rows)',
-                          thousand.sep(.QC$thisStudy$xy.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
+    print_and_log(sprintf('data from chromosome XY will be deleted! (%s rows)',
+                          thousand_sep(.QC$thisStudy$xy.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
     input.data<-input.data[!r.index,]
   }
 
@@ -58,8 +58,8 @@ find.and.remove.ChromosomeVariant<-function(input.data){
     r.index <- which(input.data$CHR == 26)
     .QC$thisStudy$m.chr.count.removed <- length(r.index)
 
-    print.and.log(sprintf('data from chromosome M will be deleted! (%s rows)',
-                          thousand.sep(.QC$thisStudy$m.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
+    print_and_log(sprintf('data from chromosome M will be deleted! (%s rows)',
+                          thousand_sep(.QC$thisStudy$m.chr.count.removed)),'warning',display=.QC$config$debug$verbose)
     input.data<-input.data[!r.index,]
   }
   ####
@@ -79,15 +79,15 @@ switchNegativeStrandsToPositive<-function(input.data)
 
     input.data[negative.strand.index,'EFFECT_ALL'] <- apply(input.data[negative.strand.index,'EFFECT_ALL'],
                                                           1,
-                                                          function(x) switch.allele(x))
+                                                          function(x) switch_allele(x))
 
     input.data[negative.strand.index,'OTHER_ALL'] <- apply(input.data[negative.strand.index,'OTHER_ALL'],
                                                          1,
-                                                         function(x) switch.allele(x))
+                                                         function(x) switch_allele(x))
 
     input.data[negative.strand.index,'STRAND'] <- '+'
 
-    print.and.log(sprintf('\'%s\' Negative strands found and switched!',thousand.sep(length(negative.strand.index))),
+    print_and_log(sprintf('\'%s\' Negative strands found and switched!',thousand_sep(length(negative.strand.index))),
                   'info')
     .QC$thisStudy$neg.strand.count <- length(negative.strand.index)
   }
@@ -123,8 +123,8 @@ removeMonomorphicVariants <- function(input.data){
                 decValue = .QC$config$output_parameters$out_dec,
 				ordered = .QC$config$output_parameters$ordered)
 
-    print.and.log(sprintf('\'%s\' monomorphic variants removed from file (step 2)!',
-                          thousand.sep(length(monomorphic.alleles))),
+    print_and_log(sprintf('\'%s\' monomorphic variants removed from file (step 2)!',
+                          thousand_sep(length(monomorphic.alleles))),
                   'warning',display=.QC$config$debug$verbose)
 
     input.data<-input.data[!monomorphic.alleles,]
@@ -160,8 +160,8 @@ removeDuplicateVariants <- function(input.data)
 
     tbl <- input.data[dup.allele, .N ,keyby=CHR]
 
-    print.and.log('duplicated variants distribution in input file...','info',display=.QC$config$debug$verbose)
-    print.and.log(kable(tbl,format = "rst"),
+    print_and_log('duplicated variants distribution in input file...','info',display=.QC$config$debug$verbose)
+    print_and_log(kable(tbl,format = "rst"),
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)
@@ -174,8 +174,8 @@ removeDuplicateVariants <- function(input.data)
 
     .QC$thisStudy$duplicate.count <- length(dup.allele)
 
-    print.and.log(sprintf('\'%s\' duplicated variants removed from file.',
-                          thousand.sep(length(dup.allele))),
+    print_and_log(sprintf('\'%s\' duplicated variants removed from file.',
+                          thousand_sep(length(dup.allele))),
                   'warning',display=.QC$config$debug$verbose)
   }
 
@@ -208,8 +208,8 @@ removeDuplicateVariants_postMatching <- function(input.data)
     # remove duplicates from dataset
     input.data<-input.data[!dup.allele,]
 
-    print.and.log(sprintf('\'%s\' duplicated variants removed from file after matching with reference dataset.',
-                          thousand.sep(length(dup.allele))),
+    print_and_log(sprintf('\'%s\' duplicated variants removed from file after matching with reference dataset.',
+                          thousand_sep(length(dup.allele))),
                   'warning',display=.QC$config$debug$verbose)
   }
 

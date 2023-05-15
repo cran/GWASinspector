@@ -28,7 +28,7 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
   input.data[is.na(PVALUE) , PVALUE := PVALUE.calculated]
 
   ## p < 10^-300 => 10^-300
-  input.data <- correct.extreme.pvalues(input.data)
+  input.data <- correct_extreme_pvalues(input.data)
 
   pvalue.count <- nrow(input.data)
 
@@ -54,7 +54,7 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
   plotting.threshold <- -log10(plot_cutoff_p)
 
 
-  qq.af.plot <- plot.qqplot.af(input.data,plotting.threshold)
+  qq.af.plot <- plot_qqplot_af(input.data,plotting.threshold)
 
 
   ## set x and y labels for consistency between plots
@@ -83,9 +83,9 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
   ##
 
 
-  qq.hwe.plot <-  plot.qqplot.hwe(input.data,plotting.threshold ,xlab,ylab)
-  qq.call.plot <- plot.qqplot.call(input.data,plotting.threshold,xlab,ylab)
-  qq.impq.plot <- plot.qqplot.impq(input.data,plotting.threshold,xlab,ylab)
+  qq.hwe.plot <-  plot_qqplot_hwe(input.data,plotting.threshold ,xlab,ylab)
+  qq.call.plot <- plot_qqplot_call(input.data,plotting.threshold,xlab,ylab)
+  qq.impq.plot <- plot_qqplot_impq(input.data,plotting.threshold,xlab,ylab)
 
 
 
@@ -107,7 +107,7 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
 
 
   ### write log #####
-  print.and.log("QQ plot is saved!",'info')
+  print_and_log("QQ plot is saved!",'info')
   #### remove plots from RAM ####
   rm(qq.af.plot,
      qq.hwe.plot,
@@ -120,7 +120,7 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
 
 
 
-plot.qqplot.af <- function(input.data,plotting.threshold) {
+plot_qqplot_af <- function(input.data,plotting.threshold) {
 
 
   #create an emoty plot , return if column not found in data or no valid variant
@@ -216,7 +216,7 @@ plot.qqplot.af <- function(input.data,plotting.threshold) {
 
 }
 
-plot.qqplot.hwe <- function(input.data,plotting.threshold,xlab,ylab) {
+plot_qqplot_hwe <- function(input.data,plotting.threshold,xlab,ylab) {
 
   #create an emoty plot , return if column not found in data or no valid variant
   plot <- textGrob('Insufficient data for "HWE P-value" variable QQ-plot',gp = gpar(fontsize=12,col='red', fontface='bold'))
@@ -306,7 +306,7 @@ plot.qqplot.hwe <- function(input.data,plotting.threshold,xlab,ylab) {
 
 }
 
-plot.qqplot.call <- function(input.data,plotting.threshold,xlab,ylab) {
+plot_qqplot_call <- function(input.data,plotting.threshold,xlab,ylab) {
 
   #create an emoty plot , return if column not found in data or no valid variant
   plot <- textGrob('Insufficient data for "call rate" variable QQ-plot',gp = gpar(fontsize=12,col='red', fontface='bold'))
@@ -398,7 +398,7 @@ plot.qqplot.call <- function(input.data,plotting.threshold,xlab,ylab) {
 
 }
 
-plot.qqplot.impq <- function(input.data,plotting.threshold,xlab,ylab) {
+plot_qqplot_impq <- function(input.data,plotting.threshold,xlab,ylab) {
 
   #create an emoty plot , return if column not found in data or no valid variant
   plot <- textGrob('Insufficient data for "imputation quality QQ-plot', gp = gpar(fontsize=12,col='red', fontface='bold'))

@@ -1,4 +1,4 @@
-plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig.threshold.log, fileName){
+plot_manhattan_standalone<-function(study.sample, plot.title, plot.subtitle, sig.threshold.log, fileName){
 
 
   if(nrow(study.sample) < 1)
@@ -6,7 +6,7 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
 
 
   ## p < 10^-300 => 10^-300
-  study.sample <- correct.extreme.pvalues(study.sample)
+  study.sample <- correct_extreme_pvalues(study.sample)
 
   study.sample <- study.sample[order(CHR,POSITION,decreasing = FALSE)]
   ###
@@ -29,9 +29,9 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
   # mathematical expression for y axis titles
   log10P <- expression(paste("-log"[10], "(",italic(p),")"))
 
-  study.sample <- fill.missing.chr.positions(study.sample)
+  study.sample <- fill_missing_chr_positions(study.sample)
 
-  man.plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
+  man_plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
     scale_y_continuous(log10P, limits=c(y.scale.min,p.Min)) + #, breaks = plot.scale) +
     labs(x="Chromosome",y=" Observed -log(P-value)",
          subtitle=plot.subtitle , title=plot.title) +
@@ -52,7 +52,7 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
     geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red")
 
 
-  ggsave(plot=man.plot,
+  ggsave(plot=man_plot,
          device = .QC$graphic.device,
          filename = fileName,
          width = 400,
@@ -66,14 +66,14 @@ plot.manhattan.standalone<-function(study.sample, plot.title, plot.subtitle, sig
   #### remove variables from RAM
 
   rm(study.sample,
-     man.plot)
+     man_plot)
 
   invisible(gc())
 
 }
 
 
-fill.missing.chr.positions <- function(plot.data) {
+fill_missing_chr_positions <- function(plot.data) {
 
   # check if map file exists in package folder
   chr_pos_map.file <- system.file("extdata", "chr_pos_map.rds", package = "GWASinspector")
@@ -108,17 +108,17 @@ fill.missing.chr.positions <- function(plot.data) {
   return(plot.data)
 }
 
-plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.log, fileName){
+plot_manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.log, fileName){
 
 
   if(nrow(study.sample) < 1)
   {
-    print.and.log('Manhattan plot skipped! not enough variables.','warning',display=.QC$config$debug$verbose)
+    print_and_log('Manhattan plot skipped! not enough variables.','warning',display=.QC$config$debug$verbose)
     return(NULL)
   }
 
   ## p < 10^-300 => 10^-300
-  study.sample <- correct.extreme.pvalues(study.sample)
+  study.sample <- correct_extreme_pvalues(study.sample)
 
   study.sample <- study.sample[order(CHR,POSITION,decreasing = FALSE)]
   ###
@@ -141,9 +141,9 @@ plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
   # mathematical expression for y axis titles
   log10P <- expression(paste("-log"[10], "(",italic(p),")"))
 
-  study.sample <- fill.missing.chr.positions(study.sample)
+  study.sample <- fill_missing_chr_positions(study.sample)
 
-  man.plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
+  man_plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
     scale_y_continuous(log10P, limits=c(y.scale.min,p.Min)) + #, breaks = plot.scale) +
     labs(x="Chromosome",y=" Observed -log(P-value)",
          subtitle=plot.subtitle , title=plot.title) +
@@ -164,7 +164,7 @@ plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
     geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red")
 
 
-  ggsave(plot=man.plot,
+  ggsave(plot=man_plot,
          device = .QC$graphic.device,
          filename = fileName,
          width = 400,
@@ -174,18 +174,18 @@ plot.manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
 
 
   #### write log ####
-  print.and.log("Manhattan plot saved!",
+  print_and_log("Manhattan plot saved!",
                 'info')
   #### remove variables from RAM
   rm(study.sample,
-     man.plot)
+     man_plot)
 
   invisible(gc())
 
 }
 
 
-fill.missing.chr.positions <- function(plot.data) {
+fill_missing_chr_positions <- function(plot.data) {
 
   # check if map file exists in package folder
   chr_pos_map.file <- system.file("extdata", "chr_pos_map.rds", package = "GWASinspector")

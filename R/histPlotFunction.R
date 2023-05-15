@@ -1,4 +1,4 @@
-plot.variable.frequency.histograms<-function(input.data, study , plot.title.text)
+plot_variable_frequency_histograms<-function(input.data, study , plot.title.text)
 {
 
   ###FIXME only draw plot for variable with more than a threshold
@@ -236,7 +236,7 @@ plot.variable.frequency.histograms<-function(input.data, study , plot.title.text
   #dev.off()
 
   ### write log #####
-  print.and.log("histogram plot is saved!",'info')
+  print_and_log("histogram plot is saved!",'info')
 
   #### remove plots from RAM ####
   rm(err.plot,

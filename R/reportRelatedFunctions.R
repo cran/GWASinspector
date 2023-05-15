@@ -1,15 +1,15 @@
-create.report.files <- function() {
+create_report_files <- function() {
 
 
-  # print.and.log('\n','info')
-  print.and.log('============== Creating Report Files ==============',
+  # print_and_log('\n','info')
+  print_and_log('============== Creating Report Files ==============',
                 'info')
 
   if(!.QC$pandoc.exists)
-    print.and.log('pandoc module is required for converting report to Html format! check the manual on how to install.','warning',display=.QC$config$debug$verbose)
+    print_and_log('pandoc module is required for converting report to Html format! check the manual on how to install.','warning',display=.QC$config$debug$verbose)
 
   if(!.QC$kableExtra.package.exists)
-    print.and.log('kableExtra package is suggested for pretty Html format! check the manual on how to install.','warning',display=.QC$config$debug$verbose)
+    print_and_log('kableExtra package is suggested for pretty Html format! check the manual on how to install.','warning',display=.QC$config$debug$verbose)
 
 
 
@@ -18,17 +18,17 @@ create.report.files <- function() {
     tryCatch(
       # multi file comparison report - html
       writeMainReportFile(), #reportRelatedFunctions.R
-      error = function(err) print.and.log(paste0('Error in converting main report to html format. %s ',err$message))
+      error = function(err) print_and_log(paste0('Error in converting main report to html format. %s ',err$message))
     )
 
     tryCatch(
       # file specific report - html
       writeStudyReportFile(), #reportRelatedFunctions.R
-      error = function(err) print.and.log(paste0('Error in converting input file report to html format. %s ',err$message))
+      error = function(err) print_and_log(paste0('Error in converting input file report to html format. %s ',err$message))
     )
   }
   else
-    print.and.log('Writing Html report is skipped! required packages not found.','warning',display=.QC$config$debug$verbose)
+    print_and_log('Writing Html report is skipped! required packages not found.','warning',display=.QC$config$debug$verbose)
 
 
 
@@ -52,7 +52,7 @@ writeMainReportFile <- function() {
 
 
   # check if template file exists and get the path
-  multi.file.report.template <- get.multi.file.report.template()
+  multi.file.report.template <- get_multi_file_report_template()
 
   # if user wants the report file and template file exists
   if(.QC$config$output_parameters$html_report & !is.null(multi.file.report.template))
@@ -71,14 +71,14 @@ writeMainReportFile <- function() {
              output_file = report.output.path,
              quiet = TRUE)
 
-      print.and.log(sprintf('HTML report file saved as %s!',report.output.path),
+      print_and_log(sprintf('HTML report file saved as %s!',report.output.path),
                     'info')
       return(TRUE)
 
     },
     error=function(err){
 
-      print.and.log(paste('---[ERROR saving main html file!---]\nThe result is also saved as txt and is in the output folder.',err$message),
+      print_and_log(paste('---[ERROR saving main html file!---]\nThe result is also saved as txt and is in the output folder.',err$message),
                     'warning',display=.QC$config$debug$verbose)
 
       return(FALSE)
@@ -86,12 +86,12 @@ writeMainReportFile <- function() {
     )
 
     if(render.success)
-      print.and.log(sprintf('HTML report file saved as %s!',report.output.path),
+      print_and_log(sprintf('HTML report file saved as %s!',report.output.path),
                     'info')
 
   }else
   {
-    print.and.log('Writing the report file is skipped!','info')
+    print_and_log('Writing the report file is skipped!','info')
   }
 }
 
@@ -99,7 +99,7 @@ writeMainReportFile <- function() {
 writeStudyReportFile <- function(){
 
   # check if template file exists and get the path
-  report.template <- get.study.specific.report.template()
+  report.template <- get_study_specific_report_template()
 
 
 
@@ -125,23 +125,23 @@ writeStudyReportFile <- function(){
                quiet = TRUE)
 
 
-        print.and.log(sprintf('HTML report file saved as %s!',report.output.path),
+        print_and_log(sprintf('HTML report file saved as %s!',report.output.path),
                       'info')
       }
       ,error=function(err){
-        print.and.log(paste('---[ERROR saving study html file!---]\nThe result is also saved as txt and is in the output folder.',err$message),
+        print_and_log(paste('---[ERROR saving study html file!---]\nThe result is also saved as txt and is in the output folder.',err$message),
                       'warning',display=.QC$config$debug$verbose)
       }
       )
     })
   }else
   {
-    print.and.log('Writing the report file is skipped!','info')
+    print_and_log('Writing the report file is skipped!','info')
   }
 }
 
 
-get.study.specific.report.template <- function() {
+get_study_specific_report_template <- function() {
 
 
   # check if package default report template file is present and accessible. report is skipped if template file not found
@@ -158,14 +158,14 @@ get.study.specific.report.template <- function() {
     return(report.template.file)
   else
   {
-    print.and.log('Report template file is not found in package! try re-installing GWASinspector package.','warning',display=.QC$config$debug$verbose)
-    print.and.log('Writing the report file is skipped!','info')
+    print_and_log('Report template file is not found in package! try re-installing GWASinspector package.','warning',display=.QC$config$debug$verbose)
+    print_and_log('Writing the report file is skipped!','info')
     return(NULL)
   }
 }
 
 
-get.multi.file.report.template <- function() {
+get_multi_file_report_template <- function() {
   # check if package default report template file is present and accessible. report is skipped if template file not found
   if(.QC$kableExtra.package.exists)
     report.template.file <- system.file("rmd", "multiFileReport_extra.rmd", package = "GWASinspector")
@@ -177,15 +177,15 @@ get.multi.file.report.template <- function() {
     return(report.template.file)
   else
   {
-    print.and.log('Main-Report template file is not found in package! try re-installing GWASinspector package.','warning',display=.QC$config$debug$verbose)
-    print.and.log('Writing the main-report file is skipped!','info')
+    print_and_log('Main-Report template file is not found in package! try re-installing GWASinspector package.','warning',display=.QC$config$debug$verbose)
+    print_and_log('Writing the main-report file is skipped!','info')
     return(NULL)
   }
 }
 
 
 # display a report table to user for each input file
-report.to.txt.file <- function(study) {
+report_to_txt_file <- function(study) {
 
   # remove old report file if exists
   if(file.exists(study$txt.report.path))
@@ -530,7 +530,7 @@ report.to.txt.file <- function(study) {
   writeTXTreport(' ')
 
   ##========================================
-  # print.and.log('--------[Result from matching with standard reference file!]--------','info', cat = FALSE)
+  # print_and_log('--------[Result from matching with standard reference file!]--------','info', cat = FALSE)
 
   writeTXTreport(' ')
   # writeTXTreport('========================================================')
@@ -580,7 +580,7 @@ report.to.txt.file <- function(study) {
 
   if(!is.na(.QC$config$supplementaryFiles$allele_ref_alt))
   {
-    # print.and.log('-------[Result from matching with alternate reference file!]-------','info', cat = FALSE)
+    # print_and_log('-------[Result from matching with alternate reference file!]-------','info', cat = FALSE)
     writeTXTreport(' ')
     writeTXTreport('=========================================================')
     writeTXTreport('= Result from matching with alternate reference dataset =')
@@ -626,7 +626,7 @@ report.to.txt.file <- function(study) {
 
 
   ##=========================================
-  # print.and.log('-------[Calculated variables]-------','info', cat = FALSE)
+  # print_and_log('-------[Calculated variables]-------','info', cat = FALSE)
   writeTXTreport(' ')
   writeTXTreport('==============================================')
   writeTXTreport('============ QC summary statistics ===========')
@@ -676,7 +676,7 @@ report.to.txt.file <- function(study) {
 
 
   ##=========================================
-  # print.and.log('-------[Calculated variables]-------','info', cat = FALSE)
+  # print_and_log('-------[Calculated variables]-------','info', cat = FALSE)
   writeTXTreport(' ')
   writeTXTreport('==============================================')
   writeTXTreport('========== Distribution statistics  ==========')
@@ -759,7 +759,7 @@ report.to.txt.file <- function(study) {
 
   ## END OF REPORT
   # =============
-  print.and.log(sprintf('Report file saved as \'%s\'',study$txt.report.path),
+  print_and_log(sprintf('Report file saved as \'%s\'',study$txt.report.path),
                 'info')
 }
 
@@ -767,7 +767,7 @@ report.to.txt.file <- function(study) {
 
 # save each study object as rdata file
 # to compare different files after each is run separately
-save.rds.file <- function(study) {
+save_rds_file <- function(study) {
 
 
   # rm(list=setdiff(ls(envir =  study$effect.plot$plot_env),
@@ -786,7 +786,7 @@ save.rds.file <- function(study) {
     },
     error = function(err)
     {
-      print.and.log(paste('Could not save study RDS object file:',err$message),'warning',display=.QC$config$debug$verbose)
+      print_and_log(paste('Could not save study RDS object file:',err$message),'warning',display=.QC$config$debug$verbose)
     }
   )
 }

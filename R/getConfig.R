@@ -6,7 +6,7 @@
 #' @param dir.path Path to the folder for saving a sample configuration file.
 #' @return Copies a sample configuration file (config.ini) in the specified folder.
 #'
-get.config <- function(dir.path)
+get_config <- function(dir.path)
 {
   if(missing(dir.path))
   {

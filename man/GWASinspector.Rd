@@ -3,6 +3,7 @@
 \docType{package}
 \name{GWASinspector}
 \alias{GWASinspector}
+\alias{GWASinspector-package}
 \title{Comprehensive and Easy to Use Quality Control of GWAS Results}
 \description{
 When evaluating the results of a genome-wide association study (GWAS), it is important to perform a quality control to ensure that the results are valid, complete, correctly formatted, and, in case of meta-analysis, consistent with other studies in the same analysis.

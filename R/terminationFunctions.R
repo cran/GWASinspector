@@ -54,3 +54,16 @@ resetDefaultSystemOptions<-function(user.options)
 {
   options(user.options)
 }
+
+
+# This is an issue with ggsave() from ggplot2 package
+# https://github.com/tidyverse/ggplot2/issues/2787
+removeRedundantPlotFile <- function()
+{
+  redundantFilePath = paste(.QC$config$paths$dir_output,"Rplots.pdf",sep='/')
+  try(
+    {
+      if(file.exists(redundantFilePath))
+        file.remove(redundantFilePath)
+    },silent = TRUE)
+}

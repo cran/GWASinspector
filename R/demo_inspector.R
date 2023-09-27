@@ -25,6 +25,7 @@ demo_inspector <- function(result.dir)
   changeROptions() ## change R Options for better performance. THIS WILL BE REVERSED AT THE END OF QC RUN!
   # reset to default setting and empty the created environmet on exit (including errors)
   on.exit({
+    removeRedundantPlotFile() #remove the possible existing Rplots.pdf
     removeFunctionVariablesFromRAM() #terminationFunctions.R
     resetDefaultSystemOptions(user.options) # sytem restore
   })

@@ -28,6 +28,7 @@ run_inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
   # reset to default setting and empty the createdenvironmet on exit (including errors)
   on.exit({
+    removeRedundantPlotFile() #remove the possible existing Rplots.pdf
     removeFunctionVariablesFromRAM() #terminationFunctions.R
     resetDefaultSystemOptions(user.options) # sytem restore
   })

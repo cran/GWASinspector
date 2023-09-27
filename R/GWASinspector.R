@@ -37,4 +37,5 @@
 #'
 #' @docType package
 #' @name GWASinspector
+#' @aliases GWASinspector-package
 NULL

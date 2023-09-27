@@ -24,15 +24,15 @@
 #  
 
 ## -----------------------------------------------------------------------------
-#  system.check()
+#  system_check()
 #  
 
 ## -----------------------------------------------------------------------------
-#  get.headerTranslation('/path/to/referenceFolder') # copy the file to selected folder
+#  get_headerTranslation('/path/to/referenceFolder') # copy the file to selected folder
 #  
 
 ## -----------------------------------------------------------------------------
-#  get.config('/home/user') # copy the file to selected folder
+#  get_config('/home/user') # copy the file to selected folder
 #  
 
 ## -----------------------------------------------------------------------------
@@ -41,21 +41,21 @@
 #  library(GWASinspector)
 #  
 #  ## import the QC-configuration file
-#  job <- setup.inspector("/home/user/config.ini")
+#  job <- setup_inspector("/home/user/config.ini")
 #  
 #  ## check the created instance
 #  ## input result files that will be inspected are also displayed
 #  job
 #  
 #  ## run the algorithm
-#  job <- run.inspector(job)
+#  job <- run_inspector(job)
 #  
 #  ## check the results
 #  ## comprehensive report and result file are already saved in the output folder
-#  result.inspector(job)
+#  result_inspector(job)
 #  
 
 ## -----------------------------------------------------------------------------
 #  library(GWASinspector)
-#  demo.inspector('/sample_dir')
+#  demo_inspector('/sample_dir')
 

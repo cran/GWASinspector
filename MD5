@@ -1,8 +1,8 @@
 82642a41f0e80cea83d228e323926840 *ChangeLog
-d84c4915ed5858fe7bdd2a0b02b8b09a *DESCRIPTION
+194083be816021c7eac20abb6326fd49 *DESCRIPTION
 562fa45362c7a8bd27e76cc5f1373072 *NAMESPACE
 267c49fbce4c9e3b18abab4205676fd6 *NEWS
-d68e12228b8f1a12a57897a4b41eb4b4 *R/GWASinspector.R
+a88c68b821fc04e54c785fc42b0b30cd *R/GWASinspector.R
 3810adedea74743109654e3473fd2ac8 *R/QQPlotFunction.R
 329c10e5dbbeeb50460cb483ed2d7603 *R/Study.R
 439a7ee0d02eebeb954d41ac8da1ca66 *R/aaa.R
@@ -15,7 +15,7 @@ b5c68063b53cbd61138863ae230697f6 *R/checkConfigFile.R
 599287f99677cb378c0a257d234a67e3 *R/class_definition.R
 aace12f3712a80e0aed7682b9ded14d3 *R/compare_GWASs.R
 27f1932b32ebbaa768c59514f3548f62 *R/demoConfig.R
-ef185ec7fad96c4599eded9114f506bc *R/demo_inspector.R
+b74556925902f890321bb7d670344ac5 *R/demo_inspector.R
 0ec01d4a49500e765fbbdb5ab0b13ade *R/drawPlots.R
 0d67373470ee98d8d34baba8445b6e98 *R/effect_size_ref_make.R
 309a44c7f8ae30ee154eff3562fee0ff *R/effectsizePlotFunction.R
@@ -40,14 +40,14 @@ fcd3b1632678311b8832dcd6d95f32ff *R/pValueFunctions.R
 63a627bce1a406078bc01a74409f28f0 *R/referenceRelatedFunctions.R
 95f6805a2a914181dd11cf9bfa7b8d9d *R/reportRelatedFunctions.R
 822d0588088c3568f4a13f5f5e44637f *R/result_inspector.R
-2e4d04cc113af3bcdba3008e74a96049 *R/run_inspector.R
+41a52f17da8bae3299f005f39b0eb8b9 *R/run_inspector.R
 e49c8f872e3fd27ddf259f00713b3ead *R/saveFilesFunctions.R
 7a74ad2d7263985ced3f65e920ec95ff *R/setGraphicDevice.R
 7a435cfb1686a7e155289d005ebf70f0 *R/setup_inspector.R
 bfbd785ee1828ffb11d9b0789da472c1 *R/studyFunctions.R
 4f8cd6c1f6d85fdcdd18189529485210 *R/suppFunctions.R
 eab7a96afcee8ba4abf3cc7efd2ebbee *R/system_check.R
-1d4d288753a3e395eda3ecdfcbc902f1 *R/terminationFunctions.R
+52af166bcbe5019a8fd2af70349bd2f4 *R/terminationFunctions.R
 ee8b7bedc4071e3b6dcfb741e3661cc6 *R/uploadInputFile.R
 3fc2a62680be19b91937f5ff87e8143e *R/validate.R
 8eeff78f804463cea81ed65a59133f74 *R/variantMatching.R
@@ -56,9 +56,9 @@ c02c16349ae1c93763d60acadd9666a3 *R/variantModifierFunctions.R
 0b91a93bb8ca6c5a258d9f32d0f1bc4d *R/zzz.R
 1b1215f51e07c75f1badbadbeb01904b *build/vignette.rds
 2f6e42c49f069770ce7afcbaf1ada953 *inst/CITATION
-d346512bbbdd54f09143491865111e7b *inst/doc/GWASinspector.R
-164cf77385974d2a94558ca019b671d9 *inst/doc/GWASinspector.Rmd
-ec076bef468e94713ea1fac2e2e9e708 *inst/doc/GWASinspector.html
+0bd27776d1bc6cedf0a4fe46845bc212 *inst/doc/GWASinspector.R
+d063fbe393fa148403ba45b24998db96 *inst/doc/GWASinspector.Rmd
+afba13c7add68223b4b6e98c2bcec055 *inst/doc/GWASinspector.html
 34df5f5f1f76a4d2b886c7772218110c *inst/extdata/DNA.png
 0078e825648fdc7a0617a128ee7db8e2 *inst/extdata/HapMap_CEU_r28_b36_EDIT_v10c_sample.rds
 489516f3e4068c1006857e5ffa87c163 *inst/extdata/alt_headers.txt
@@ -73,7 +73,7 @@ e6b6edb731864e9138c15f9e2a1e7b61 *inst/rmd/mainReport.rmd
 28ce9f00ca3e360e0e65f37588d9d3c2 *inst/rmd/multiFileReport_extra.rmd
 c10b7e5f2de69b86160b8261ebf44620 *inst/rmd/styles.css
 95d8149f0807630afacebfcca2d055d2 *inst/rmd/styles_extra.css
-c266a7faaeac5ac6213f6a64096bdae2 *man/GWASinspector.Rd
+e73de164da8d60e542499bade66944d2 *man/GWASinspector.Rd
 462836242686a2d1f50700ea0abadf33 *man/Inspector-class.Rd
 81bf7d089200154f80d27b3bf2d7adef *man/Study-class.Rd
 28abf830d914fe48e2305f661d274215 *man/StudyList-class.Rd
@@ -86,4 +86,4 @@ c5b9e184cad96687ff74ff21fdc42ba7 *man/manhattan_plot.Rd
 9225d203eace9a89ea4e7f80c16e61e2 *man/run_inspector.Rd
 bdd878f789270d3f69bfc8ea747d541e *man/setup_inspector.Rd
 fee8a333b205370928437c6c75651f1a *man/system_check.Rd
-164cf77385974d2a94558ca019b671d9 *vignettes/GWASinspector.Rmd
+d063fbe393fa148403ba45b24998db96 *vignettes/GWASinspector.Rmd

@@ -1,8 +1,8 @@
 Package: GWASinspector
 Type: Package
 Title: Comprehensive and Easy to Use Quality Control of GWAS Results
-Version: 1.6.4
-Date: 2023-05-14
+Version: 1.6.5
+Date: 2023-09-27
 Authors@R: c(
   person(given = "Alireza", family = "Ani", role = c("aut", "cre"), email = "a.ani@umcg.nl"),
   person(given = "Peter J.", family = "van der Most", role = "aut"),
@@ -21,10 +21,10 @@ License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-05-15 17:16:49 UTC; Alireza
+Packaged: 2023-09-27 19:03:52 UTC; Alireza
 Author: Alireza Ani [aut, cre],
   Peter J. van der Most [aut],
   Ahmad Vaez [aut],
   Ilja M. Nolte [aut]
 Repository: CRAN
-Date/Publication: 2023-05-15 18:30:02 UTC
+Date/Publication: 2023-09-27 20:00:05 UTC

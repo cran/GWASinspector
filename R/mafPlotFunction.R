@@ -287,7 +287,7 @@ plot_DataMAF_vs_RefMAF<-function(input.data,mafPlotPath,AFcor,AFcor.palindromic,
      all.alleles,
      amb.alleles)
 
-  invisible(gc())
+  # invisible(gc())
 
 }
 

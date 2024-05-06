@@ -254,7 +254,7 @@ run_inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
     .QC$qc.study.list[[i]]$effect.plot <- NULL
   }
 
-  invisible(gc())
+  # invisible(gc())
 
 
 
@@ -264,6 +264,7 @@ run_inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
   ## ==============================================
   create_report_files()
 
+  inspector@StudyList <- .QC$StudyList
 
   ### post QC processes
   # 1 find significant variants
@@ -277,10 +278,8 @@ run_inspector <- function(inspector, verbose = TRUE, test.run=FALSE)
 
   #print_and_log(mem_used(),'info',cat= FALSE)
   ## 9- termination functions
-  print_and_log(sprintf('\nFinished analyzing %s files!',length(.QC$qc.study.list)))
+  print_and_log(sprintf('Finished analyzing %s files!',length(.QC$qc.study.list)))
   print_and_log(sprintf("Run time: %s",timetaken(start.time)))# END LOG
 
-
-  inspector@StudyList <- .QC$StudyList
   return(invisible(inspector))
 }

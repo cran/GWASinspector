@@ -68,45 +68,11 @@ plot_manhattan_standalone<-function(study.sample, plot.title, plot.subtitle, sig
   rm(study.sample,
      man_plot)
 
-  invisible(gc())
+  #invisible(gc())
 
 }
 
 
-fill_missing_chr_positions <- function(plot.data) {
-
-  # check if map file exists in package folder
-  chr_pos_map.file <- system.file("extdata", "chr_pos_map.rds", package = "GWASinspector")
-
-  if(!file.exists(chr_pos_map.file))
-    return(plot.data)
-
-  # load the map file
-  chr_pos_map <- readRDS(chr_pos_map.file)
-
-  # this column might be missing , if the function is run independently from the package
-  if(!is.element('PVALUE.calculated',names(plot.data)))
-    plot.data[,PVALUE.calculated := NA]
-
-
-  for(i in 1:nrow(chr_pos_map))
-  {
-
-    plot.data <- rbind(plot.data,data.table::data.table(CHR = chr_pos_map[i]$CHR,
-                                                        PVALUE = NA ,
-                                                        POSITION = chr_pos_map[i]$`min(POS)` - 2 ,
-                                                        PVALUE.calculated = NA))
-
-    plot.data <- rbind(plot.data,data.table::data.table(CHR = chr_pos_map[i]$CHR,
-                                                        PVALUE = NA ,
-                                                        POSITION = chr_pos_map[i]$`max(POS)` + 2 ,
-                                                        PVALUE.calculated = NA))
-  }
-
-
-
-  return(plot.data)
-}
 
 plot_manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.log, fileName){
 
@@ -149,18 +115,22 @@ plot_manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
          subtitle=plot.subtitle , title=plot.title) +
     facet_grid(.~study.sample$CHR, scales = "free",space = 'free', switch = "both", margins = TRUE) +
     geom_point() +
-    theme_grey() +
+   # theme_grey() +
+    theme_classic() +
     theme(strip.background = element_blank(),
-          strip.text.x = element_text(size=12, face = "bold")
-          ,strip.text.y = element_text(size=14, face = "bold")
-          ,axis.text.x = element_blank()
-          ,axis.ticks.x = element_blank()
-          ,legend.position="none"
-          ,plot.title=element_text(size=30, face="bold",hjust = 0.5)
-          ,plot.subtitle=element_text(size=15, face="bold",hjust = 0.5)
-          ,axis.text.y=element_text(size=15)
-          ,axis.title.x=element_text(size=25)
-          ,axis.title.y=element_text(size=25)) +
+          strip.text.x = element_text(size=12, face = "bold"),
+          strip.text.y = element_text(size=14, face = "bold"),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          legend.position="none",
+          plot.title=element_text(size=30, face="bold",hjust = 0.5),
+          plot.subtitle=element_text(size=15, face="bold",hjust = 0.5),
+          axis.text.y=element_text(size=15),
+          axis.title.x=element_text(size=25),
+          axis.title.y=element_text(size=25),
+          panel.spacing = unit(0, "points"),
+          panel.border = element_rect(fill=NA,color="black", size=0.1, linetype="solid")
+          ) +
     geom_hline(data = study.sample, aes(yintercept = sig.threshold.log),color="red")
 
 
@@ -180,10 +150,9 @@ plot_manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
   rm(study.sample,
      man_plot)
 
-  invisible(gc())
+  #invisible(gc())
 
 }
-
 
 fill_missing_chr_positions <- function(plot.data) {
 

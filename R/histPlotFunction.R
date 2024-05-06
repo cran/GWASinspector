@@ -249,6 +249,6 @@ plot_variable_frequency_histograms<-function(input.data, study , plot.title.text
      final.plot,
      tmp.data)
 
-  invisible(gc())
+  # invisible(gc())
 
 }

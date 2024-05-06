@@ -63,7 +63,7 @@ multi_file_comparison <- function() {
   }
 
   ## free RAM
-  invisible(gc())
+  # invisible(gc())
 }
 
 finalReport_to_txt_file <- function(config,study.list)

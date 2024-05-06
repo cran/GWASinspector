@@ -22,7 +22,7 @@ system_check <- function()
     "kableExtra" = ifelse(.QC$kableExtra.package.exists,   paste(packageVersion('kableExtra'),collapse = '.') , 'not available'),
     "ggplot2" = .QC$ggplot2.version,
     "openxlsx" = ifelse(.QC$xlsx.package.exists,  paste(packageVersion('openxlsx'),collapse = '.') , 'not available'),
-    "rJava" = ifelse(.QC$rJava.package.exists,  paste(packageVersion('rJava'),collapse = '.') , 'not available'),
+    #"rJava" = ifelse(.QC$rJava.package.exists,  paste(packageVersion('rJava'),collapse = '.') , 'not available'),
     "RSQLite" = ifelse(.QC$rsqlite.package.exists,  paste(packageVersion('RSQLite'),collapse = '.') , 'not available'),
     "Capabilities" = '  '
   )))

@@ -76,7 +76,7 @@ plot_observedP_vs_expectedP<-function(input.data,plot_cutoff_p,PVcor,pvalCorPlot
 
   #### remove variables from RAM
   rm(study.sample, plot ,boolScale)
-  invisible(gc())
+  # invisible(gc())
 }
 
 
@@ -192,7 +192,7 @@ plot_observedP_vs_expectedP_dual<-function(input.data,plot_cutoff_p,PVcor,pvalCo
 
   #### remove variables from RAM
   rm(study.sample, plot,plot_HQ ,boolScale)
-  invisible(gc())
+  # invisible(gc())
 }
 
 

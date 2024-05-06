@@ -164,6 +164,9 @@ validate_Inspector <- function(object, printWarnings = TRUE)
   if(object@plot_specs$make_plots == FALSE)
     warnings <- c(warnings, "Plots are skipped.")
 
+  if(object@plot_specs$plot_HQ_Manhattan == TRUE)
+    warnings <- c(warnings, "Only HQ variants are used for Manhattan plot.")
+
   if(object@output_parameters$html_report == FALSE)
     warnings <- c(warnings, "HTML report will not be saved.")
 

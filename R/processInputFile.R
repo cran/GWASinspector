@@ -84,7 +84,7 @@ processInputFile <- function(input.data) {
   if(is.null(input.data))
     return(NULL)
 
-  invisible(gc())
+  # invisible(gc())
 
 
   ##===============================
@@ -109,7 +109,7 @@ processInputFile <- function(input.data) {
   input.data.backup  <-  input.data ##a copy of input data is kept for final report (without NA)
   input.data.backup <- as.data.table(input.data.backup)
 
-  invisible(gc())
+  # invisible(gc())
 
   input.data <- tryCatch(processNonCrucialColumns(input.data),
                          error = function(err) {
@@ -128,7 +128,7 @@ processInputFile <- function(input.data) {
   save_NA_Dataset(input.data , input.data.backup)
 
   rm(input.data.backup) # file is saved and no need for this variable anymore
-  invisible(gc())
+  # invisible(gc())
   ## ------------------------------------------------
   #### step 4: saving invalid variants
   #### clean the file from monomorphic, duplicates ,chromosomes
@@ -145,7 +145,7 @@ processInputFile <- function(input.data) {
     return(NULL)
 
 
-  invisible(gc())
+  # invisible(gc())
 
   # find INDELs and SNPs
   input.data <- tryCatch(variantDiscrimination(input.data),

@@ -111,6 +111,7 @@ Inspector <- setClass(
     ),
     plot_specs = list(
       make_plots = TRUE,
+      plot_HQ_Manhattan = TRUE,
       plot_cutoff_p = 0.01,
       graphic_device = "",
       plot_title = ""
@@ -307,6 +308,7 @@ setMethod(
     cat("\n\tGraphic device:\t", object@plot_specs$graphic_device)
     cat("\n\tPlot title:\t", object@plot_specs$plot_title)
     cat("\n\tP-value cut off:\t", object@plot_specs$plot_cutoff_p)
+    cat("\n\tUse HQ variants in Manhattan plot:\t", object@plot_specs$plot_HQ_Manhattan)
 
 
     cat("\n\n   HQ variant filters")

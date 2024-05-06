@@ -76,7 +76,7 @@ demo_inspector <- function(result.dir)
   .QC$qc.study.list <- lapply(.QC$qc.study.list,
                               process_each_file)
 
-  invisible(gc())
+  # invisible(gc())
 
   .QC$config$new_items$endtime <- Sys.time()
 

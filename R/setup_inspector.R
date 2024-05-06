@@ -69,6 +69,7 @@ setup_inspector <- function(config.file , validate = TRUE)
     ),
     plot_specs = list(
       make_plots = configuration$plot_specs$make_plots,
+      plot_HQ_Manhattan = configuration$plot_specs$plot_HQ_Manhattan,
       plot_cutoff_p = configuration$plot_specs$plot_cutoff_p,
       graphic_device = configuration$plot_specs$graphic_device,
       plot_title = configuration$plot_specs$plot_title

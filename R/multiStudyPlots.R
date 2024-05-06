@@ -80,7 +80,7 @@ multi_study_precision_plot <- function(study.list, graphic.device , figure.path)
 
 
     rm(plot)
-    invisible(gc())
+    # invisible(gc())
 
     print_and_log("Precision plot is saved!",'info')
 
@@ -177,7 +177,7 @@ multi_study_skew_kurt_plot <- function(study.list, graphic.device , figure.path)
 
 
     rm(plot)
-    invisible(gc())
+    # invisible(gc())
 
     print_and_log("Skewness vs kurtosis plot is saved!",'info')
   }else
@@ -245,7 +245,7 @@ multi_study_eff_plot <- function(study.list, graphic.device , figure.path)
            limitsize = FALSE )
 
 
-    invisible(gc())
+    # invisible(gc())
 
 
     print_and_log("Effect-size box plot is saved!",'info')

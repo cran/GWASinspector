@@ -64,7 +64,7 @@ writeMainReportFile <- function() {
     render.success <- tryCatch({
       # clear cache and RAM
       knitr::knit_meta(class=NULL, clean = TRUE)
-      invisible(gc())
+      # invisible(gc())
 
       render(multi.file.report.template,
              output_dir = .QC$config$paths$dir_output,
@@ -117,7 +117,7 @@ writeStudyReportFile <- function(){
 
         # clear cache and RAM
         knitr::knit_meta(class=NULL, clean = TRUE)
-        invisible(gc())
+        # invisible(gc())
 
         render(report.template,
                output_dir = .QC$config$paths$dir_output,

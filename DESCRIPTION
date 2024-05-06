@@ -1,8 +1,8 @@
 Package: GWASinspector
 Type: Package
 Title: Comprehensive and Easy to Use Quality Control of GWAS Results
-Version: 1.6.5
-Date: 2023-09-27
+Version: 1.7.1
+Date: 2024-05-06
 Authors@R: c(
   person(given = "Alireza", family = "Ani", role = c("aut", "cre"), email = "a.ani@umcg.nl"),
   person(given = "Peter J.", family = "van der Most", role = "aut"),
@@ -19,12 +19,12 @@ URL: http://GWASinspector.com
 Description: When evaluating the results of a genome-wide association study (GWAS), it is important to perform a quality control to ensure that the results are valid, complete, correctly formatted, and, in case of meta-analysis, consistent with other studies that have applied the same analysis. This package was developed to facilitate and streamline this process and provide the user with a comprehensive report. 
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2023-09-27 19:03:52 UTC; Alireza
+Packaged: 2024-05-06 14:02:19 UTC; Alireza
 Author: Alireza Ani [aut, cre],
   Peter J. van der Most [aut],
   Ahmad Vaez [aut],
   Ilja M. Nolte [aut]
 Repository: CRAN
-Date/Publication: 2023-09-27 20:00:05 UTC
+Date/Publication: 2024-05-06 18:20:10 UTC

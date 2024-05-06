@@ -40,13 +40,16 @@ variant_match <- function(effect_allele, other_allele, ALT, REF, VT) {
     if (is.na(REF) | REF == "")
       return(list(9L, palindromic_variant))
 
+
     if (effect_allele == ALT && other_allele == REF)
+																	   
       return(list(1L, palindromic_variant))
 
 
     if(palindromic_variant)
     {
       if (effect_allele == REF && other_allele == ALT)
+																		  
         return(list(2L, palindromic_variant))
       else
         return(list(4L, palindromic_variant))
@@ -54,6 +57,7 @@ variant_match <- function(effect_allele, other_allele, ALT, REF, VT) {
     else
     {
       if (other_allele_switched == REF && effect_allele_switched == ALT)
+																							
         return(list(3L, FALSE))
       else if ((effect_allele == REF && other_allele == ALT) |
                (effect_allele_switched == REF && other_allele_switched == ALT))
@@ -82,10 +86,12 @@ variant_match <- function(effect_allele, other_allele, ALT, REF, VT) {
 
 
     if (other_allele_switched == REF && effect_allele_switched == ALT) {
+																						   
       return(list(3L, FALSE))
     }
 
     if(effect_allele %in% c("R","D","I") | (effect_allele == ALT && other_allele == REF))
+																										 
       return(list(1L, FALSE))
 
 

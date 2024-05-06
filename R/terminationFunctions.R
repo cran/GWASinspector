@@ -38,7 +38,7 @@ removeFunctionVariablesFromRAM<-function(){
  #    print_and_log('Graphic devices are closed.','info')
 
 
-  invisible(gc()) ## Free RAM
+  #invisible(gc()) ## Free RAM
 
   if(.QC$verbose)
   {

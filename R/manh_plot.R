@@ -14,6 +14,7 @@
 #' @param beta (optional) Name of the effect-size column
 #' @param std.error (optional) Name of the standard error column
 #' @param check.columns Whether to check input columns for invalid values
+#' @param useHQ Whether to only plot HQ variants
 #' @return Generates and saves a Manhattan plot for the provided data.
 #'
 manhattan_plot <- function(dataset,
@@ -27,7 +28,8 @@ manhattan_plot <- function(dataset,
                      sig.threshold.log = -log10(5*10^-8),
                      beta=NULL,
                      std.error = NULL,
-                     check.columns = TRUE) {
+                     check.columns = TRUE,
+                     useHQ = TRUE) {
 
   # check if function arguments are defined
   if(missing(dataset) ||
@@ -99,7 +101,7 @@ manhattan_plot <- function(dataset,
 
   ##2- subset input data and calculate missing pvalues
 
-  if('HQ' %in% col.names) # filter data if function is called from package and contains HQ column
+  if('HQ' %in% col.names & useHQ) # filter data if function is called from package and contains HQ column
     plot.data <- subset(dataset[HQ==TRUE], select = selected.col.names)
   else
     plot.data <- subset(dataset, select = selected.col.names)
@@ -178,7 +180,8 @@ man_plot <- function(dataset,
                      sig.threshold.log = -log10(5*10^-8),
                      beta=NULL,
                      std.error = NULL,
-                     check.columns = TRUE) {
+                     check.columns = TRUE,
+                     useHQ = TRUE) {
 
   # check if function arguments are defined
   if(missing(dataset) ||
@@ -253,7 +256,7 @@ man_plot <- function(dataset,
 
   ##2- subset input data and calculate missing pvalues
 
-  if('HQ' %in% col.names) # filter data if function is called from package and contains HQ column
+  if('HQ' %in% col.names & useHQ) # filter data if function is called from package and contains HQ column
     plot.data <- subset(dataset[HQ==TRUE], select = selected.col.names)
   else
     plot.data <- subset(dataset, select = selected.col.names)

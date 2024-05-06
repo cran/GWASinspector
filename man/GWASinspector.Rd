@@ -43,3 +43,21 @@ The main product of the QC is the extensive log file (in Excel/HTML format, depe
 \code{\link{manhattan_plot}} Generates the Manhattan plot from a GWAS result file. This function has many features that are described in the package tutorial.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{http://GWASinspector.com}
+}
+
+}
+\author{
+\strong{Maintainer}: Alireza Ani \email{a.ani@umcg.nl}
+
+Authors:
+\itemize{
+  \item Peter J. van der Most
+  \item Ahmad Vaez
+  \item Ilja M. Nolte
+}
+
+}

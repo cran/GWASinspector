@@ -45,5 +45,5 @@ plot_DataEFFECT_vs_RefEFFECT<-function(input.data, effPlotPath, plot.title.text)
                 'info')
 
   rm(eff.ggplot)
-  invisible(gc())
+  # invisible(gc())
 }

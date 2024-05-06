@@ -16,7 +16,8 @@ manhattan_plot(
   sig.threshold.log = -log10(5 * 10^-8),
   beta = NULL,
   std.error = NULL,
-  check.columns = TRUE
+  check.columns = TRUE,
+  useHQ = TRUE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ manhattan_plot(
 \item{std.error}{(optional) Name of the standard error column}
 
 \item{check.columns}{Whether to check input columns for invalid values}
+
+\item{useHQ}{Whether to only plot HQ variants}
 }
 \value{
 Generates and saves a Manhattan plot for the provided data.

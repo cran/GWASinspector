@@ -38,46 +38,10 @@ checkConfigFile <- function(config.file) {
 
   ## ========================================================
   ## 2
-  ##change \ to / in paths
-  config$paths$dir_data <-
-    gsub(
-      pattern = '\\\\',
-      replacement = '/' ,
-      x = config$paths$dir_data
-    )
-  config$paths$dir_output <-
-    gsub(
-      pattern = '\\\\',
-      replacement = '/' ,
-      x = config$paths$dir_output
-    )
-  config$paths$dir_references <-
-    gsub(
-      pattern = '\\\\',
-      replacement = '/' ,
-      x = config$paths$dir_references
-    )
 
-  ## double check to remove / at the end of path e.g '/var/user/user1/' to 'var/user/user1'
-  config$paths$dir_data <-
-    sub(
-      pattern = '/$',
-      replacement = '' ,
-      x = config$paths$dir_data
-    )
-  config$paths$dir_output <-
-    sub(
-      pattern = '/$',
-      replacement = '' ,
-      x = config$paths$dir_output
-    )
-  config$paths$dir_references <-
-    sub(
-      pattern = '/$',
-      replacement = '' ,
-      x = config$paths$dir_references
-    )
-
+  config$paths$dir_data <- cleanDirectoryName(config$paths$dir_data)
+  config$paths$dir_output <- cleanDirectoryName(config$paths$dir_output)
+  config$paths$dir_references <- cleanDirectoryName(config$paths$dir_references)
 
 
   ##### file names
@@ -356,6 +320,9 @@ checkConfigFile <- function(config.file) {
 
   config$plot_specs$make_plots  <-
     checkConfigParameters(config$plot_specs$make_plots, 'logical', FALSE)
+
+  config$plot_specs$plot_HQ_Manhattan  <-
+    checkConfigParameters(config$plot_specs$plot_HQ_Manhattan, 'logical', TRUE)
 
 
 
@@ -680,6 +647,7 @@ set_test_run_variables <- function(test.run)
   {
     .QC$config$output_parameters$save_final_dataset <- FALSE
     .QC$config$plot_specs$make_plots <- FALSE
+    .QC$config$plot_specs$plot_HQ_Manhattan <- TRUE
     .QC$config$test.run <- TRUE
 
   }
@@ -744,6 +712,7 @@ make_config <- function(object)
     ),
     plot_specs = list(
       make_plots = object@plot_specs$make_plots,
+      plot_HQ_Manhattan = object@plot_specs$plot_HQ_Manhattan,
       plot_cutoff_p = object@plot_specs$plot_cutoff_p,
       graphic_device = object@plot_specs$graphic_device,
       plot_title = object@plot_specs$plot_title
@@ -840,4 +809,28 @@ make_config <- function(object)
   )
 
   return(config)
+}
+
+
+cleanDirectoryName <- function(dirPath)
+{
+  ##change \ to / in paths
+  dirPath <-
+    gsub(
+      pattern = '\\\\',
+      replacement = '/' ,
+      x = dirPath
+    )
+
+  ## double check to remove / at the end of path e.g '/var/user/user1/' to 'var/user/user1'
+  ## double check to remove " in the adress
+  dirPath <-
+    gsub(
+      pattern = '[\'\"]|/[\'\"]$|/$',
+      replacement = '' ,
+      x = dirPath
+    )
+
+  return(dirPath)
+
 }

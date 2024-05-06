@@ -115,7 +115,7 @@ QQ_plots<-function(input.data,plot_cutoff_p = 0.01,plot.title.text)
      qq.impq.plot
   )
 
-  invisible(gc())
+  # invisible(gc())
 }
 
 

@@ -52,7 +52,7 @@ process_each_file <- function(study){
     return(NULL)
   }
 
-  invisible(gc())
+  # invisible(gc())
 
 
   # remove duplicate lines of data
@@ -80,7 +80,7 @@ process_each_file <- function(study){
 
   # variable_statistics_pre_matching(input.data) moved to process_matched_data()
 
-  invisible(gc())
+  # invisible(gc())
 
 
 
@@ -101,7 +101,7 @@ process_each_file <- function(study){
     return(NULL)
   }
 
-  invisible(gc())
+  # invisible(gc())
   #print_and_log(mem_used(),'info',cat= FALSE)
 
 
@@ -125,7 +125,7 @@ process_each_file <- function(study){
     return(NULL)
   }
 
-  invisible(gc())
+  # invisible(gc())
   #print_and_log(mem_used(),'info',cat= FALSE)
 
 
@@ -150,7 +150,7 @@ process_each_file <- function(study){
   }
 
 
-  invisible(gc())
+  # invisible(gc())
 
 
 
@@ -281,7 +281,7 @@ process_each_file <- function(study){
   input.data[, switch := NULL]
   input.data[, wrong := NULL]
 
-  invisible(gc())
+  # invisible(gc())
   #print_and_log(mem_used(),'info',cat= FALSE)
 
 
@@ -293,7 +293,7 @@ process_each_file <- function(study){
   print_and_log('Plotting ...','info')
   drawPlots(input.data)
 
-  invisible(gc())
+  # invisible(gc())
 
 
   ## ==============================================
@@ -306,7 +306,7 @@ process_each_file <- function(study){
 
 
 
-  invisible(gc())
+  # invisible(gc())
   #print_and_log(mem_used(),'info',cat= FALSE)
 
 
@@ -344,7 +344,7 @@ process_each_file <- function(study){
     # only variants that could be matched are returned.
 
     # gc not done in previous function
-    invisible(gc())
+    # invisible(gc())
 
     ## allele matching for effect size plot
     ## ==============================================
@@ -429,7 +429,7 @@ process_each_file <- function(study){
   save_rds_file(.QC$thisStudy)
 
   rm(input.data)
-  invisible(gc())
+  # invisible(gc())
 
   ## ended
   ##==============

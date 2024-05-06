@@ -97,7 +97,8 @@ drawPlots <- function(processed.data) {
                       plot.title = 'Manhattan Plot',
                       p.threshold = config$plot_specs$plot_cutoff_p,
                       sig.threshold.log = -log10(5*10^-8),
-                      check.columns = FALSE),
+                      check.columns = FALSE,
+                      useHQ = config$plot_specs$plot_HQ_Manhattan),
              error = function(err)
                print_and_log(paste('error in manhattan plot.',err$message),'warning',display=.QC$config$debug$verbose)
     )

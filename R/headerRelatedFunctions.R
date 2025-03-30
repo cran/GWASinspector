@@ -160,7 +160,8 @@ checkRequiredColumnNames <- function(inputFile, study){
     study$missing.Columns <- missing.columns # add to config fo report
 
 
-    if('PVALUE' %in% missing.columns){
+    # some files will report LOG10P instead of P
+    if(is.element('PVALUE' , missing.columns) & !is.element('LOG10P' , renamed.File.Columns)){
       study$missing.PVALUE.column <- TRUE
 
       print_and_log('PVALUE column is missing. calculated values will be used!',

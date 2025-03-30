@@ -86,3 +86,8 @@ Changes in version 1.6.4 (May 2023)
 	- get.config() is renamed to get_config()
 	- get.headerTranslation() is renamed to get_headerTranslation()
 	- manhattan.plot() is renamed to manhattan_plot()
+
+Changes in version 1.7.2 (Mar 2024)
+====================================
+	- Minor changes for compatibility with R v4.4.
+	- LOG10P will be converted to PVALUE, if not in the input file

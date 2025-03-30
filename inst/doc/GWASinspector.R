@@ -13,7 +13,7 @@
 
 ## -----------------------------------------------------------------------------
 #  # get the installation function from our website:
-#  source('http://GWASinspector.com/references/install_GWASinspector.R')
+#  source('https://GWASinspector.com/references/install_GWASinspector.R')
 #  
 #  # this function will check R packages and install the dependencies from CRAN.
 #  install.GWASinspector(package.path = 'path/to/packageFile.gz')

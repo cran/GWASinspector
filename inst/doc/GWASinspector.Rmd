@@ -17,9 +17,9 @@ text-align: justify}
 
 # Overview
 
-This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS result files. Check our [website](http://GWASinspector.com) for further information and reference data sets. 
+This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS result files. Check our [website](https://GWASinspector.com) for further information and reference data sets. 
 
-The manual for this package can also be accessed online from [here](http://gwasinspector.com/references/Introduction_to_GWASinspector.pdf).
+The manual for this package can also be accessed online from [here](https://gwasinspector.com/references/Introduction_to_GWASinspector.pdf).
 
 
 
@@ -48,7 +48,7 @@ The manual for this package can also be accessed online from [here](http://gwasi
 1. Alternatively, you can use the installation function and zipped package from our website:
     ```{r}
     # get the installation function from our website:
-    source('http://GWASinspector.com/references/install_GWASinspector.R')
+    source('https://GWASinspector.com/references/install_GWASinspector.R')
     
     # this function will check R packages and install the dependencies from CRAN.
     install.GWASinspector(package.path = 'path/to/packageFile.gz')
@@ -63,7 +63,7 @@ The manual for this package can also be accessed online from [here](http://gwasi
 
 Comparing result files with an standard reference panel is the most important part of the QC process. This reference is used to check the alleles in the datasets and to ensure they are all in the same configuration (same strand, same coded alleles) in the post-QC data.
 
-We have created databases from the most popular refernece panel (e.g. HapMap, 1000G, HRC) which are available from our [website](http://GWASinspector.com). Database files are in SQLite format and can be downloaded as a compressed file. 
+We have created databases from the most popular refernece panel (e.g. HapMap, 1000G, HRC) which are available from our [website](https://GWASinspector.com). Database files are in SQLite format and can be downloaded as a compressed file. 
 
 > Some reference panels include more than one population. The target population which should be set as a parameter in the configuration file before running the algorithm.
 
@@ -121,7 +121,7 @@ Refer to the package dependency list in the manual for detail about mandatory an
 
 ## Step 3: download the standard allele-frequency reference datasets
 
-Standard allele-frequency reference datasets are available from our [website](http://GWASinspector.com). The database file should be decompressed and copied in the *references* folder [`dir_references` parameter of the config file].
+Standard allele-frequency reference datasets are available from our [website](https://GWASinspector.com). The database file should be decompressed and copied in the *references* folder [`dir_references` parameter of the config file].
 
 > This package supports both *Rdata* and *SQLite database* files (the later is recommended).
 

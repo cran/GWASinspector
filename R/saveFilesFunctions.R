@@ -107,6 +107,11 @@ saveDataSet_final<-function(dataset)
 
     requiredColNames <- .QC$thisStudy$renamed.File.Columns.sorted
 
+    ## LOG10P is previously converted to PVALUE by 10^(-log10p)
+    # so the column name vector should have PVALUE as well
+    if(is.element('PVALUE',names(dataset)) && !is.element('PVALUE',requiredColNames))
+      requiredColNames <- c(requiredColNames,'PVALUE')
+
     if(is.element('MULTI_ALLELIC',names(dataset)) && config$output_parameters$add_column_multiallelic == TRUE)
       requiredColNames <- c(requiredColNames,'MULTI_ALLELIC')
 

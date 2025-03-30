@@ -21,6 +21,7 @@
 utils::globalVariables(c('PVALUE',
       'PVALUE.calculated',
       'logP',
+      'LOG10P',
       'expected.logP',
       'cupper',
       'clower',

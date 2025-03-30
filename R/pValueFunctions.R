@@ -83,3 +83,17 @@ correct_extreme_calculated_pvalues <- function(input.data){
 
   return(input.data)
 }
+
+convert_logP_to_P <- function(input.data)
+{
+  if(!is.element('PVALUE' , colnames(input.data)) & is.element('LOG10P' , colnames(input.data)))
+  {
+    input.data[,PVALUE := formatC((10 ^ (-LOG10P)), digits = 5, format = "f")]
+    print_and_log('PVALUE column generated from LOG10P ...','info')
+
+   # input.data$LOG10P <- NULL
+   # print_and_log('LOG10P column removed ...','info')
+  }
+
+  return(input.data)
+}

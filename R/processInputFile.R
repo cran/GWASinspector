@@ -37,9 +37,10 @@ processInputFile <- function(input.data) {
 
 
 
-
-
   #### step 1: checking crucial variables
+
+  #### conert log10p to p
+  input.data <- convert_logP_to_P(input.data)
 
   column.names <- colnames(input.data)
   .QC$thisStudy$input.data.rowcount <- nrow(input.data)

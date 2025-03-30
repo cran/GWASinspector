@@ -3,7 +3,7 @@ citHeader('If you use GWASinspector in published research, please cite the follo
 bibentry(bibtype = "Article",
 title        = "GWASinspector: comprehensive quality control of genome-wide association study results",
 author       = c(as.person("Alireza Ani"),
-                 as.person('Peter J van der Most'),
+                 as.person("Peter J van der Most"),
                  as.person("Harold Snieder"),
                  as.person("Ahmad Vaez"),
                  as.person("Ilja Nolte")
@@ -11,7 +11,7 @@ author       = c(as.person("Alireza Ani"),
 journal      = "Bioinformatics",
 year         = "2021",
 doi          = "10.1093/bioinformatics/btaa1084",
-url          = "https://doi.org/10.1093/bioinformatics/btaa1084",
+url          = "https://dx.doi.org/10.1093/bioinformatics/btaa1084",
 textVersion  = "Ani A, van der Most PJ, Snieder H, Vaez A, Nolte IM. GWASinspector: comprehensive quality control of genome-wide association study results. Bioinformatics. 2021 Jan 8. DOI: 10.1093/bioinformatics/btaa1084"
 )
 

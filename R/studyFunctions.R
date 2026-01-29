@@ -997,7 +997,12 @@ verify_files_with_user <- function(qc.study.list, user.verification)
   study.table <- cbind(seq(1:ncol(study.table)),t(study.table))
   colnames(study.table)[1] <- '#'
 
-  print_and_log(kable(study.table,format = "rst"),
+
+  tbl_txt <- paste(
+    capture.output(knitr::kable(study.table, format = "rst")),
+    collapse = "\n"
+  )
+  print_and_log(tbl_txt,
                 'info',
                 cat= FALSE)
 

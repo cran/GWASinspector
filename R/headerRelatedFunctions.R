@@ -383,7 +383,12 @@ replaceInputStringSetFromHashSet <- function(hashset , inputStringSet)
   tbl <- data.table('header' = inputStringSet , 'translated_header' = returnSet)
 
   print_and_log('Header translation in input file...','info',display=.QC$config$debug$verbose)
-  print_and_log(kable(tbl,format = "rst"),
+
+  tbl_txt <- paste(
+    capture.output(knitr::kable(tbl, format = "rst")),
+    collapse = "\n"
+  )
+  print_and_log(tbl_txt,
                 'info',
                 cat= FALSE,
                 display= .QC$config$debug$verbose)

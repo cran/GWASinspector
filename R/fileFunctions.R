@@ -196,7 +196,11 @@ removeDuplicatedLines <- function(input.data) {
     tbl <- input.data[dup_lines, .N ,keyby=CHR]
 
     print_and_log('duplicated lines distribution in input file...','info',display=.QC$config$debug$verbose)
-    print_and_log(kable(tbl,format = "rst"),
+    tbl_txt <- paste(
+      capture.output(knitr::kable(tbl, format = "rst")),
+      collapse = "\n"
+    )
+    print_and_log(tbl_txt,
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)

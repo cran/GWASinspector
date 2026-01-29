@@ -1,5 +1,5 @@
 import(ini)
-import(futile.logger)
+import(logger)
 import(data.table)
 import(tools)
 import(ggplot2)
@@ -17,7 +17,7 @@ importFrom("stats", "complete.cases", "cor", "median", "na.omit",
              "pchisq", "ppoints", "qbeta", "qchisq", "sd")
 importFrom("utils", "data", "head", "installed.packages", "menu",
              "modifyList", "packageVersion", "read.table",
-             "setTxtProgressBar", "txtProgressBar", "write.table")
+             "setTxtProgressBar", "txtProgressBar", "write.table","capture.output")
 importFrom("graphics", "par", "plot.new", "smoothScatter", "text",
              "title")
 export(setup_inspector)

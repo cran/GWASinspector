@@ -9,8 +9,8 @@ setupLogOptions <- function(config,
   if(file.exists(log.file.path))
     file.remove(log.file.path)
 
-  flog.appender(appender.file(log.file.path), name='GWASinspector_logger')
-  flog.threshold(INFO)
+  log_appender(appender_file(log.file.path), namespace='GWASinspector_logger')
+  log_threshold(INFO, namespace='GWASinspector_logger')
   return(log.file.path)
 }
 
@@ -33,11 +33,11 @@ print_and_log <- function(message,
 
 #  tryCatch({
     if (level == "info") {
-      flog.info(msg = message, name = "GWASinspector_logger")
+      log_info(message, namespace = "GWASinspector_logger")
     } else if (level == "warning") {
-      flog.warn(msg = message, name = "GWASinspector_logger")
+      log_warn(message, namespace = "GWASinspector_logger")
     } else if (level == "fatal") {
-      flog.fatal(msg = message, name = "GWASinspector_logger")
+      log_fatal(message, namespace = "GWASinspector_logger")
       runStopCommand()
     }
   # },

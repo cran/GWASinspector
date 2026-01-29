@@ -31,11 +31,11 @@ plot_manhattan_standalone<-function(study.sample, plot.title, plot.subtitle, sig
 
   study.sample <- fill_missing_chr_positions(study.sample)
 
-  man_plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
+  man_plot<-ggplot(study.sample,aes(POSITION,-log10(PVALUE) ,colour = factor(CHR))) +
     scale_y_continuous(log10P, limits=c(y.scale.min,p.Min)) + #, breaks = plot.scale) +
     labs(x="Chromosome",y=" Observed -log(P-value)",
          subtitle=plot.subtitle , title=plot.title) +
-    facet_grid(.~study.sample$CHR, scales = "free",space = 'free', switch = "both", margins = TRUE) +
+    facet_grid(.~CHR, scales = "free",space = 'free', switch = "both")+#, margins = TRUE) +
     geom_point() +
     theme_grey() +
     theme(strip.background = element_blank(),
@@ -109,11 +109,11 @@ plot_manhattan<-function(study.sample, plot.title, plot.subtitle, sig.threshold.
 
   study.sample <- fill_missing_chr_positions(study.sample)
 
-  man_plot<-ggplot(study.sample,aes(study.sample$POSITION,-log10(study.sample$PVALUE) ,colour = factor(study.sample$CHR))) +
+  man_plot<-ggplot(study.sample,aes(POSITION,-log10(PVALUE) ,colour = factor(CHR))) +
     scale_y_continuous(log10P, limits=c(y.scale.min,p.Min)) + #, breaks = plot.scale) +
     labs(x="Chromosome",y=" Observed -log(P-value)",
          subtitle=plot.subtitle , title=plot.title) +
-    facet_grid(.~study.sample$CHR, scales = "free",space = 'free', switch = "both", margins = TRUE) +
+    facet_grid(.~CHR, scales = "free",space = 'free', switch = "both")+#, margins = TRUE) +
     geom_point() +
    # theme_grey() +
     theme_classic() +

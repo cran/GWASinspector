@@ -305,7 +305,13 @@ input_data_preAnalysis_report <- function(input.data)
   {
 
     print_and_log('Variants distribution on each chromosome in input file...','info',display=.QC$config$debug$verbose)
-    print_and_log(kable(input.data[, .N ,by=CHR][order(as.numeric(CHR))],format = "rst"),
+
+    tbl_txt <- paste(
+      capture.output(knitr::kable(input.data[, .N ,by=CHR][order(as.numeric(CHR))], format = "rst")),
+      collapse = "\n"
+    )
+
+    print_and_log(tbl_txt,
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)
@@ -320,7 +326,11 @@ input_data_preAnalysis_report <- function(input.data)
     tbl <- input.data[, .N ,keyby=IMPUTED]
 
     print_and_log('Imputation distribution in input file...','info',display=.QC$config$debug$verbose)
-    print_and_log(kable(tbl,format = "rst"),
+    tbl_txt <- paste(
+      capture.output(knitr::kable(tbl, format = "rst")),
+      collapse = "\n"
+    )
+    print_and_log(tbl_txt,
                   'info',
                   cat= FALSE,
                   display= .QC$config$debug$verbose)

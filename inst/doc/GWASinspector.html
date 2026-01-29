@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2025-03-29" />
+<meta name="date" content="2026-01-28" />
 
 <title>Introduction to GWASinspector</title>
 
@@ -325,7 +325,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to GWASinspector</h1>
 <h3 class="subtitle">Comprehensive, efficient and easy to use quality control of genome-wide association study results</h3>
-<h4 class="date">2025-03-29</h4>
+<h4 class="date">2026-01-28</h4>
 
 
 
@@ -335,23 +335,16 @@ text-align: justify}
 </style>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS result files. Check our <a href="https://GWASinspector.com">website</a> for further information and reference data sets.</p>
-<p>The manual for this package can also be accessed online from <a href="https://gwasinspector.com/references/Introduction_to_GWASinspector.pdf">here</a>.</p>
+<p>This vignette introduces the GWASinspector package, its general form and how to run the algorithm on multiple GWAS result files.</p>
 <hr />
 </div>
 <div id="installation" class="section level1">
 <h1>Installation</h1>
-<ol style="list-style-type: decimal">
-<li><p>The easiest way to get <strong>GWASinspector</strong> is to install it from CRAN:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># this will automatically download and install the dependencies.</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">install.packages</span>(<span class="st">&quot;GWASinspector&quot;</span>)</a></code></pre></div></li>
-<li><p>Alternatively, you can use the installation function and zipped package from our website:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># get the installation function from our website:</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="kw">source</span>(<span class="st">&#39;https://GWASinspector.com/references/install_GWASinspector.R&#39;</span>)</a>
-<a class="sourceLine" id="cb2-3" title="3"></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="co"># this function will check R packages and install the dependencies from CRAN.</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="kw">install.GWASinspector</span>(<span class="dt">package.path =</span> <span class="st">&#39;path/to/packageFile.gz&#39;</span>)</a></code></pre></div></li>
-</ol>
+<p>The easiest way to get <strong>GWASinspector</strong> is to install it from CRAN:</p>
+<pre><code>```r
+# this will automatically download and install the dependencies.
+install.packages(&quot;GWASinspector&quot;)
+```</code></pre>
 <hr />
 </div>
 <div id="required-files" class="section level1">
@@ -359,7 +352,7 @@ text-align: justify}
 <div id="allele-reference-panels" class="section level2">
 <h2>Allele reference panels</h2>
 <p>Comparing result files with an standard reference panel is the most important part of the QC process. This reference is used to check the alleles in the datasets and to ensure they are all in the same configuration (same strand, same coded alleles) in the post-QC data.</p>
-<p>We have created databases from the most popular refernece panel (e.g. HapMap, 1000G, HRC) which are available from our <a href="https://GWASinspector.com">website</a>. Database files are in SQLite format and can be downloaded as a compressed file.</p>
+<p>We have created databases from the most popular refernece panel (e.g. HapMap, 1000G, HRC). Database files are in SQLite format and can be downloaded as a compressed file.</p>
 <blockquote>
 <p>Some reference panels include more than one population. The target population which should be set as a parameter in the configuration file before running the algorithm.</p>
 </blockquote>
@@ -389,17 +382,17 @@ text-align: justify}
 <div id="step-1-make-sure-the-package-is-installed-correctly" class="section level2">
 <h2>Step 1: make sure the package is installed correctly</h2>
 <p>After installation, try loading the package with the following command.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">library</span>(GWASinspector)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(GWASinspector)</a></code></pre></div>
 </div>
 <div id="step-2-check-r-environment" class="section level2">
 <h2>Step 2: check R environment</h2>
 <p>Local machine and R environment can be explored by running the following function.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">system_check</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">system_check</span>()</a></code></pre></div>
 <p>Refer to the package dependency list in the manual for detail about mandatory and optional libraries.</p>
 </div>
 <div id="step-3-download-the-standard-allele-frequency-reference-datasets" class="section level2">
 <h2>Step 3: download the standard allele-frequency reference datasets</h2>
-<p>Standard allele-frequency reference datasets are available from our <a href="https://GWASinspector.com">website</a>. The database file should be decompressed and copied in the <em>references</em> folder [<code>dir_references</code> parameter of the config file].</p>
+<p>Standard allele-frequency reference datasets are available from our website. The database file should be decompressed and copied in the <em>references</em> folder [<code>dir_references</code> parameter of the config file].</p>
 <blockquote>
 <p>This package supports both <em>Rdata</em> and <em>SQLite database</em> files (the later is recommended).</p>
 </blockquote>
@@ -409,13 +402,13 @@ text-align: justify}
 <p>A copy of this file can be copied to a local folder by running the below command. This is a text file which includes most common variable/header names and can be edited according to user specifications. This file should be copied in the <em>references</em> folder [<code>dir_references</code> parameter of the config file].</p>
 <p>The default name of this file is <strong>alt_headers.txt</strong>.</p>
 <p><code>header_translations</code> field should be edited in the configuration file accordingly if this name is changed by user.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">get_headerTranslation</span>(<span class="st">&#39;/path/to/referenceFolder&#39;</span>) <span class="co"># copy the file to selected folder</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">get_headerTranslation</span>(<span class="st">&#39;/path/to/referenceFolder&#39;</span>) <span class="co"># copy the file to selected folder</span></a></code></pre></div>
 </div>
 <div id="step-5-get-the-configuration-file" class="section level2">
 <h2>Step 5: get the configuration file</h2>
 <p>The configuration file is in plain text format and is used for setting the desired parameters for running the algorithm. A template file can be copied to local folder by running the following command.</p>
 <p>The default name of this file is <strong>config.ini</strong>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">get_config</span>(<span class="st">&#39;/home/user&#39;</span>) <span class="co"># copy the file to selected folder</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">get_config</span>(<span class="st">&#39;/home/user&#39;</span>) <span class="co"># copy the file to selected folder</span></a></code></pre></div>
 </div>
 <div id="step-6-modify-the-parameters-in-the-configuration-file" class="section level2">
 <h2>Step 6: modify the parameters in the configuration file</h2>
@@ -426,31 +419,31 @@ text-align: justify}
 <h2>Step 7: run the QC function</h2>
 <p>The QC is configured by the configuration (ini) file, which is imported into R through <code>setup_inspector</code> and turned into an object of the <code>Inspector</code> class. To perform the QC, process the object with <code>run_inspector</code>. A quick scan of the results can be performed via <code>result_inspector</code>, but the primary outcome of the QC are the log files and graphs generated by <code>run_inspector</code>. An exhaustive log file indicating the progress and possible warnings is also saved which can be used for localization of any problems during this run.</p>
 <p><strong>Example:</strong></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="co">## load the package</span></a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw">library</span>(GWASinspector)</a>
-<a class="sourceLine" id="cb7-4" title="4"></a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="co">## import the QC-configuration file </span></a>
-<a class="sourceLine" id="cb7-6" title="6">job &lt;-<span class="st"> </span><span class="kw">setup_inspector</span>(<span class="st">&quot;/home/user/config.ini&quot;</span>)</a>
-<a class="sourceLine" id="cb7-7" title="7"></a>
-<a class="sourceLine" id="cb7-8" title="8"><span class="co">## check the created instance</span></a>
-<a class="sourceLine" id="cb7-9" title="9"><span class="co">## input result files that will be inspected are also displayed</span></a>
-<a class="sourceLine" id="cb7-10" title="10">job</a>
-<a class="sourceLine" id="cb7-11" title="11"></a>
-<a class="sourceLine" id="cb7-12" title="12"><span class="co">## run the algorithm </span></a>
-<a class="sourceLine" id="cb7-13" title="13">job &lt;-<span class="st"> </span><span class="kw">run_inspector</span>(job)</a>
-<a class="sourceLine" id="cb7-14" title="14"></a>
-<a class="sourceLine" id="cb7-15" title="15"><span class="co">## check the results</span></a>
-<a class="sourceLine" id="cb7-16" title="16"><span class="co">## comprehensive report and result file are already saved in the output folder</span></a>
-<a class="sourceLine" id="cb7-17" title="17"><span class="kw">result_inspector</span>(job)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">## load the package</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="kw">library</span>(GWASinspector)</a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">## import the QC-configuration file </span></a>
+<a class="sourceLine" id="cb6-6" title="6">job &lt;-<span class="st"> </span><span class="kw">setup_inspector</span>(<span class="st">&quot;/home/user/config.ini&quot;</span>)</a>
+<a class="sourceLine" id="cb6-7" title="7"></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">## check the created instance</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="co">## input result files that will be inspected are also displayed</span></a>
+<a class="sourceLine" id="cb6-10" title="10">job</a>
+<a class="sourceLine" id="cb6-11" title="11"></a>
+<a class="sourceLine" id="cb6-12" title="12"><span class="co">## run the algorithm </span></a>
+<a class="sourceLine" id="cb6-13" title="13">job &lt;-<span class="st"> </span><span class="kw">run_inspector</span>(job)</a>
+<a class="sourceLine" id="cb6-14" title="14"></a>
+<a class="sourceLine" id="cb6-15" title="15"><span class="co">## check the results</span></a>
+<a class="sourceLine" id="cb6-16" title="16"><span class="co">## comprehensive report and result file are already saved in the output folder</span></a>
+<a class="sourceLine" id="cb6-17" title="17"><span class="kw">result_inspector</span>(job)</a></code></pre></div>
 <hr />
 </div>
 </div>
 <div id="test-run" class="section level1">
 <h1>Test run</h1>
 <p>You can run the algorithm on a sample GWAS file which is embedded in the package. Reports are generated and saved in the specified folder.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">library</span>(GWASinspector)</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw">demo_inspector</span>(<span class="st">&#39;/sample_dir&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">library</span>(GWASinspector)</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">demo_inspector</span>(<span class="st">&#39;/sample_dir&#39;</span>)</a></code></pre></div>
 <hr />
 </div>
 

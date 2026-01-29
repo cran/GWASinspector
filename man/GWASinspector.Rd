@@ -9,7 +9,7 @@ When evaluating the results of a genome-wide association study (GWAS), it is imp
 This package was developed to facilitate and streamline this process and provide the user with a comprehensive report.
 }
 \details{
-Check out our website for more help and support  \url{https://GWASinspector.com}.
+Check out our website for more help and support.
 }
 \note{
 GWASinspector uses the S4 object system of R to conduct the QC.

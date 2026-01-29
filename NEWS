@@ -63,3 +63,7 @@ Changes in version 1.7.2 (Mar 2025)
 	- Minor changes for compatibility with R v4.4.
 	- LOG10P will be converted to PVALUE, if not in the input file.
 
+Changes in version 1.7.4 (Dec 2025)
+====================================
+	- futile.logger package was replaced with logger
+
